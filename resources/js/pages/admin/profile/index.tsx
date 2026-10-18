@@ -9,7 +9,17 @@ import { ProfileInfoCard } from './profile-info-card';
 import { ProfileActionCard } from './profile-action-card';
 import { ProfilePasswordModal } from './profile-password-modal';
 
-export default function AdminProfile() {
+interface AdminProfileProps {
+    initialAdmin?: {
+        name: string;
+        username: string;
+        role: string;
+        class?: string;
+        phone?: string;
+    } | null;
+}
+
+export default function AdminProfile({ initialAdmin }: AdminProfileProps) {
     const [session, setSession] = useState<SessionToken | null>(null);
     const [passwordModalOpen, setPasswordModalOpen] = useState(false);
     const [oldPassword, setOldPassword] = useState('');
@@ -32,14 +42,22 @@ export default function AdminProfile() {
             return;
         }
 
-        const username = session?.username || 'admin';
+        const username = session?.username || initialAdmin?.username || 'admin';
         updateStudentPassword(username, newPassword);
 
-        toast.success('Kata sandi administrator berhasil diperbarui!');
-        setPasswordModalOpen(false);
-        setOldPassword('');
-        setNewPassword('');
-        setConfirmPassword('');
+        router.post('/admin/profile/password', {
+            old_password: oldPassword,
+            new_password: newPassword,
+        }, {
+            preserveScroll: true,
+            onSuccess: () => {
+                toast.success('Kata sandi administrator berhasil diperbarui!');
+                setPasswordModalOpen(false);
+                setOldPassword('');
+                setNewPassword('');
+                setConfirmPassword('');
+            }
+        });
     };
 
     const handleLogout = () => {
@@ -48,8 +66,8 @@ export default function AdminProfile() {
         router.visit('/login');
     };
 
-    const adminName = session?.name || 'Bambang Haryanto, S.Kom';
-    const adminUsername = session?.username || 'admin';
+    const adminName = initialAdmin?.name || session?.name || 'Bambang Haryanto, S.T.';
+    const adminUsername = initialAdmin?.username || session?.username || 'admin';
     const adminInitials = adminName
         .split(' ')
         .map((n) => n[0])

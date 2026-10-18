@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Head } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
 import { AdminLayout } from '@/layouts/admin-layout';
 import {
     getStoredAccounts,
@@ -14,8 +14,17 @@ import { SiswaTable } from './siswa-table';
 import { SiswaResetPasswordModal } from './siswa-reset-password-modal';
 import { SiswaCreateModal, type NewUserFormData } from './siswa-create-modal';
 
-export default function AdminSiswa() {
-    const [accounts, setAccounts] = useState<UserAccount[]>([]);
+interface AdminSiswaProps {
+    initialStudents?: UserAccount[];
+}
+
+export default function AdminSiswa({ initialStudents }: AdminSiswaProps) {
+    const [accounts, setAccounts] = useState<UserAccount[]>(() => {
+        if (initialStudents && initialStudents.length > 0) {
+            return initialStudents;
+        }
+        return getStoredAccounts();
+    });
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedClass, setSelectedClass] = useState<string>('ALL');
     const [revealedPasswords, setRevealedPasswords] = useState<Record<string, boolean>>({});
@@ -35,15 +44,23 @@ export default function AdminSiswa() {
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     useEffect(() => {
-        setAccounts(getStoredAccounts());
+        if (initialStudents && initialStudents.length > 0) {
+            setAccounts(initialStudents);
+        } else {
+            setAccounts(getStoredAccounts());
+        }
 
-        const handleAccountsChange = () => setAccounts(getStoredAccounts());
+        const handleAccountsChange = () => {
+            if (!initialStudents || initialStudents.length === 0) {
+                setAccounts(getStoredAccounts());
+            }
+        };
         window.addEventListener('inventory_accounts_changed', handleAccountsChange);
 
         return () => {
             window.removeEventListener('inventory_accounts_changed', handleAccountsChange);
         };
-    }, []);
+    }, [initialStudents]);
 
     // Filter students only (exclude admin from student table)
     const students = accounts.filter((a) => a.role === 'siswa');
@@ -113,22 +130,32 @@ export default function AdminSiswa() {
 
         if (success) {
             setAccounts(getStoredAccounts());
-            toast.success(
-                `Password baru untuk ${selectedStudent.name} (${selectedStudent.username}) berhasil disimpan: "${newPassword}"`,
-                { duration: 6000 }
-            );
-            setIsResetModalOpen(false);
-            setNewPassword('');
-        } else {
-            toast.error('Gagal memperbarui password.');
+            updateStudentPassword(selectedStudent.username, newPassword.trim());
         }
 
-        setIsSubmitting(false);
+        router.post('/admin/siswa/reset-password', {
+            username: selectedStudent.username,
+            new_password: newPassword.trim(),
+        }, {
+            preserveScroll: true,
+            onSuccess: () => {
+                toast.success(
+                    `Password baru untuk ${selectedStudent.name} (${selectedStudent.username}) berhasil disimpan: "${newPassword}"`,
+                    { duration: 6000 }
+                );
+                setIsResetModalOpen(false);
+                setNewPassword('');
+                setIsSubmitting(false);
+            },
+            onError: () => {
+                setIsSubmitting(false);
+            }
+        });
     };
 
     const handleCreateUser = (formData: NewUserFormData) => {
         setIsCreatingUser(true);
-        const result = createUserAccount({
+        createUserAccount({
             username: formData.username,
             name: formData.name,
             role: formData.role,
@@ -139,16 +166,29 @@ export default function AdminSiswa() {
             phone: formData.phone
         });
 
-        if (result.success) {
-            setAccounts(getStoredAccounts());
-            toast.success(result.message);
-            setIsCreateModalOpen(false);
-            setCurrentPage(1);
-        } else {
-            toast.error(result.message);
-        }
-
-        setIsCreatingUser(false);
+        router.post('/admin/siswa', {
+            username: formData.username,
+            name: formData.name,
+            role: formData.role,
+            class: formData.class,
+            email: formData.email,
+            password: formData.password,
+            nisn: formData.nisn,
+            phone: formData.phone
+        }, {
+            preserveScroll: true,
+            onSuccess: () => {
+                toast.success(`Akun siswa ${formData.name} berhasil dibuat!`);
+                setIsCreateModalOpen(false);
+                setCurrentPage(1);
+                setIsCreatingUser(false);
+            },
+            onError: (errors) => {
+                const firstErr = Object.values(errors)[0] as string;
+                toast.error(firstErr || 'Gagal menambahkan akun siswa.');
+                setIsCreatingUser(false);
+            }
+        });
     };
 
     const copyToClipboard = (text: string, label: string) => {

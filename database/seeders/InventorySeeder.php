@@ -15,30 +15,86 @@ class InventorySeeder extends Seeder
      */
     public function run(): void
     {
-        // 1. Seed Siswa & Admin Users
-        $siswa = User::firstOrCreate(
-            ['email' => 'kenho.imut@smkn1kotabekasi.sch.id'],
+        // 1. Seed Accounts
+        $accounts = [
             [
-                'name' => 'Kenho Imut',
-                'password' => Hash::make('password'),
-                'role' => 'siswa',
-                'class' => 'XII RPL 2 | Rekayasa Perangkat Lunak',
-                'nisn' => '0067829102',
-                'phone' => '0812-3456-7890',
-            ]
-        );
-
-        $admin = User::firstOrCreate(
-            ['email' => 'admin@smkn1kotabekasi.sch.id'],
-            [
-                'name' => 'Admin Lab RPL',
-                'password' => Hash::make('admin123'),
+                'username' => 'admin',
+                'name' => 'Bambang Haryanto, S.T.',
+                'email' => 'admin@smkn1.sch.id',
+                'password' => Hash::make('adminlab123'),
                 'role' => 'admin',
-                'class' => null,
-                'nisn' => null,
-                'phone' => '0812-9999-8888',
-            ]
-        );
+                'class' => 'Kepala Lab RPL SMKN 1',
+                'phone' => '0811-2233-4455',
+            ],
+            [
+                'username' => 'siswa1',
+                'name' => 'Ahmad Rizky Pratama',
+                'email' => 'siswa1@smkn1.sch.id',
+                'password' => Hash::make('siswa123'),
+                'role' => 'siswa',
+                'class' => 'XII RPL A',
+                'nisn' => '0067829101',
+                'phone' => '0812-9876-1101',
+            ],
+            [
+                'username' => 'siswa2',
+                'name' => 'Nabila Putri Syahrani',
+                'email' => 'siswa2@smkn1.sch.id',
+                'password' => Hash::make('rpl2024!'),
+                'role' => 'siswa',
+                'class' => 'XII RPL B',
+                'nisn' => '0067829102',
+                'phone' => '0813-4455-2202',
+            ],
+            [
+                'username' => 'siswa3',
+                'name' => 'Muhammad Fajar Ramadhan',
+                'email' => 'siswa3@smkn1.sch.id',
+                'password' => Hash::make('rplfajar11'),
+                'role' => 'siswa',
+                'class' => 'XI RPL A',
+                'nisn' => '0078912301',
+                'phone' => '0812-3344-5566',
+            ],
+            [
+                'username' => 'siswa4',
+                'name' => 'Siti Aisyah Azzahra',
+                'email' => 'siswa4@smkn1.sch.id',
+                'password' => Hash::make('aisyah2024'),
+                'role' => 'siswa',
+                'class' => 'XI RPL B',
+                'nisn' => '0078912302',
+                'phone' => '0813-9988-7766',
+            ],
+            [
+                'username' => 'siswa5',
+                'name' => 'Dimas Arya Saputra',
+                'email' => 'siswa5@smkn1.sch.id',
+                'password' => Hash::make('dimasrpl10'),
+                'role' => 'siswa',
+                'class' => 'X RPL A',
+                'nisn' => '0089123401',
+                'phone' => '0821-1122-3344',
+            ],
+            [
+                'username' => 'siswa6',
+                'name' => 'Zahra Amelia Dewi',
+                'email' => 'siswa6@smkn1.sch.id',
+                'password' => Hash::make('zahra10rpl'),
+                'role' => 'siswa',
+                'class' => 'X RPL B',
+                'nisn' => '0089123402',
+                'phone' => '0822-4455-6677',
+            ],
+        ];
+
+        $createdUsers = [];
+        foreach ($accounts as $acc) {
+            $createdUsers[$acc['username']] = User::updateOrCreate(
+                ['email' => $acc['email']],
+                $acc
+            );
+        }
 
         // 2. Seed Items
         $items = [
@@ -294,12 +350,13 @@ class InventorySeeder extends Seeder
         }
 
         // 3. Seed Initial Loans
-        if (isset($createdAlats['EL-001'])) {
+        $siswa1 = $createdUsers['siswa1'] ?? User::first();
+        if ($siswa1 && isset($createdAlats['EL-001'])) {
             Peminjaman::create([
-                'user_id' => $siswa->id,
+                'user_id' => $siswa1->id,
                 'alat_id' => $createdAlats['EL-001']->id,
-                'borrower_name' => $siswa->name,
-                'borrower_class' => 'XII RPL 2',
+                'borrower_name' => $siswa1->name,
+                'borrower_class' => $siswa1->class ?? 'XII RPL A',
                 'borrow_date' => '2024-08-03',
                 'return_estimate' => '2024-08-05',
                 'status' => 'Sedang Dipinjam',
@@ -307,24 +364,23 @@ class InventorySeeder extends Seeder
             ]);
         }
 
-        if (isset($createdAlats['PR-001'])) {
+        if ($siswa1 && isset($createdAlats['PR-001'])) {
             Peminjaman::create([
-                'user_id' => $siswa->id,
+                'user_id' => $siswa1->id,
                 'alat_id' => $createdAlats['PR-001']->id,
-                'borrower_name' => $siswa->name,
-                'borrower_class' => 'XII RPL 2',
+                'borrower_name' => $siswa1->name,
+                'borrower_class' => $siswa1->class ?? 'XII RPL A',
                 'borrow_date' => '2024-08-03',
                 'return_estimate' => '2024-08-05',
                 'status' => 'Sedang Dipinjam',
                 'notes' => 'Navigasi praktikum coding',
             ]);
 
-            // Riwayat yang sudah dikembalikan
             Peminjaman::create([
-                'user_id' => $siswa->id,
+                'user_id' => $siswa1->id,
                 'alat_id' => $createdAlats['PR-001']->id,
-                'borrower_name' => $siswa->name,
-                'borrower_class' => 'XII RPL 2',
+                'borrower_name' => $siswa1->name,
+                'borrower_class' => $siswa1->class ?? 'XII RPL A',
                 'borrow_date' => '2024-08-01',
                 'return_estimate' => '2024-08-02',
                 'return_date' => '2024-08-05',

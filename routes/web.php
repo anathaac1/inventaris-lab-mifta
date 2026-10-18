@@ -3,9 +3,12 @@
 use App\Http\Controllers\Admin\AlatController as AdminAlatController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\PeminjamanController as AdminPeminjamanController;
+use App\Http\Controllers\Admin\ProfileController as AdminProfileController;
+use App\Http\Controllers\Admin\SiswaController as AdminSiswaController;
 use App\Http\Controllers\AlatController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PeminjamanController;
+use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 Route::inertia('/', 'welcome')->name('home');
@@ -18,7 +21,8 @@ Route::get('peminjaman', [PeminjamanController::class, 'index'])->name('peminjam
 Route::post('peminjaman', [PeminjamanController::class, 'store'])->name('peminjaman.store');
 Route::post('peminjaman/{peminjaman}/kembalikan', [PeminjamanController::class, 'returnItem'])->name('peminjaman.kembalikan');
 
-Route::inertia('profile', 'profile')->name('profile.index');
+Route::get('profile', [ProfileController::class, 'index'])->name('profile.index');
+Route::post('profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
 
 // Admin CMS Routes
 Route::prefix('admin')->name('admin.')->group(function () {
@@ -32,24 +36,16 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     Route::get('peminjaman', [AdminPeminjamanController::class, 'index'])->name('peminjaman.index');
     Route::post('peminjaman/{peminjaman}/kembalikan', [AdminPeminjamanController::class, 'returnItem'])->name('peminjaman.kembalikan');
-    Route::inertia('siswa', 'admin/siswa')->name('admin.siswa.index');
-    Route::inertia('profile', 'admin/profile')->name('admin.profile.index');
-    Route::post('siswa/reset-password', function (\Illuminate\Http\Request $request) {
-        $request->validate([
-            'username' => 'required|string',
-            'new_password' => 'required|string|min:4',
-        ]);
 
-        $username = trim($request->username);
-        $user = \App\Models\User::where('email', $username)
-            ->orWhere('email', $username . '@smkn1.sch.id')
-            ->first();
+    Route::get('siswa', [AdminSiswaController::class, 'index'])->name('siswa.index');
+    Route::post('siswa', [AdminSiswaController::class, 'store'])->name('siswa.store');
+    Route::post('siswa/reset-password', [AdminSiswaController::class, 'resetPassword'])->name('siswa.reset_password');
+    Route::delete('siswa/{user}', [AdminSiswaController::class, 'destroy'])->name('siswa.destroy');
 
-        if ($user) {
-            $user->password = \Illuminate\Support\Facades\Hash::make($request->new_password);
-            $user->save();
-        }
+    Route::get('profile', [AdminProfileController::class, 'index'])->name('profile.index');
+    Route::post('profile/password', [AdminProfileController::class, 'updatePassword'])->name('profile.password');
+});
 
-        return back()->with('status', "Password untuk akun {$username} berhasil diperbarui.");
-    })->name('admin.siswa.reset_password');
+Route::middleware(['auth', 'verified'])->group(function () {
+    // Authenticated settings
 });
