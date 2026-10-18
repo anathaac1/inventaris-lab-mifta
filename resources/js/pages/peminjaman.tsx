@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 import {
     Clock,
     Calendar,
@@ -20,16 +20,35 @@ import {
 } from '@/data/inventory-data';
 import { toast } from 'sonner';
 
-export default function Peminjaman() {
+interface PeminjamanProps {
+    initialActiveLoans?: LoanItem[];
+    initialLoanHistory?: LoanItem[];
+}
+
+export default function Peminjaman({ initialActiveLoans, initialLoanHistory }: PeminjamanProps) {
     const [activeTab, setActiveTab] = useState<'aktif' | 'riwayat'>('aktif');
-    const [loans, setLoans] = useState<LoanItem[]>([]);
+    const [loans, setLoans] = useState<LoanItem[]>(() => {
+        if (initialActiveLoans || initialLoanHistory) {
+            return [...(initialActiveLoans || []), ...(initialLoanHistory || [])];
+        }
+        return getStoredLoans();
+    });
 
     useEffect(() => {
-        setLoans(getStoredLoans());
-        const handleLoansChange = () => setLoans(getStoredLoans());
+        if (initialActiveLoans || initialLoanHistory) {
+            setLoans([...(initialActiveLoans || []), ...(initialLoanHistory || [])]);
+        } else {
+            setLoans(getStoredLoans());
+        }
+
+        const handleLoansChange = () => {
+            if (!initialActiveLoans && !initialLoanHistory) {
+                setLoans(getStoredLoans());
+            }
+        };
         window.addEventListener('inventory_loans_changed', handleLoansChange);
         return () => window.removeEventListener('inventory_loans_changed', handleLoansChange);
-    }, []);
+    }, [initialActiveLoans, initialLoanHistory]);
 
     const activeLoans = loans.filter((item) => item.status === 'Sedang Dipinjam');
     const loanHistory = loans.filter((item) => item.status === 'Dikembalikan');
@@ -67,7 +86,17 @@ export default function Peminjaman() {
         });
         saveStoredItems(updatedItems);
 
-        toast.success(`Alat ${loan.itemName} (${loan.code}) berhasil dikembalikan!`);
+        // Submit to Laravel backend
+        if (typeof loan.id === 'number' || initialActiveLoans || initialLoanHistory) {
+            router.post(`/peminjaman/${loan.id}/kembalikan`, {}, {
+                preserveScroll: true,
+                onSuccess: () => {
+                    toast.success(`Alat ${loan.itemName} (${loan.code}) berhasil dikembalikan!`);
+                },
+            });
+        } else {
+            toast.success(`Alat ${loan.itemName} (${loan.code}) berhasil dikembalikan!`);
+        }
     };
 
     return (

@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 import {
     Search,
     SlidersHorizontal,
@@ -19,8 +19,14 @@ import {
     type LoanItem
 } from '@/data/inventory-data';
 
-export default function Alat() {
-    const [items, setItems] = useState<InventoryItem[]>([]);
+interface AlatProps {
+    initialItems?: InventoryItem[];
+}
+
+export default function Alat({ initialItems }: AlatProps) {
+    const [items, setItems] = useState<InventoryItem[]>(() =>
+        initialItems && initialItems.length > 0 ? initialItems : getStoredItems()
+    );
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedCategory, setSelectedCategory] = useState<string>('Semua');
     const [selectedStatus, setSelectedStatus] = useState<string>('Semua');
@@ -29,11 +35,20 @@ export default function Alat() {
     const [detailModalOpen, setDetailModalOpen] = useState(false);
 
     useEffect(() => {
-        setItems(getStoredItems());
-        const handleItemsChange = () => setItems(getStoredItems());
+        if (initialItems && initialItems.length > 0) {
+            setItems(initialItems);
+        } else {
+            setItems(getStoredItems());
+        }
+
+        const handleItemsChange = () => {
+            if (!initialItems || initialItems.length === 0) {
+                setItems(getStoredItems());
+            }
+        };
         window.addEventListener('inventory_items_changed', handleItemsChange);
         return () => window.removeEventListener('inventory_items_changed', handleItemsChange);
-    }, []);
+    }, [initialItems]);
 
     const filteredItems = useMemo(() => {
         return items.filter((item) => {
@@ -82,6 +97,20 @@ export default function Alat() {
         });
         saveStoredItems(updatedItems);
         setItems(updatedItems);
+
+        // Submit to Laravel backend
+        if (typeof item.id === 'number' || (initialItems && initialItems.length > 0)) {
+            router.post('/peminjaman', {
+                alat_id: item.id,
+                borrower_name: 'Kenho Imut',
+                borrower_class: 'XII RPL 2',
+                borrow_date: borrowDate,
+                return_estimate: returnEstimate,
+                notes,
+            }, {
+                preserveScroll: true,
+            });
+        }
     };
 
     return (

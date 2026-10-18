@@ -1,0 +1,96 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Alat;
+use App\Models\Peminjaman;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Inertia\Inertia;
+use Inertia\Response;
+
+class PeminjamanController extends Controller
+{
+    /**
+     * Display student loans page.
+     */
+    public function index(): Response
+    {
+        $loans = Peminjaman::with('alat')
+            ->latest()
+            ->get();
+
+        $activeLoans = $loans->where('status', 'Sedang Dipinjam')->values();
+        $loanHistory = $loans->where('status', 'Dikembalikan')->values();
+
+        return Inertia::render('peminjaman', [
+            'initialActiveLoans' => $activeLoans,
+            'initialLoanHistory' => $loanHistory,
+        ]);
+    }
+
+    /**
+     * Store new loan application.
+     */
+    public function store(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'alat_id' => ['required', 'exists:alats,id'],
+            'borrower_name' => ['required', 'string', 'max:255'],
+            'borrower_class' => ['required', 'string', 'max:100'],
+            'borrow_date' => ['required', 'date'],
+            'return_estimate' => ['required', 'date', 'after_or_equal:borrow_date'],
+            'notes' => ['nullable', 'string', 'max:1000'],
+        ]);
+
+        DB::transaction(function () use ($validated, $request) {
+            $alat = Alat::where('id', $validated['alat_id'])->lockForUpdate()->firstOrFail();
+
+            if ($alat->stock <= 0) {
+                abort(422, 'Stok alat sudah habis, tidak dapat dipinjam.');
+            }
+
+            $alat->decrement('stock');
+
+            Peminjaman::create([
+                'user_id' => $request->user()?->id,
+                'alat_id' => $alat->id,
+                'borrower_name' => $validated['borrower_name'],
+                'borrower_class' => $validated['borrower_class'],
+                'borrow_date' => $validated['borrow_date'],
+                'return_estimate' => $validated['return_estimate'],
+                'status' => 'Sedang Dipinjam',
+                'notes' => $validated['notes'] ?? null,
+            ]);
+        });
+
+        return redirect()->back()->with('success', 'Peminjaman alat berhasil diajukan.');
+    }
+
+    /**
+     * Return borrowed item.
+     */
+    public function returnItem(Peminjaman $peminjaman): RedirectResponse
+    {
+        if ($peminjaman->status === 'Dikembalikan') {
+            return redirect()->back()->with('info', 'Barang ini sudah dikembalikan.');
+        }
+
+        DB::transaction(function () use ($peminjaman) {
+            $peminjaman->update([
+                'status' => 'Dikembalikan',
+                'return_date' => now()->toDateString(),
+            ]);
+
+            $alat = Alat::where('id', $peminjaman->alat_id)->lockForUpdate()->first();
+            if ($alat) {
+                $alat->update([
+                    'stock' => min($alat->total, $alat->stock + 1),
+                ]);
+            }
+        });
+
+        return redirect()->back()->with('success', 'Barang berhasil dikembalikan ke inventaris.');
+    }
+}

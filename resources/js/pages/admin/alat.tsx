@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Head } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
 import {
     Plus,
     Search,
@@ -37,8 +37,14 @@ const ICON_OPTIONS: IconType[] = [
     'flashdisk'
 ];
 
-export default function AdminAlat() {
-    const [items, setItems] = useState<InventoryItem[]>([]);
+interface AdminAlatProps {
+    initialItems?: InventoryItem[];
+}
+
+export default function AdminAlat({ initialItems }: AdminAlatProps) {
+    const [items, setItems] = useState<InventoryItem[]>(() =>
+        initialItems && initialItems.length > 0 ? initialItems : getStoredItems()
+    );
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedCategory, setSelectedCategory] = useState<string>('Semua');
     const [visibilityFilter, setVisibilityFilter] = useState<'all' | 'visible' | 'hidden'>('all');
@@ -74,11 +80,18 @@ export default function AdminAlat() {
     });
 
     useEffect(() => {
-        setItems(getStoredItems());
-        const handleItemsChange = () => setItems(getStoredItems());
+        if (initialItems && initialItems.length > 0) {
+            setItems(initialItems);
+        } else {
+            setItems(getStoredItems());
+        }
+
+        const handleItemsChange = () => {
+            if (!initialItems || initialItems.length === 0) setItems(getStoredItems());
+        };
         window.addEventListener('inventory_items_changed', handleItemsChange);
         return () => window.removeEventListener('inventory_items_changed', handleItemsChange);
-    }, []);
+    }, [initialItems]);
 
     // Filter items
     const filteredItems = items.filter((item) => {
@@ -100,15 +113,11 @@ export default function AdminAlat() {
     });
 
     // Toggle single item visibility to students
-    const handleToggleVisibility = (itemId: string) => {
+    const handleToggleVisibility = (itemId: string | number) => {
+        const target = items.find((i) => i.id === itemId);
         const updated = items.map((item) => {
             if (item.id === itemId) {
                 const newVis = item.isVisibleToStudents === false ? true : false;
-                toast.success(
-                    newVis
-                        ? `"${item.name}" sekarang TAMPIL di halaman siswa.`
-                        : `"${item.name}" sekarang DISEMBUNYIKAN dari siswa.`
-                );
                 return { ...item, isVisibleToStudents: newVis };
             }
             return item;
@@ -116,6 +125,27 @@ export default function AdminAlat() {
 
         saveStoredItems(updated);
         setItems(updated);
+
+        if (typeof itemId === 'number' || (initialItems && initialItems.length > 0)) {
+            router.patch(`/admin/alat/${itemId}/visibility`, {}, {
+                preserveScroll: true,
+                onSuccess: () => {
+                    const newVis = target?.isVisibleToStudents === false;
+                    toast.success(
+                        newVis
+                            ? `"${target?.name}" sekarang TAMPIL di halaman siswa.`
+                            : `"${target?.name}" sekarang DISEMBUNYIKAN dari siswa.`
+                    );
+                },
+            });
+        } else {
+            const newVis = target?.isVisibleToStudents === false;
+            toast.success(
+                newVis
+                    ? `"${target?.name}" sekarang TAMPIL di halaman siswa.`
+                    : `"${target?.name}" sekarang DISEMBUNYIKAN dari siswa.`
+            );
+        }
     };
 
     // Open add modal
@@ -183,7 +213,30 @@ export default function AdminAlat() {
             });
             saveStoredItems(updated);
             setItems(updated);
-            toast.success(`Alat "${formData.name}" berhasil diperbarui!`);
+
+            if (typeof editingItem.id === 'number' || (initialItems && initialItems.length > 0)) {
+                router.put(`/admin/alat/${editingItem.id}`, {
+                    name: formData.name,
+                    code: formData.code,
+                    category: formData.category,
+                    stock: Number(formData.stock),
+                    total: Number(formData.total),
+                    description: formData.description,
+                    icon_type: formData.iconType,
+                    is_visible_to_students: formData.isVisibleToStudents,
+                    specs: {
+                        ...(editingItem.specs || {}),
+                        [formData.specType || 'Keterangan']: formData.specDetail || 'Tersedia'
+                    }
+                }, {
+                    preserveScroll: true,
+                    onSuccess: () => {
+                        toast.success(`Alat "${formData.name}" berhasil diperbarui!`);
+                    }
+                });
+            } else {
+                toast.success(`Alat "${formData.name}" berhasil diperbarui!`);
+            }
         } else {
             // Create
             const newItem: InventoryItem = {
@@ -204,7 +257,29 @@ export default function AdminAlat() {
             const updated = [newItem, ...items];
             saveStoredItems(updated);
             setItems(updated);
-            toast.success(`Alat baru "${formData.name}" berhasil ditambahkan!`);
+
+            if (initialItems && initialItems.length > 0) {
+                router.post('/admin/alat', {
+                    name: formData.name,
+                    code: formData.code,
+                    category: formData.category,
+                    stock: Number(formData.stock),
+                    total: Number(formData.total),
+                    description: formData.description,
+                    icon_type: formData.iconType,
+                    is_visible_to_students: formData.isVisibleToStudents,
+                    specs: {
+                        [formData.specType || 'Tipe']: formData.specDetail || 'Standar Lab'
+                    }
+                }, {
+                    preserveScroll: true,
+                    onSuccess: () => {
+                        toast.success(`Alat baru "${formData.name}" berhasil ditambahkan!`);
+                    }
+                });
+            } else {
+                toast.success(`Alat baru "${formData.name}" berhasil ditambahkan!`);
+            }
         }
 
         setIsFormModalOpen(false);
@@ -213,10 +288,21 @@ export default function AdminAlat() {
     // Delete item
     const handleConfirmDelete = () => {
         if (!deleteConfirmItem) return;
-        const updated = items.filter((item) => item.id !== deleteConfirmItem.id);
+        const target = deleteConfirmItem;
+        const updated = items.filter((item) => item.id !== target.id);
         saveStoredItems(updated);
         setItems(updated);
-        toast.success(`Alat "${deleteConfirmItem.name}" berhasil dihapus dari inventaris.`);
+
+        if (typeof target.id === 'number' || (initialItems && initialItems.length > 0)) {
+            router.delete(`/admin/alat/${target.id}`, {
+                preserveScroll: true,
+                onSuccess: () => {
+                    toast.success(`Alat "${target.name}" berhasil dihapus dari inventaris.`);
+                }
+            });
+        } else {
+            toast.success(`Alat "${target.name}" berhasil dihapus dari inventaris.`);
+        }
         setDeleteConfirmItem(null);
     };
 

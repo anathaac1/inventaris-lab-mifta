@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Head } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
 import {
     Search,
     CheckCircle2,
@@ -20,18 +20,40 @@ import {
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 
-export default function AdminPeminjaman() {
-    const [loans, setLoans] = useState<LoanItem[]>([]);
-    const [items, setItems] = useState<InventoryItem[]>([]);
+interface AdminPeminjamanProps {
+    initialLoans?: LoanItem[];
+    initialItems?: InventoryItem[];
+}
+
+export default function AdminPeminjaman({ initialLoans, initialItems }: AdminPeminjamanProps) {
+    const [loans, setLoans] = useState<LoanItem[]>(() =>
+        initialLoans && initialLoans.length > 0 ? initialLoans : getStoredLoans()
+    );
+    const [items, setItems] = useState<InventoryItem[]>(() =>
+        initialItems && initialItems.length > 0 ? initialItems : getStoredItems()
+    );
     const [searchQuery, setSearchQuery] = useState('');
     const [statusTab, setStatusTab] = useState<'all' | 'active' | 'returned'>('all');
 
     useEffect(() => {
-        setLoans(getStoredLoans());
-        setItems(getStoredItems());
+        if (initialLoans && initialLoans.length > 0) {
+            setLoans(initialLoans);
+        } else {
+            setLoans(getStoredLoans());
+        }
 
-        const handleLoansChange = () => setLoans(getStoredLoans());
-        const handleItemsChange = () => setItems(getStoredItems());
+        if (initialItems && initialItems.length > 0) {
+            setItems(initialItems);
+        } else {
+            setItems(getStoredItems());
+        }
+
+        const handleLoansChange = () => {
+            if (!initialLoans || initialLoans.length === 0) setLoans(getStoredLoans());
+        };
+        const handleItemsChange = () => {
+            if (!initialItems || initialItems.length === 0) setItems(getStoredItems());
+        };
 
         window.addEventListener('inventory_loans_changed', handleLoansChange);
         window.addEventListener('inventory_items_changed', handleItemsChange);
@@ -40,7 +62,7 @@ export default function AdminPeminjaman() {
             window.removeEventListener('inventory_loans_changed', handleLoansChange);
             window.removeEventListener('inventory_items_changed', handleItemsChange);
         };
-    }, []);
+    }, [initialLoans, initialItems]);
 
     // Filter
     const filteredLoans = loans.filter((loan) => {
@@ -96,7 +118,16 @@ export default function AdminPeminjaman() {
         setLoans(updatedLoans);
         setItems(updatedItems);
 
-        toast.success(`Barang ${targetLoan.itemName} telah berhasil dikembalikan ke inventaris!`);
+        if (typeof targetLoan.id === 'number' || (initialLoans && initialLoans.length > 0)) {
+            router.post(`/admin/peminjaman/${targetLoan.id}/kembalikan`, {}, {
+                preserveScroll: true,
+                onSuccess: () => {
+                    toast.success(`Barang ${targetLoan.itemName} telah berhasil dikembalikan ke inventaris!`);
+                }
+            });
+        } else {
+            toast.success(`Barang ${targetLoan.itemName} telah berhasil dikembalikan ke inventaris!`);
+        }
     };
 
     return (

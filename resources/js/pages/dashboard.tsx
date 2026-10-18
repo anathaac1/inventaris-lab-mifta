@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 import {
     Search,
     SlidersHorizontal,
@@ -23,25 +23,51 @@ import {
     type LoanItem
 } from '@/data/inventory-data';
 
-export default function Dashboard() {
-    const [items, setItems] = useState<InventoryItem[]>([]);
+interface DashboardProps {
+    initialItems?: InventoryItem[];
+    initialActiveLoans?: LoanItem[];
+}
+
+export default function Dashboard({ initialItems, initialActiveLoans }: DashboardProps) {
+    const [items, setItems] = useState<InventoryItem[]>(() =>
+        initialItems && initialItems.length > 0 ? initialItems : getStoredItems()
+    );
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('Semua');
     const [selectedStatus, setSelectedStatus] = useState('Semua');
     const [filterSheetOpen, setFilterSheetOpen] = useState(false);
     const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
     const [detailModalOpen, setDetailModalOpen] = useState(false);
-    const [activeLoans, setActiveLoans] = useState<LoanItem[]>([]);
+    const [activeLoans, setActiveLoans] = useState<LoanItem[]>(() =>
+        initialActiveLoans && initialActiveLoans.length > 0
+            ? initialActiveLoans
+            : getStoredLoans().filter((l) => l.status === 'Sedang Dipinjam')
+    );
 
     useEffect(() => {
-        setItems(getStoredItems());
-        const allLoans = getStoredLoans();
-        setActiveLoans(allLoans.filter((l) => l.status === 'Sedang Dipinjam'));
+        if (initialItems && initialItems.length > 0) {
+            setItems(initialItems);
+        } else {
+            setItems(getStoredItems());
+        }
 
-        const handleItemsChange = () => setItems(getStoredItems());
+        if (initialActiveLoans && initialActiveLoans.length > 0) {
+            setActiveLoans(initialActiveLoans);
+        } else {
+            const allLoans = getStoredLoans();
+            setActiveLoans(allLoans.filter((l) => l.status === 'Sedang Dipinjam'));
+        }
+
+        const handleItemsChange = () => {
+            if (!initialItems || initialItems.length === 0) {
+                setItems(getStoredItems());
+            }
+        };
         const handleLoansChange = () => {
-            const updatedLoans = getStoredLoans();
-            setActiveLoans(updatedLoans.filter((l) => l.status === 'Sedang Dipinjam'));
+            if (!initialActiveLoans || initialActiveLoans.length === 0) {
+                const updatedLoans = getStoredLoans();
+                setActiveLoans(updatedLoans.filter((l) => l.status === 'Sedang Dipinjam'));
+            }
         };
 
         window.addEventListener('inventory_items_changed', handleItemsChange);
@@ -51,7 +77,7 @@ export default function Dashboard() {
             window.removeEventListener('inventory_items_changed', handleItemsChange);
             window.removeEventListener('inventory_loans_changed', handleLoansChange);
         };
-    }, []);
+    }, [initialItems, initialActiveLoans]);
 
     const categories = [
         { name: 'Laptop', icon: Laptop },
@@ -110,6 +136,20 @@ export default function Dashboard() {
         });
         saveStoredItems(updatedItems);
         setItems(updatedItems);
+
+        // Submit to Laravel backend
+        if (typeof item.id === 'number' || (initialItems && initialItems.length > 0)) {
+            router.post('/peminjaman', {
+                alat_id: item.id,
+                borrower_name: 'Kenho Imut',
+                borrower_class: 'XII RPL 2',
+                borrow_date: borrowDate,
+                return_estimate: returnEstimate,
+                notes,
+            }, {
+                preserveScroll: true,
+            });
+        }
     };
 
     return (

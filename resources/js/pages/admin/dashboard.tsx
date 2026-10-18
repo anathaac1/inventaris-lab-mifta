@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 import {
     Box,
     Layers,
@@ -23,16 +23,38 @@ import { ItemIllustration } from '@/components/inventory/item-illustration';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 
-export default function AdminDashboard() {
-    const [items, setItems] = useState<InventoryItem[]>([]);
-    const [loans, setLoans] = useState<LoanItem[]>([]);
+interface AdminDashboardProps {
+    initialItems?: InventoryItem[];
+    initialLoans?: LoanItem[];
+}
+
+export default function AdminDashboard({ initialItems, initialLoans }: AdminDashboardProps) {
+    const [items, setItems] = useState<InventoryItem[]>(() =>
+        initialItems && initialItems.length > 0 ? initialItems : getStoredItems()
+    );
+    const [loans, setLoans] = useState<LoanItem[]>(() =>
+        initialLoans && initialLoans.length > 0 ? initialLoans : getStoredLoans()
+    );
 
     useEffect(() => {
-        setItems(getStoredItems());
-        setLoans(getStoredLoans());
+        if (initialItems && initialItems.length > 0) {
+            setItems(initialItems);
+        } else {
+            setItems(getStoredItems());
+        }
 
-        const handleItemsChange = () => setItems(getStoredItems());
-        const handleLoansChange = () => setLoans(getStoredLoans());
+        if (initialLoans && initialLoans.length > 0) {
+            setLoans(initialLoans);
+        } else {
+            setLoans(getStoredLoans());
+        }
+
+        const handleItemsChange = () => {
+            if (!initialItems || initialItems.length === 0) setItems(getStoredItems());
+        };
+        const handleLoansChange = () => {
+            if (!initialLoans || initialLoans.length === 0) setLoans(getStoredLoans());
+        };
 
         window.addEventListener('inventory_items_changed', handleItemsChange);
         window.addEventListener('inventory_loans_changed', handleLoansChange);
@@ -41,7 +63,7 @@ export default function AdminDashboard() {
             window.removeEventListener('inventory_items_changed', handleItemsChange);
             window.removeEventListener('inventory_loans_changed', handleLoansChange);
         };
-    }, []);
+    }, [initialItems, initialLoans]);
 
     // Summary calculations
     const totalItems = items.length;
@@ -84,7 +106,17 @@ export default function AdminDashboard() {
         setLoans(updatedLoans);
         setItems(updatedItems);
 
-        toast.success(`Barang ${targetLoan.itemName} telah ditandai dikembalikan!`);
+        // Submit to Laravel backend
+        if (typeof targetLoan.id === 'number' || (initialLoans && initialLoans.length > 0)) {
+            router.post(`/admin/peminjaman/${targetLoan.id}/kembalikan`, {}, {
+                preserveScroll: true,
+                onSuccess: () => {
+                    toast.success(`Barang ${targetLoan.itemName} telah ditandai dikembalikan!`);
+                },
+            });
+        } else {
+            toast.success(`Barang ${targetLoan.itemName} telah ditandai dikembalikan!`);
+        }
     };
 
     return (
