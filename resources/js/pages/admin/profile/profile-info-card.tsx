@@ -19,11 +19,11 @@ export function ProfileInfoCard({ adminUsername }: ProfileInfoCardProps) {
             </div>
             <div className="flex justify-between py-3 px-4.5">
                 <span className="text-slate-500">NIP / Identitas</span>
-                <span className="font-semibold text-slate-800 font-mono">19820415 200801 1 012</span>
+                <span className="font-semibold text-slate-800">19820415 200801 1 012</span>
             </div>
             <div className="flex justify-between py-3 px-4.5">
                 <span className="text-slate-500">Username Login</span>
-                <span className="font-bold text-slate-800 font-mono">{adminUsername}</span>
+                <span className="font-bold text-slate-800">{adminUsername}</span>
             </div>
             <div className="flex justify-between py-3 px-4.5">
                 <span className="text-slate-500">Tingkat Hak Akses</span>

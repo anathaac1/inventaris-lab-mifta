@@ -82,7 +82,7 @@ export default function AdminProfile({ initialAdmin }: AdminProfileProps) {
         >
             <Head title="Profil Administrator - Sistem Inventory Lab RPL" />
 
-            <div className="max-w-2xl mx-auto space-y-4 pt-1 pb-8">
+            <div className="max-w-4xl mx-auto space-y-4 pt-1 pb-8">
                 <ProfileHeader />
 
                 <ProfileBanner

@@ -35,7 +35,7 @@ export function PeminjamanTable({ loans, onReturnItem }: PeminjamanTableProps) {
                                     {/* Siswa */}
                                     <td className="py-3.5 px-5">
                                         <div className="flex items-center gap-3">
-                                            <div className="w-8 h-8 rounded-lg bg-blue-50 text-[#0256D0] font-bold text-xs flex items-center justify-center shrink-0 border border-blue-200/60 shadow-2xs">
+                                            <div className="w-8 h-8 bg-blue-50 text-[#0256D0] font-bold text-xs flex items-center justify-center shrink-0 border border-blue-200/60 shadow-2xs">
                                                 {loan.borrowerName.substring(0, 2).toUpperCase()}
                                             </div>
                                             <div className="min-w-0">
@@ -55,7 +55,7 @@ export function PeminjamanTable({ loans, onReturnItem }: PeminjamanTableProps) {
                                             <span className="font-semibold text-slate-900 block">
                                                 {loan.itemName}
                                             </span>
-                                            <span className="text-[11px] text-slate-400 font-mono">
+                                            <span className="text-[11px] text-slate-400">
                                                 {loan.code} • {loan.category}
                                             </span>
                                         </div>

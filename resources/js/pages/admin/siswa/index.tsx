@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Head, router } from '@inertiajs/react';
+import { Head } from '@inertiajs/react';
 import { AdminLayout } from '@/layouts/admin-layout';
 import {
     getStoredAccounts,
@@ -25,8 +25,11 @@ export default function AdminSiswa({ initialStudents }: AdminSiswaProps) {
         }
         return getStoredAccounts();
     });
-    const [searchQuery, setSearchQuery] = useState('');
-    const [selectedClass, setSelectedClass] = useState<string>('ALL');
+
+    // Filter Form Values & Applied Filter State
+    const [filterForm, setFilterForm] = useState<SiswaFilterValues>(DEFAULT_SISWA_FILTERS);
+    const [appliedFilters, setAppliedFilters] = useState<SiswaFilterValues>(DEFAULT_SISWA_FILTERS);
+
     const [revealedPasswords, setRevealedPasswords] = useState<Record<string, boolean>>({});
 
     // Pagination State
@@ -44,23 +47,15 @@ export default function AdminSiswa({ initialStudents }: AdminSiswaProps) {
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     useEffect(() => {
-        if (initialStudents && initialStudents.length > 0) {
-            setAccounts(initialStudents);
-        } else {
-            setAccounts(getStoredAccounts());
-        }
+        setAccounts(getStoredAccounts());
 
-        const handleAccountsChange = () => {
-            if (!initialStudents || initialStudents.length === 0) {
-                setAccounts(getStoredAccounts());
-            }
-        };
+        const handleAccountsChange = () => setAccounts(getStoredAccounts());
         window.addEventListener('inventory_accounts_changed', handleAccountsChange);
 
         return () => {
             window.removeEventListener('inventory_accounts_changed', handleAccountsChange);
         };
-    }, [initialStudents]);
+    }, []);
 
     // Filter students only (exclude admin from student table)
     const students = accounts.filter((a) => a.role === 'siswa');
@@ -130,32 +125,22 @@ export default function AdminSiswa({ initialStudents }: AdminSiswaProps) {
 
         if (success) {
             setAccounts(getStoredAccounts());
-            updateStudentPassword(selectedStudent.username, newPassword.trim());
+            toast.success(
+                `Password baru untuk ${selectedStudent.name} (${selectedStudent.username}) berhasil disimpan: "${newPassword}"`,
+                { duration: 6000 }
+            );
+            setIsResetModalOpen(false);
+            setNewPassword('');
+        } else {
+            toast.error('Gagal memperbarui password.');
         }
 
-        router.post('/admin/siswa/reset-password', {
-            username: selectedStudent.username,
-            new_password: newPassword.trim(),
-        }, {
-            preserveScroll: true,
-            onSuccess: () => {
-                toast.success(
-                    `Password baru untuk ${selectedStudent.name} (${selectedStudent.username}) berhasil disimpan: "${newPassword}"`,
-                    { duration: 6000 }
-                );
-                setIsResetModalOpen(false);
-                setNewPassword('');
-                setIsSubmitting(false);
-            },
-            onError: () => {
-                setIsSubmitting(false);
-            }
-        });
+        setIsSubmitting(false);
     };
 
     const handleCreateUser = (formData: NewUserFormData) => {
         setIsCreatingUser(true);
-        createUserAccount({
+        const result = createUserAccount({
             username: formData.username,
             name: formData.name,
             role: formData.role,
@@ -166,29 +151,16 @@ export default function AdminSiswa({ initialStudents }: AdminSiswaProps) {
             phone: formData.phone
         });
 
-        router.post('/admin/siswa', {
-            username: formData.username,
-            name: formData.name,
-            role: formData.role,
-            class: formData.class,
-            email: formData.email,
-            password: formData.password,
-            nisn: formData.nisn,
-            phone: formData.phone
-        }, {
-            preserveScroll: true,
-            onSuccess: () => {
-                toast.success(`Akun siswa ${formData.name} berhasil dibuat!`);
-                setIsCreateModalOpen(false);
-                setCurrentPage(1);
-                setIsCreatingUser(false);
-            },
-            onError: (errors) => {
-                const firstErr = Object.values(errors)[0] as string;
-                toast.error(firstErr || 'Gagal menambahkan akun siswa.');
-                setIsCreatingUser(false);
-            }
-        });
+        if (result.success) {
+            setAccounts(getStoredAccounts());
+            toast.success(result.message);
+            setIsCreateModalOpen(false);
+            setCurrentPage(1);
+        } else {
+            toast.error(result.message);
+        }
+
+        setIsCreatingUser(false);
     };
 
     const copyToClipboard = (text: string, label: string) => {

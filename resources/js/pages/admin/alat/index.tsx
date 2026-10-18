@@ -8,17 +8,26 @@ import {
 } from '@/data/inventory-data';
 import { toast } from 'sonner';
 import { AdminPagination } from '@/components/inventory/admin-pagination';
-import { AlatFilterBar } from './alat-filter-bar';
+import { AlatFilterBar, type AlatFilterValues } from './alat-filter-bar';
 import { AlatTable } from './alat-table';
 import { AlatDetailModal } from './alat-detail-modal';
 import { AlatFormModal, type AlatFormData, type SpecRow } from './alat-form-modal';
 import { AlatDeleteModal } from './alat-delete-modal';
 
+const DEFAULT_ALAT_FILTERS: AlatFilterValues = {
+    name: '',
+    code: '',
+    category: 'Semua',
+    stockStatus: 'all',
+    visibility: 'all'
+};
+
 export default function AdminAlat() {
     const [items, setItems] = useState<InventoryItem[]>([]);
-    const [searchQuery, setSearchQuery] = useState('');
-    const [selectedCategory, setSelectedCategory] = useState<string>('Semua');
-    const [visibilityFilter, setVisibilityFilter] = useState<'all' | 'visible' | 'hidden'>('all');
+
+    // Filter Form Values & Applied Filter State
+    const [filterForm, setFilterForm] = useState<AlatFilterValues>(DEFAULT_ALAT_FILTERS);
+    const [appliedFilters, setAppliedFilters] = useState<AlatFilterValues>(DEFAULT_ALAT_FILTERS);
 
     // Pagination State
     const [currentPage, setCurrentPage] = useState(1);
@@ -50,24 +59,46 @@ export default function AdminAlat() {
         return () => window.removeEventListener('inventory_items_changed', handleItemsChange);
     }, []);
 
-    // Filter items
+    // Filter items based on appliedFilters
     const filteredItems = items.filter((item) => {
-        const matchesSearch =
-            item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            item.code.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            item.category.toLowerCase().includes(searchQuery.toLowerCase());
+        const nameQuery = appliedFilters.name.toLowerCase().trim();
+        const matchesName = !nameQuery || item.name.toLowerCase().includes(nameQuery);
+
+        const codeQuery = appliedFilters.code.toLowerCase().trim();
+        const matchesCode = !codeQuery || item.code.toLowerCase().includes(codeQuery);
 
         const matchesCategory =
-            selectedCategory === 'Semua' || item.category === selectedCategory;
+            appliedFilters.category === 'Semua' || item.category === appliedFilters.category;
+
+        // Stock status logic
+        let matchesStock = true;
+        if (appliedFilters.stockStatus === 'in_stock') {
+            matchesStock = item.stock > 2;
+        } else if (appliedFilters.stockStatus === 'low_stock') {
+            matchesStock = item.stock > 0 && item.stock <= 2;
+        } else if (appliedFilters.stockStatus === 'out_of_stock') {
+            matchesStock = item.stock === 0;
+        }
 
         const isVisible = item.isVisibleToStudents !== false;
         const matchesVisibility =
-            visibilityFilter === 'all' ||
-            (visibilityFilter === 'visible' && isVisible) ||
-            (visibilityFilter === 'hidden' && !isVisible);
+            appliedFilters.visibility === 'all' ||
+            (appliedFilters.visibility === 'visible' && isVisible) ||
+            (appliedFilters.visibility === 'hidden' && !isVisible);
 
-        return matchesSearch && matchesCategory && matchesVisibility;
+        return matchesName && matchesCode && matchesCategory && matchesStock && matchesVisibility;
     });
+
+    const handleApplyFilter = () => {
+        setAppliedFilters({ ...filterForm });
+        setCurrentPage(1);
+    };
+
+    const handleResetFilter = () => {
+        setFilterForm(DEFAULT_ALAT_FILTERS);
+        setAppliedFilters(DEFAULT_ALAT_FILTERS);
+        setCurrentPage(1);
+    };
 
     // Pagination Calculations
     const totalPages = Math.max(1, Math.ceil(filteredItems.length / itemsPerPage));
@@ -219,21 +250,10 @@ export default function AdminAlat() {
             <div className="space-y-4">
                 <div className="bg-white rounded-xl border border-slate-200/90 shadow-2xs overflow-hidden">
                     <AlatFilterBar
-                        searchQuery={searchQuery}
-                        onSearchChange={(q) => {
-                            setSearchQuery(q);
-                            setCurrentPage(1);
-                        }}
-                        selectedCategory={selectedCategory}
-                        onCategoryChange={(c) => {
-                            setSelectedCategory(c);
-                            setCurrentPage(1);
-                        }}
-                        visibilityFilter={visibilityFilter}
-                        onVisibilityFilterChange={(v) => {
-                            setVisibilityFilter(v);
-                            setCurrentPage(1);
-                        }}
+                        filters={filterForm}
+                        onFilterChange={setFilterForm}
+                        onApply={handleApplyFilter}
+                        onReset={handleResetFilter}
                         onOpenAdd={handleOpenAdd}
                     />
 

@@ -19,11 +19,11 @@ export function AlatDetailModal({ item, onClose, onEdit }: AlatDetailModalProps)
                         {/* Header Banner */}
                         <div className="bg-gradient-to-r from-[#0256D0] to-[#0A1C38] text-white p-5 flex items-center justify-between">
                             <div className="flex items-center gap-3.5">
-                                <div className="w-12 h-12 rounded-xl bg-white/15 backdrop-blur-xs border border-white/20 flex items-center justify-center shrink-0">
+                                <div className="w-12 h-12 rounded bg-white/15 backdrop-blur-xs border border-white/20 flex items-center justify-center shrink-0">
                                     <ItemIllustration type={item.iconType} className="w-7 h-7" />
                                 </div>
                                 <div>
-                                    <span className="text-[10px] font-bold uppercase tracking-wider text-blue-200 bg-white/15 px-2 py-0.5 rounded-full inline-block mb-1">
+                                    <span className="text-[10px] font-bold uppercase tracking-wider text-blue-200 bg-white/15 px-2 py-0.5 rounded inline-block mb-1">
                                         {item.category}
                                     </span>
                                     <h3 className="text-base font-bold text-white">
@@ -39,7 +39,7 @@ export function AlatDetailModal({ item, onClose, onEdit }: AlatDetailModalProps)
                                 onClick={onClose}
                                 className="p-1 rounded-lg text-white/70 hover:text-white hover:bg-white/10"
                             >
-                                <X className="w-4 h-4" />
+                                {/* <X className="w-4 h-4" /> */}
                             </button>
                         </div>
 
@@ -47,7 +47,7 @@ export function AlatDetailModal({ item, onClose, onEdit }: AlatDetailModalProps)
                         <div className="p-5 space-y-4 max-h-[70vh] overflow-y-auto text-xs">
                             {/* Stock & Visibility Status Grid */}
                             <div className="grid grid-cols-2 gap-3">
-                                <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
+                                <div className="p-3 rounded bg-slate-50 border border-slate-200">
                                     <span className="text-[11px] text-slate-500 block mb-1">Ketersediaan Unit Lab</span>
                                     <div className="flex items-baseline gap-1.5">
                                         <span className="text-lg font-black text-slate-900">
@@ -67,16 +67,16 @@ export function AlatDetailModal({ item, onClose, onEdit }: AlatDetailModalProps)
                                     </div>
                                 </div>
 
-                                <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
+                                <div className="p-3 rounded bg-slate-50 border border-slate-200">
                                     <span className="text-[11px] text-slate-500 block mb-1">Status</span>
                                     {item.isVisibleToStudents !== false ? (
                                         <span className="inline-flex items-center gap-1.5 text-emerald-700 font-bold text-xs mt-1">
-                                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                                            {/* <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> */}
                                             Aktif
                                         </span>
                                     ) : (
                                         <span className="inline-flex items-center gap-1.5 text-slate-500 font-medium text-xs mt-1">
-                                            <span className="w-1.5 h-1.5 rounded-full bg-slate-400" />
+                                            {/* <span className="w-1.5 h-1.5 rounded-full bg-slate-400" /> */}
                                             Tidak Aktif
                                         </span>
                                     )}
@@ -89,7 +89,7 @@ export function AlatDetailModal({ item, onClose, onEdit }: AlatDetailModalProps)
                                     <Info className="w-3.5 h-3.5 text-[#0256D0]" />
                                     <span>Deskripsi Perangkat</span>
                                 </span>
-                                <p className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 leading-relaxed text-xs">
+                                <p className="p-3 rounded bg-slate-50 border border-slate-200 text-slate-700 leading-relaxed text-xs">
                                     {item.description || 'Tidak ada catatan deskripsi tambahan untuk perangkat ini.'}
                                 </p>
                             </div>
@@ -99,7 +99,7 @@ export function AlatDetailModal({ item, onClose, onEdit }: AlatDetailModalProps)
                                 <span className="font-bold text-slate-900 block">
                                     Spesifikasi Teknis & Rincian Lab
                                 </span>
-                                <div className="border border-slate-200 rounded-xl overflow-hidden divide-y divide-slate-100">
+                                <div className="border border-slate-200 rounded overflow-hidden divide-y divide-slate-100">
                                     {item.specs && Object.keys(item.specs).length > 0 ? (
                                         Object.entries(item.specs).map(([specKey, specVal]) => (
                                             <div key={specKey} className="flex justify-between py-2 px-3 text-xs hover:bg-slate-50/60">
@@ -122,16 +122,16 @@ export function AlatDetailModal({ item, onClose, onEdit }: AlatDetailModalProps)
                                 type="button"
                                 variant="outline"
                                 onClick={onClose}
-                                className="h-9 px-4 rounded-lg text-xs font-semibold"
+                                className="h-9 px-4 rounded text-xs font-semibold"
                             >
                                 Tutup
                             </Button>
                             <Button
                                 type="button"
                                 onClick={() => onEdit(item)}
-                                className="h-9 px-4 rounded-lg bg-[#0256D0] hover:bg-[#0243a4] text-white text-xs font-semibold flex items-center gap-1.5 shadow-xs cursor-pointer"
+                                className="h-9 px-4 rounded bg-[#0256D0] hover:bg-[#0243a4] text-white text-xs font-semibold flex items-center gap-1.5 shadow-xs cursor-pointer"
                             >
-                                <Edit2 className="w-3.5 h-3.5" />
+                                {/* <Edit2 className="w-3.5 h-3.5" /> */}
                                 <span>Ubah Data Alat Ini</span>
                             </Button>
                         </div>

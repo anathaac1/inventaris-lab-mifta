@@ -131,7 +131,7 @@ export function AlatFormModal({
                                 value={formData.code}
                                 onChange={(e) => setFormData({ ...formData, code: e.target.value })}
                                 placeholder="EL-001"
-                                className="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs focus:outline-none focus:border-slate-800 font-mono"
+                                className="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs focus:outline-none focus:border-slate-800"
                             />
                         </div>
                     </div>
@@ -167,7 +167,7 @@ export function AlatFormModal({
                                         iconType: e.target.value as IconType
                                     })
                                 }
-                                className="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs bg-white focus:outline-none focus:border-slate-800 capitalize cursor-pointer"
+                                className="w-full px-3 py-2 rounded border border-slate-200 text-xs bg-white focus:outline-none focus:border-slate-800 capitalize cursor-pointer"
                             >
                                 {ICON_OPTIONS.map((ico) => (
                                     <option key={ico} value={ico}>

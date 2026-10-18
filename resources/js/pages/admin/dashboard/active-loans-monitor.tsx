@@ -15,7 +15,7 @@ export function ActiveLoansMonitor({ activeLoans }: ActiveLoansMonitorProps) {
                         <h3 className="text-sm font-bold text-slate-900">
                             Pemantauan Sirkulasi & Peminjaman Aktif
                         </h3>
-                        <span className="text-[10px] px-2 py-0.5 rounded-full font-bold bg-amber-50 text-amber-800 border border-amber-200">
+                        <span className="text-[10px] px-2 py-0.5 rounded font-bold bg-amber-50 text-amber-800 border border-amber-200">
                             {activeLoans.length} Aktif
                         </span>
                     </div>
@@ -55,7 +55,7 @@ export function ActiveLoansMonitor({ activeLoans }: ActiveLoansMonitorProps) {
                         >
                             <div className="min-w-0 flex items-start gap-3.5">
                                 {/* Borrower Initials */}
-                                <div className="w-10 h-10 rounded-xl bg-slate-100 text-[#0256D0] font-black text-xs flex items-center justify-center shrink-0 border border-slate-200/80 shadow-2xs">
+                                <div className="w-10 h-10 rounded bg-slate-100 text-[#0256D0] font-black text-xs flex items-center justify-center shrink-0 border border-slate-200/80 shadow-2xs">
                                     {loan.borrowerName.substring(0, 2).toUpperCase()}
                                 </div>
 
@@ -64,7 +64,7 @@ export function ActiveLoansMonitor({ activeLoans }: ActiveLoansMonitorProps) {
                                         <span className="font-bold text-xs text-slate-900 truncate">
                                             {loan.borrowerName}
                                         </span>
-                                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-blue-50 text-[#0256D0] border border-blue-200/60 shrink-0">
+                                        <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-blue-50 text-[#0256D0] border border-blue-200/60 shrink-0">
                                             {loan.borrowerClass}
                                         </span>
                                     </div>
@@ -92,8 +92,8 @@ export function ActiveLoansMonitor({ activeLoans }: ActiveLoansMonitorProps) {
 
                             {/* Status Tag (Read-only monitoring) */}
                             <div className="shrink-0 flex items-center gap-2">
-                                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-amber-50 text-amber-800 border border-amber-200">
-                                    <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+                                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded text-[11px] font-bold bg-amber-50 text-amber-800 border border-amber-200">
+                                    {/* <span className="w-2 h-2 rounded bg-amber-500 animate-pulse" /> */}
                                     <span>Sedang Dipinjam</span>
                                 </span>
                             </div>

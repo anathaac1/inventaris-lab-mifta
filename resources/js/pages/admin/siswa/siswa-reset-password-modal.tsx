@@ -67,7 +67,7 @@ export function SiswaResetPasswordModal({
                                 value={newPassword}
                                 onChange={(e) => onNewPasswordChange(e.target.value)}
                                 placeholder="Contoh: rpl2024!"
-                                className="w-full px-3 py-2 rounded-md border border-slate-300 bg-white font-mono text-xs text-slate-900 focus:outline-none focus:border-[#0256D0] focus:ring-1 focus:ring-[#0256D0]"
+                                className="w-full px-3 py-2 rounded-md border border-slate-300 bg-white text-xs text-slate-900 focus:outline-none focus:border-[#0256D0] focus:ring-1 focus:ring-[#0256D0]"
                             />
 
                             {/* Quick Generator Button */}
