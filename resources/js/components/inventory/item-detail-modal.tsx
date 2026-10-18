@@ -8,12 +8,14 @@ import { toast } from 'sonner';
 
 interface ItemDetailModalProps {
     item: InventoryItem | null;
-    open: boolean;
+    open?: boolean;
+    isOpen?: boolean;
     onClose: () => void;
     onLoanSuccess?: (item: InventoryItem, borrowDate: string, returnEstimate: string, notes: string) => void;
 }
 
-export function ItemDetailModal({ item, open, onClose, onLoanSuccess }: ItemDetailModalProps) {
+export function ItemDetailModal({ item, open, isOpen, onClose, onLoanSuccess }: ItemDetailModalProps) {
+    const isModalOpen = open ?? isOpen ?? false;
     const [isBorrowing, setIsBorrowing] = useState(false);
     const [borrowDate, setBorrowDate] = useState('2024-08-03');
     const [returnEstimate, setReturnEstimate] = useState('2024-08-05');
@@ -39,7 +41,7 @@ export function ItemDetailModal({ item, open, onClose, onLoanSuccess }: ItemDeta
     };
 
     return (
-        <Dialog open={open} onOpenChange={(val) => !val && onClose()}>
+        <Dialog open={isModalOpen} onOpenChange={(val) => !val && onClose()}>
             <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto p-0 rounded-xl border border-zinc-200 bg-white">
                 <DialogHeader className="p-4 border-b border-zinc-100 flex flex-row items-center justify-between sticky top-0 bg-white z-20">
                     <DialogTitle className="text-sm font-bold text-zinc-900">

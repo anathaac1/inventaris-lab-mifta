@@ -2,18 +2,18 @@ import AppLogoIcon from '@/components/app-logo-icon';
 
 export default function AppLogo() {
     return (
-        <>
-            <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-blue-600 text-white shadow-sm">
-                <AppLogoIcon className="size-5" />
+        <div className="flex items-center gap-2.5">
+            <div className="flex aspect-square size-9 items-center justify-center rounded-xl bg-blue-50 border border-blue-200/80 p-1 shadow-xs">
+                <AppLogoIcon className="size-7" />
             </div>
-            <div className="ml-1 grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-bold text-zinc-900 dark:text-white">
-                    Pinjam<span className="text-blue-600 dark:text-blue-400">Yuk!</span>
+            <div className="grid flex-1 text-left text-sm leading-tight">
+                <span className="truncate font-extrabold text-slate-900">
+                    Pinjam<span className="text-[#0256D0]">Yuk!</span>
                 </span>
-                <span className="truncate text-[10px] text-zinc-500 dark:text-zinc-400 font-medium">
-                    Lab RPL SMKN 1
+                <span className="truncate text-[10px] text-slate-500 font-semibold">
+                    Lab RPL SMKN 1 Kota Bekasi
                 </span>
             </div>
-        </>
+        </div>
     );
 }

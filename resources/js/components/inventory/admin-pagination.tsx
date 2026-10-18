@@ -1,0 +1,165 @@
+import React from 'react';
+import { ChevronLeft, ChevronRight, ChevronDown } from 'lucide-react';
+
+interface AdminPaginationProps {
+    currentPage: number;
+    totalPages: number;
+    totalItems: number;
+    itemsPerPage: number;
+    onPageChange: (page: number) => void;
+    onItemsPerPageChange?: (perPage: number) => void;
+    itemsPerPageOptions?: number[];
+    itemLabel?: string;
+}
+
+export function AdminPagination({
+    currentPage,
+    totalPages,
+    totalItems,
+    itemsPerPage,
+    onPageChange,
+    onItemsPerPageChange,
+    itemsPerPageOptions = [10, 20, 50, 100],
+}: AdminPaginationProps) {
+    if (totalItems === 0) return null;
+
+    const from = Math.min((currentPage - 1) * itemsPerPage + 1, totalItems);
+    const to = Math.min(currentPage * itemsPerPage, totalItems);
+
+    // Generate page numbers with ellipses
+    const getPageNumbers = () => {
+        const pages: (number | string)[] = [];
+        const maxVisible = 5;
+
+        if (totalPages <= maxVisible) {
+            for (let i = 1; i <= totalPages; i++) {
+                pages.push(i);
+            }
+        } else {
+            pages.push(1);
+
+            let start = Math.max(2, currentPage - 1);
+            let end = Math.min(totalPages - 1, currentPage + 1);
+
+            if (currentPage <= 3) {
+                end = 4;
+            } else if (currentPage >= totalPages - 2) {
+                start = totalPages - 3;
+            }
+
+            if (start > 2) {
+                pages.push('...');
+            }
+
+            for (let i = start; i <= end; i++) {
+                pages.push(i);
+            }
+
+            if (end < totalPages - 1) {
+                pages.push('...');
+            }
+
+            pages.push(totalPages);
+        }
+
+        return pages;
+    };
+
+    const pages = getPageNumbers();
+
+    return (
+        <div className="px-4 py-3 sm:px-6 bg-white border-t border-slate-200/90 text-xs text-slate-500 flex flex-col sm:flex-row items-center justify-between gap-3 select-none">
+            {/* Sisi Kiri: Baris per halaman [5 v] */}
+            <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-start">
+                <span className="text-slate-500 text-xs">Baris per halaman</span>
+
+                {onItemsPerPageChange ? (
+                    <div className="relative inline-flex items-center">
+                        <select
+                            value={itemsPerPage}
+                            onChange={(e) => {
+                                onItemsPerPageChange(Number(e.target.value));
+                                onPageChange(1);
+                            }}
+                            aria-label="Pilih jumlah baris per halaman"
+                            className="appearance-none bg-white border border-slate-200 hover:border-slate-300 rounded-md pl-2.5 pr-6 py-1 text-xs font-medium text-slate-700 focus:outline-none focus:border-slate-800 cursor-pointer transition-colors shadow-2xs"
+                        >
+                            {itemsPerPageOptions.map((opt) => (
+                                <option key={opt} value={opt}>
+                                    {opt}
+                                </option>
+                            ))}
+                        </select>
+                        <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-1.5 pointer-events-none" />
+                    </div>
+                ) : (
+                    <span className="font-semibold text-slate-700">{itemsPerPage}</span>
+                )}
+            </div>
+
+            {/* Sisi Kanan: 1 - 3 dari 3  <  [ 1 ]  > */}
+            <div className="flex items-center gap-3 self-end sm:self-auto">
+                {/* 1 - 3 dari 3 */}
+                <span className="text-slate-500 text-xs font-normal whitespace-nowrap">
+                    {from} - {to} dari {totalItems}
+                </span>
+
+                {/* Tombol Navigasi Halaman */}
+                <div className="flex items-center gap-1">
+                    {/* Tombol Sebelumnya (<) */}
+                    <button
+                        type="button"
+                        onClick={() => onPageChange(Math.max(1, currentPage - 1))}
+                        disabled={currentPage <= 1}
+                        title="Halaman sebelumnya"
+                        aria-label="Halaman sebelumnya"
+                        className="p-1 rounded text-slate-400 hover:text-slate-700 hover:bg-slate-100 disabled:opacity-30 disabled:hover:bg-transparent disabled:cursor-not-allowed transition-colors"
+                    >
+                        <ChevronLeft className="w-4 h-4" />
+                    </button>
+
+                    {/* Nomor Halaman */}
+                    <div className="flex items-center gap-1 mx-0.5">
+                        {pages.map((p, idx) => {
+                            if (p === '...') {
+                                return (
+                                    <span key={`dots-${idx}`} className="w-5 text-center text-slate-400 select-none text-xs">
+                                        ...
+                                    </span>
+                                );
+                            }
+
+                            const isCurrent = p === currentPage;
+                            return (
+                                <button
+                                    key={`page-${p}`}
+                                    type="button"
+                                    onClick={() => onPageChange(p as number)}
+                                    className={`min-w-6 h-6 px-1.5 rounded text-xs font-semibold flex items-center justify-center transition-all ${
+                                        isCurrent
+                                            ? 'bg-slate-100 text-slate-800 border border-slate-200/80 shadow-2xs'
+                                            : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50'
+                                    }`}
+                                >
+                                    {p}
+                                </button>
+                            );
+                        })}
+                    </div>
+
+                    {/* Tombol Berikutnya (>) */}
+                    <button
+                        type="button"
+                        onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
+                        disabled={currentPage >= totalPages}
+                        title="Halaman selanjutnya"
+                        aria-label="Halaman selanjutnya"
+                        className="p-1 rounded text-slate-400 hover:text-slate-700 hover:bg-slate-100 disabled:opacity-30 disabled:hover:bg-transparent disabled:cursor-not-allowed transition-colors"
+                    >
+                        <ChevronRight className="w-4 h-4" />
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+}

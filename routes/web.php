@@ -32,10 +32,24 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     Route::get('peminjaman', [AdminPeminjamanController::class, 'index'])->name('peminjaman.index');
     Route::post('peminjaman/{peminjaman}/kembalikan', [AdminPeminjamanController::class, 'returnItem'])->name('peminjaman.kembalikan');
-});
+    Route::inertia('siswa', 'admin/siswa')->name('admin.siswa.index');
+    Route::inertia('profile', 'admin/profile')->name('admin.profile.index');
+    Route::post('siswa/reset-password', function (\Illuminate\Http\Request $request) {
+        $request->validate([
+            'username' => 'required|string',
+            'new_password' => 'required|string|min:4',
+        ]);
 
-Route::middleware(['auth', 'verified'])->group(function () {
-    // Authenticated settings
-});
+        $username = trim($request->username);
+        $user = \App\Models\User::where('email', $username)
+            ->orWhere('email', $username . '@smkn1.sch.id')
+            ->first();
 
-require __DIR__.'/settings.php';
+        if ($user) {
+            $user->password = \Illuminate\Support\Facades\Hash::make($request->new_password);
+            $user->save();
+        }
+
+        return back()->with('status', "Password untuk akun {$username} berhasil diperbarui.");
+    })->name('admin.siswa.reset_password');
+});

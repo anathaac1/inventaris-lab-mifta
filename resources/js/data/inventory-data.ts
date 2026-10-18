@@ -73,7 +73,7 @@ export const INVENTORY_ITEMS: InventoryItem[] = [
         code: 'EL-003',
         stock: 36,
         total: 40,
-        description: 'Adaptor charger original Lenovo 65W Type-C fast charging untuk laptop lab.',
+        description: 'Adaptor charger\ original Lenovo 65W Type-C fast charging untuk laptop lab.',
         specs: {
             'Daya': '65 Watt',
             'Konektor': 'USB Type-C',
@@ -295,82 +295,126 @@ export const INITIAL_ACTIVE_LOANS: LoanItem[] = [
         itemName: 'Laptop Lenovo',
         code: 'EL-001',
         category: 'Laptop',
-        borrowDate: '3 Agustus 2024',
-        returnEstimate: '5 Agustus 2024',
+        borrowDate: '14 Oktober 2026',
+        returnEstimate: '17 Oktober 2026',
         status: 'Sedang Dipinjam',
-        borrowerName: 'Kenho Imut',
-        borrowerClass: 'XII RPL 2',
-        notes: 'Praktikum Pemrograman Web Lanjut'
+        borrowerName: 'Ahmad Rizky Pratama',
+        borrowerClass: 'XII RPL A',
+        notes: 'Praktikum Web Service & REST API'
     },
     {
         id: 'loan-2',
         itemId: 'mouse',
         itemName: 'Mouse',
-        code: 'EL-001',
+        code: 'PR-001',
         category: 'Peripheral',
-        borrowDate: '3 Agustus 2024',
-        returnEstimate: '5 Agustus 2024',
+        borrowDate: '15 Oktober 2026',
+        returnEstimate: '18 Oktober 2026',
         status: 'Sedang Dipinjam',
-        borrowerName: 'Kenho Imut',
-        borrowerClass: 'XII RPL 2',
-        notes: 'Navigasi praktikum coding'
+        borrowerName: 'Nabila Putri Syahrani',
+        borrowerClass: 'XII RPL B',
+        notes: 'Desain Wireframe & Prototyping UI/UX'
+    },
+    {
+        id: 'loan-3',
+        itemId: 'laptop-acer',
+        itemName: 'Laptop Acer',
+        code: 'EL-002',
+        category: 'Laptop',
+        borrowDate: '16 Oktober 2026',
+        returnEstimate: '19 Oktober 2026',
+        status: 'Sedang Dipinjam',
+        borrowerName: 'Muhammad Fajar Ramadhan',
+        borrowerClass: 'XI RPL A',
+        notes: 'Praktikum Basis Data MySQL & Query Lanjut'
     }
 ];
 
 export const INITIAL_LOAN_HISTORY: LoanItem[] = [
     {
         id: 'hist-1',
-        itemId: 'mouse',
-        itemName: 'Mouse',
-        code: 'EL-001',
+        itemId: 'keyboard-wireless',
+        itemName: 'Keyboard Wireless',
+        code: 'PR-006',
         category: 'Peripheral',
-        borrowDate: '1 Agustus 2024',
-        returnEstimate: '2 Agustus 2024',
-        returnDate: '5 Agustus 2024',
+        borrowDate: '11 Oktober 2026',
+        returnEstimate: '13 Oktober 2026',
+        returnDate: '13 Oktober 2026',
         status: 'Dikembalikan',
-        borrowerName: 'Kenho Imut',
-        borrowerClass: 'XII RPL 2'
+        borrowerName: 'Siti Aisyah Azzahra',
+        borrowerClass: 'XI RPL B',
+        notes: 'Input data evaluasi praktikum'
     },
     {
         id: 'hist-2',
-        itemId: 'mouse',
-        itemName: 'Mouse',
-        code: 'EL-001',
-        category: 'Peripheral',
-        borrowDate: '28 Juli 2024',
-        returnEstimate: '29 Juli 2024',
-        returnDate: '29 Juli 2024',
+        itemId: 'screwdriver',
+        itemName: 'Tool Kit Obeng',
+        code: 'TL-001',
+        category: 'Tools',
+        borrowDate: '8 Oktober 2026',
+        returnEstimate: '9 Oktober 2026',
+        returnDate: '9 Oktober 2026',
         status: 'Dikembalikan',
-        borrowerName: 'Kenho Imut',
-        borrowerClass: 'XII RPL 2'
+        borrowerName: 'Dimas Arya Saputra',
+        borrowerClass: 'X RPL A',
+        notes: 'Perakitan komponen PC & cleaning fan'
     },
     {
         id: 'hist-3',
-        itemId: 'mouse',
-        itemName: 'Mouse',
-        code: 'EL-001',
-        category: 'Peripheral',
-        borrowDate: '20 Juli 2024',
-        returnEstimate: '21 Juli 2024',
-        returnDate: '21 Juli 2024',
+        itemId: 'lan-tester',
+        itemName: 'LAN Cable Tester',
+        code: 'TL-002',
+        category: 'Tools',
+        borrowDate: '5 Oktober 2026',
+        returnEstimate: '6 Oktober 2026',
+        returnDate: '6 Oktober 2026',
         status: 'Dikembalikan',
-        borrowerName: 'Kenho Imut',
-        borrowerClass: 'XII RPL 2'
+        borrowerName: 'Zahra Amelia Dewi',
+        borrowerClass: 'X RPL B',
+        notes: 'Uji konektivitas kabel UTP RJ-45'
+    },
+    {
+        id: 'hist-4',
+        itemId: 'charger-lenovo',
+        itemName: 'Charger Lenovo',
+        code: 'EL-003',
+        category: 'Elektrikal',
+        borrowDate: '2 Oktober 2026',
+        returnEstimate: '3 Oktober 2026',
+        returnDate: '3 Oktober 2026',
+        status: 'Dikembalikan',
+        borrowerName: 'Ahmad Rizky Pratama',
+        borrowerClass: 'XII RPL A',
+        notes: 'Praktikum Ujian Sertifikasi Kompetensi'
+    },
+    {
+        id: 'hist-5',
+        itemId: 'flashdisk',
+        itemName: 'Flashdisk',
+        code: 'PR-007',
+        category: 'Peripheral',
+        borrowDate: '28 September 2026',
+        returnEstimate: '29 September 2026',
+        returnDate: '29 September 2026',
+        status: 'Dikembalikan',
+        borrowerName: 'Muhammad Fajar Ramadhan',
+        borrowerClass: 'XI RPL A',
+        notes: 'Backup source code proyek Laravel'
     }
 ];
 
 export const USER_PROFILE = {
-    name: 'Kenho Imut',
+    name: 'Ahmad Rizky Pratama',
     role: 'Siswa / Peminjam',
-    class: 'XII RPL 2 | Rekayasa Perangkat Lunak',
+    class: 'XII RPL A | Rekayasa Perangkat Lunak',
     school: 'SMKN 1 Kota Bekasi',
-    email: 'kenho.imut@smkn1kotabekasi.sch.id',
-    nisn: '0067829102',
-    phone: '0812-3456-7890'
+    email: 'siswa1@smkn1.sch.id',
+    nisn: '0067829101',
+    phone: '0812-9876-1101'
 };
 
 const ITEMS_STORAGE_KEY = 'lab_inventory_items_v1';
-const LOANS_STORAGE_KEY = 'lab_inventory_loans_v1';
+const LOANS_STORAGE_KEY = 'lab_inventory_loans_v3';
 
 export function getStoredItems(): InventoryItem[] {
     if (typeof window === 'undefined') {
@@ -400,20 +444,32 @@ export function saveStoredItems(items: InventoryItem[]): void {
 }
 
 export function getStoredLoans(): LoanItem[] {
+    const defaultList = [...INITIAL_ACTIVE_LOANS, ...INITIAL_LOAN_HISTORY];
     if (typeof window === 'undefined') {
-        return [...INITIAL_ACTIVE_LOANS, ...INITIAL_LOAN_HISTORY];
+        return defaultList;
     }
     try {
         const data = localStorage.getItem(LOANS_STORAGE_KEY);
         if (!data) {
-            const initial = [...INITIAL_ACTIVE_LOANS, ...INITIAL_LOAN_HISTORY];
-            localStorage.setItem(LOANS_STORAGE_KEY, JSON.stringify(initial));
-            return initial;
+            localStorage.setItem(LOANS_STORAGE_KEY, JSON.stringify(defaultList));
+            return defaultList;
         }
         const parsed = JSON.parse(data);
-        return Array.isArray(parsed) ? parsed : [...INITIAL_ACTIVE_LOANS, ...INITIAL_LOAN_HISTORY];
+        // Purge obsolete legacy mockup data if found
+        const hasLegacyKenho = Array.isArray(parsed) && parsed.some((l: LoanItem) => l.borrowerName === 'Kenho Imut');
+        if (hasLegacyKenho || !Array.isArray(parsed) || parsed.length === 0) {
+            localStorage.setItem(LOANS_STORAGE_KEY, JSON.stringify(defaultList));
+            return defaultList;
+        }
+        // Normalize class names to RPL A / RPL B
+        return parsed.map((loan: LoanItem) => ({
+            ...loan,
+            borrowerClass: loan.borrowerClass
+                ? loan.borrowerClass.replace(/RPL\s*1\b/gi, 'RPL A').replace(/RPL\s*2\b/gi, 'RPL B')
+                : 'XII RPL A'
+        }));
     } catch {
-        return [...INITIAL_ACTIVE_LOANS, ...INITIAL_LOAN_HISTORY];
+        return defaultList;
     }
 }
 

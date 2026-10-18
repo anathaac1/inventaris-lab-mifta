@@ -1,0 +1,130 @@
+import { Copy, Eye, EyeOff, KeyRound } from 'lucide-react';
+import type { UserAccount } from '@/data/auth-store';
+
+interface SiswaTableProps {
+    students: UserAccount[];
+    revealedPasswords: Record<string, boolean>;
+    onTogglePasswordReveal: (username: string) => void;
+    onCopy: (text: string, label: string) => void;
+    onOpenResetModal: (student: UserAccount) => void;
+}
+
+export function SiswaTable({
+    students,
+    revealedPasswords,
+    onTogglePasswordReveal,
+    onCopy,
+    onOpenResetModal
+}: SiswaTableProps) {
+    return (
+        <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs">
+                <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold uppercase tracking-wider text-[10px]">
+                    <tr>
+                        <th className="py-3.5 px-5">Siswa & Kelas</th>
+                        <th className="py-3.5 px-4">Username Login</th>
+                        <th className="py-3.5 px-4">NISN & Kontak</th>
+                        <th className="py-3.5 px-4">Password Saat Ini</th>
+                        <th className="py-3.5 px-4 text-center">Status Akun</th>
+                        <th className="py-3.5 px-5 text-right">Tindakan Admin</th>
+                    </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 text-slate-800">
+                    {students.length === 0 ? (
+                        <tr>
+                            <td colSpan={6} className="py-12 text-center text-slate-400">
+                                Tidak ada data siswa yang cocok dengan pencarian.
+                            </td>
+                        </tr>
+                    ) : (
+                        students.map((student) => {
+                            const isRevealed = !!revealedPasswords[student.username];
+                            return (
+                                <tr key={student.id} className="hover:bg-slate-50/70 transition-colors">
+                                    {/* Siswa & Kelas */}
+                                    <td className="py-3.5 px-5">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-8 h-8 rounded-lg bg-blue-50 text-[#0256D0] font-bold text-xs flex items-center justify-center shrink-0 border border-blue-200/60 shadow-2xs">
+                                                {student.avatar || student.name.substring(0, 2).toUpperCase()}
+                                            </div>
+                                            <div className="min-w-0">
+                                                <span className="font-bold text-slate-900 block truncate">
+                                                    {student.name}
+                                                </span>
+                                                <span className="text-[11px] font-semibold text-blue-700 bg-blue-50 px-1.5 py-0.2 rounded border border-blue-200/60 inline-block mt-0.5">
+                                                    {student.class}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </td>
+
+                                    {/* Username */}
+                                    <td className="py-3.5 px-4 font-mono font-semibold text-slate-800">
+                                        <div className="flex items-center gap-1.5">
+                                            <span>{student.username}</span>
+                                            <button
+                                                type="button"
+                                                onClick={() => onCopy(student.username, 'Username')}
+                                                title="Salin Username"
+                                                className="text-slate-400 hover:text-slate-700 p-0.5"
+                                            >
+                                                <Copy className="w-3 h-3" />
+                                            </button>
+                                        </div>
+                                    </td>
+
+                                    {/* NISN & Phone */}
+                                    <td className="py-3.5 px-4 text-slate-500 text-[11px] space-y-0.5">
+                                        <p>NISN: {student.nisn || '-'}</p>
+                                        <p>{student.email}</p>
+                                    </td>
+
+                                    {/* Password with Reveal Button */}
+                                    <td className="py-3.5 px-4">
+                                        <div className="flex items-center gap-2">
+                                            <span className="font-mono text-xs px-2 py-1 rounded bg-slate-100 border border-slate-200">
+                                                {isRevealed ? student.password : '••••••••'}
+                                            </span>
+                                            <button
+                                                type="button"
+                                                onClick={() => onTogglePasswordReveal(student.username)}
+                                                className="text-slate-400 hover:text-slate-700 p-1 rounded"
+                                                title={isRevealed ? 'Sembunyikan' : 'Lihat password'}
+                                            >
+                                                {isRevealed ? (
+                                                    <EyeOff className="w-3.5 h-3.5" />
+                                                ) : (
+                                                    <Eye className="w-3.5 h-3.5" />
+                                                )}
+                                            </button>
+                                        </div>
+                                    </td>
+
+                                    {/* Status */}
+                                    <td className="py-3.5 px-4 text-center">
+                                        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">
+                                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                                            <span>Aktif</span>
+                                        </span>
+                                    </td>
+
+                                    {/* Action */}
+                                    <td className="py-3.5 px-5 text-right">
+                                        <button
+                                            type="button"
+                                            onClick={() => onOpenResetModal(student)}
+                                            className="h-8 px-3 rounded-lg bg-blue-50/80 hover:bg-blue-100 text-[#0256D0] border border-blue-200/80 text-xs font-bold flex items-center gap-1.5 ml-auto transition-all cursor-pointer shadow-2xs group"
+                                        >
+                                            <KeyRound className="w-3.5 h-3.5 text-[#0256D0] group-hover:scale-110 transition-transform" />
+                                            <span>Beri Password Baru</span>
+                                        </button>
+                                    </td>
+                                </tr>
+                            );
+                        })
+                    )}
+                </tbody>
+            </table>
+        </div>
+    );
+}
