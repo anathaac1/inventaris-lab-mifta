@@ -1,14 +1,19 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from '@inertiajs/react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Link, router } from '@inertiajs/react';
 import {
     LayoutDashboard,
     Box,
     ClipboardList,
     Users,
-    ChevronRight
+    ChevronRight,
+    User,
+    LogOut,
+    ChevronDown
 } from 'lucide-react';
 import { getStoredItems, getStoredLoans } from '@/data/inventory-data';
-import { getStoredAccounts } from '@/data/auth-store';
+import { getStoredAccounts, terminateSession, getActiveSession, type SessionToken } from '@/data/auth-store';
+import { toast } from 'sonner';
+import { ProfileModal } from '@/pages/admin/profile/profile-modal';
 
 interface AdminLayoutProps {
     children: React.ReactNode;
@@ -26,8 +31,14 @@ export function AdminLayout({
         activeLoans: 0,
         students: 6
     });
+    const [dropdownOpen, setDropdownOpen] = useState(false);
+    const [profileModalOpen, setProfileModalOpen] = useState(false);
+    const [session, setSession] = useState<SessionToken | null>(null);
+    const dropdownRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
+        setSession(getActiveSession());
+
         const updateCounts = () => {
             const items = getStoredItems();
             const loans = getStoredLoans();
@@ -37,6 +48,7 @@ export function AdminLayout({
                 activeLoans: loans.filter((l) => l.status === 'Sedang Dipinjam').length,
                 students: accounts.filter((a) => a.role === 'siswa').length
             });
+            setSession(getActiveSession());
         };
 
         updateCounts();
@@ -51,6 +63,34 @@ export function AdminLayout({
             window.removeEventListener('inventory_accounts_changed', updateCounts);
         };
     }, []);
+
+    // Close dropdown on outside click or escape
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+                setDropdownOpen(false);
+            }
+        };
+
+        const handleEscape = (event: KeyboardEvent) => {
+            if (event.key === 'Escape') {
+                setDropdownOpen(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        document.addEventListener('keydown', handleEscape);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+            document.removeEventListener('keydown', handleEscape);
+        };
+    }, []);
+
+    const handleLogout = () => {
+        terminateSession();
+        toast.info('Sesi administrator telah berakhir.');
+        router.visit('/login');
+    };
 
     const navTabs = [
         {
@@ -86,8 +126,8 @@ export function AdminLayout({
 
     return (
         <div className="min-h-screen bg-[#F6F8FA] text-slate-800 flex flex-col font-sans antialiased selection:bg-[#0256D0] selection:text-white">
-            {/* 1. TOP BRANDED HEADER BAR (Telkomsel inspired: rich themed banner with tech pattern & breadcrumb) */}
-            <header className="relative bg-gradient-to-r from-[#0256D0] via-[#0448AB] to-[#0A1C38] text-white shadow-sm z-30 select-none overflow-hidden">
+            {/* 1. TOP BRANDED HEADER BAR */}
+            <header className="relative bg-gradient-to-r from-[#0256D0] via-[#0448AB] to-[#0A1C38] text-white shadow-sm z-30 select-none">
                 {/* Tech Hexagonal & Dot Grid Watermark Pattern */}
                 <div
                     className="absolute inset-0 opacity-10 pointer-events-none"
@@ -126,30 +166,74 @@ export function AdminLayout({
                         </div>
                     </div>
 
-                    {/* Right: Admin Avatar Profile Link Chip */}
-                    <div className="flex items-center gap-3 shrink-0">
-                        <Link
-                            href="/admin/profile"
-                            className={`flex items-center gap-2.5 px-2.5 py-1.5 rounded-xl transition-all group cursor-pointer ${
-                                currentTab === 'profile'
-                                    ? 'bg-white/20 ring-1 ring-white/40 shadow-xs'
-                                    : 'hover:bg-white/10'
+                    {/* Right: Admin Avatar Profile with Dropdown Menu */}
+                    <div className="relative shrink-0" ref={dropdownRef}>
+                        <button
+                            type="button"
+                            onClick={() => setDropdownOpen((prev) => !prev)}
+                            className={`flex items-center gap-2.5 px-2.5 py-1.5 rounded-xl transition-all group cursor-pointer border ${
+                                dropdownOpen
+                                    ? 'bg-white/20 border-white/40 shadow-xs'
+                                    : 'border-transparent hover:bg-white/10'
                             }`}
-                            title="Buka Profil Administrator Lab"
+                            title="Menu Profil Administrator"
+                            aria-expanded={dropdownOpen}
                         >
-                            <div className="w-8 h-8 rounded-full bg-white text-[#0256D0] font-black text-xs flex items-center justify-center shadow-xs border border-white/40 group-hover:scale-105 transition-transform">
+                            <div className="w-8 h-8 rounded-full bg-white text-[#0256D0] font-black text-xs flex items-center justify-center shadow-xs border border-white/40 group-hover:scale-105 transition-transform shrink-0">
                                 BH
                             </div>
                             <div className="hidden sm:block text-left leading-tight">
                                 <p className="text-xs font-bold text-white leading-none">Bambang H.</p>
                                 <p className="text-[10px] text-blue-200 mt-0.5">Kepala Lab</p>
                             </div>
-                        </Link>
+                            <ChevronDown
+                                className={`w-3.5 h-3.5 text-blue-200 transition-transform duration-200 ${
+                                    dropdownOpen ? 'rotate-180 text-white' : ''
+                                }`}
+                            />
+                        </button>
+
+                        {/* Floating Dropdown Menu */}
+                        {dropdownOpen && (
+                            <div className="absolute right-0 mt-2 w-48 rounded-xl bg-[#202C33] text-[#E9EDEF] shadow-2xl border border-slate-700/60 py-1.5 z-50 animate-in fade-in zoom-in-95 duration-100">
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setDropdownOpen(false);
+                                        setProfileModalOpen(true);
+                                    }}
+                                    className="w-full flex items-center gap-3 px-4 py-2.5 text-xs text-[#E9EDEF] hover:bg-[#111B21] transition-colors cursor-pointer text-left"
+                                >
+                                    <User className="w-4 h-4 text-slate-400" />
+                                    <span>Lihat Profil</span>
+                                </button>
+                                <div className="h-px bg-slate-700/50 my-1 mx-2"></div>
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setDropdownOpen(false);
+                                        handleLogout();
+                                    }}
+                                    className="w-full flex items-center gap-3 px-4 py-2.5 text-xs text-rose-400 hover:text-rose-300 hover:bg-[#111B21] transition-colors cursor-pointer text-left"
+                                >
+                                    <LogOut className="w-4 h-4" />
+                                    <span>Keluar</span>
+                                </button>
+                            </div>
+                        )}
                     </div>
                 </div>
             </header>
 
-            {/* 2. TOOLBAR SUBNAV TABS (Horizontal toolbar directly underneath header, matching Telkomsel style) */}
+            {/* Profile Pop-up Modal */}
+            <ProfileModal
+                isOpen={profileModalOpen}
+                onClose={() => setProfileModalOpen(false)}
+                session={session}
+                onLogout={handleLogout}
+            />
+
+            {/* 2. TOOLBAR SUBNAV TABS */}
             <div className="sticky top-0 z-20 bg-white border-b border-slate-200/90 shadow-2xs select-none">
                 <div className="px-4 sm:px-6 flex items-center justify-between gap-4">
                     {/* Horizontal Tabs with active underline */}
@@ -189,7 +273,7 @@ export function AdminLayout({
                 </div>
             </div>
 
-            {/* 3. MAIN WORKSPACE (Clean Full-Width, no left sidebar) */}
+            {/* 3. MAIN WORKSPACE */}
             <div className="flex-1 flex min-w-0">
                 <main className="flex-1 min-w-0 px-4 sm:px-6 py-5 sm:py-6 w-full">
                     {children}

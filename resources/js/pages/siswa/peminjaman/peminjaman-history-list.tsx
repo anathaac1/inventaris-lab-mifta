@@ -40,7 +40,7 @@ export function PeminjamanHistoryList({ loans }: PeminjamanHistoryListProps) {
                             </div>
                             <div>
                                 <div className="flex items-center gap-2">
-                                    <span className="text-[10px] uppercase font-mono px-1.5 py-0.5 rounded bg-zinc-100 text-zinc-600 font-semibold">
+                                    <span className="text-[10px] uppercase px-1.5 py-0.5 rounded bg-zinc-100 text-zinc-600 font-semibold">
                                         {loan.code}
                                     </span>
                                     <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-semibold flex items-center gap-1">

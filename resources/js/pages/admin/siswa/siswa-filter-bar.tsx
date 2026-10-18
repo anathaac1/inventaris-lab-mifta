@@ -1,49 +1,59 @@
-import { Search, UserCheck, UserPlus } from 'lucide-react';
-import { RPL_CLASSES, type UserAccount } from '@/data/auth-store';
+import React from 'react';
+import { UserPlus, X, ChevronDown } from 'lucide-react';
+import { RPL_CLASSES } from '@/data/auth-store';
+
+export interface SiswaFilterValues {
+    name: string;
+    username: string;
+    role: 'all' | 'siswa' | 'admin';
+    studentClass: string;
+    nisn: string;
+}
 
 interface SiswaFilterBarProps {
-    searchQuery: string;
-    onSearchChange: (query: string) => void;
-    selectedClass: string;
-    onClassChange: (cls: string) => void;
-    totalStudents: number;
-    students: UserAccount[];
+    filters: SiswaFilterValues;
+    onFilterChange: (filters: SiswaFilterValues) => void;
+    onReset: () => void;
+    onApply: () => void;
+    totalAccounts: number;
     onOpenCreateModal: () => void;
 }
 
 export function SiswaFilterBar({
-    searchQuery,
-    onSearchChange,
-    selectedClass,
-    onClassChange,
-    totalStudents,
-    students,
+    filters,
+    onFilterChange,
+    onReset,
+    onApply,
+    totalAccounts,
     onOpenCreateModal
 }: SiswaFilterBarProps) {
+    const handleFieldChange = (field: keyof SiswaFilterValues, value: string) => {
+        onFilterChange({
+            ...filters,
+            [field]: value
+        });
+    };
+
+    const handleKeyDown = (e: React.KeyboardEvent) => {
+        if (e.key === 'Enter') {
+            onApply();
+        }
+    };
+
     return (
-        <div className="p-3.5 sm:p-4 border-b border-slate-100 space-y-3 bg-white">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <div className="relative flex-1 max-w-md">
-                    <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                    <input
-                        type="text"
-                        placeholder="Cari nama siswa, username, atau kelas..."
-                        value={searchQuery}
-                        onChange={(e) => onSearchChange(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2 rounded-lg border border-slate-200 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-slate-800 transition-colors"
-                    />
-                </div>
+        <div className="p-4 sm:p-5 border-b border-slate-200 bg-white">
+            <div className="flex items-center justify-between pb-3 mb-4 border-b border-slate-100">
+                <span className="text-xs font-bold text-slate-800 uppercase tracking-wider">
 
-                <div className="flex items-center gap-2.5">
-                    <div className="text-xs text-slate-500 hidden sm:flex items-center gap-1.5">
-                        <UserCheck className="w-4 h-4 text-[#0256D0]" />
-                        <span>Total: <strong>{totalStudents} Akun</strong></span>
-                    </div>
-
+                </span>
+                <div className="flex items-center gap-3">
+                    <span className="text-xs text-slate-500 hidden sm:inline">
+                        Total: <strong>{totalAccounts} Akun</strong>
+                    </span>
                     <button
                         type="button"
                         onClick={onOpenCreateModal}
-                        className="h-9 px-3.5 rounded-lg bg-[#0256D0] hover:bg-blue-700 text-white text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-xs shrink-0"
+                        className="h-8 px-3.5 rounded bg-[#0256D0] hover:bg-blue-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-2xs transition-colors cursor-pointer shrink-0"
                     >
                         <UserPlus className="w-3.5 h-3.5" />
                         <span>Tambah User Baru</span>
@@ -51,42 +61,158 @@ export function SiswaFilterBar({
                 </div>
             </div>
 
-            {/* 6 Classes Filter Pills */}
-            <div className="flex items-center gap-1.5 overflow-x-auto pb-0.5 pt-1 text-xs scrollbar-none">
-                <span className="text-[11px] text-slate-400 font-semibold uppercase tracking-wider mr-1 shrink-0">
-                    Filter Kelas:
-                </span>
-                <button
-                    type="button"
-                    onClick={() => onClassChange('ALL')}
-                    className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold transition-all shrink-0 cursor-pointer ${
-                        selectedClass === 'ALL'
-                            ? 'bg-[#0256D0] text-white shadow-2xs'
-                            : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                    }`}
-                >
-                    Semua Kelas ({totalStudents})
-                </button>
-                {RPL_CLASSES.map((cls) => {
-                    const count = students.filter(
-                        (s) => s.class.trim().toLowerCase() === cls.trim().toLowerCase()
-                    ).length;
-                    const isActive = selectedClass.trim().toLowerCase() === cls.trim().toLowerCase();
-                    return (
-                        <button
-                            key={cls}
-                            type="button"
-                            onClick={() => onClassChange(cls)}
-                            className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold transition-all shrink-0 cursor-pointer ${
-                                isActive
-                                    ? 'bg-[#0256D0] text-white shadow-2xs'
-                                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+            {/* 3-Column Grid Form */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-3.5 text-xs">
+                {/* Row 1 - Col 1: Nama Pengguna / Siswa (Input biasa) */}
+                <div className="flex items-center gap-3">
+                    <label className="w-32 shrink-0 font-medium text-slate-600 text-[11px] sm:text-xs">
+                        Nama Lengkap
+                    </label>
+                    <input
+                        type="text"
+                        placeholder="Masukkan Nama Lengkap"
+                        value={filters.name}
+                        onChange={(e) => handleFieldChange('name', e.target.value)}
+                        onKeyDown={handleKeyDown}
+                        className="flex-1 h-9 px-3 rounded border border-slate-300 bg-white text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#0256D0] focus:ring-1 focus:ring-[#0256D0]"
+                    />
+                </div>
+
+                {/* Row 1 - Col 2: Peran Akun (Select) */}
+                <div className="flex items-center gap-3">
+                    <label className="w-32 shrink-0 font-medium text-slate-600 text-[11px] sm:text-xs">
+                        Peran Akun
+                    </label>
+                    <div className="relative flex-1">
+                        <select
+                            value={filters.role}
+                            onChange={(e) => handleFieldChange('role', e.target.value)}
+                            className={`w-full h-9 pl-3 pr-14 rounded border border-slate-300 bg-white text-xs appearance-none focus:outline-none focus:border-[#0256D0] focus:ring-1 focus:ring-[#0256D0] cursor-pointer ${
+                                filters.role === 'all' ? 'text-transparent' : 'text-slate-900 font-medium'
                             }`}
                         >
-                            {cls} ({count})
-                        </button>
-                    );
-                })}
+                            <option value="all" className="hidden" disabled>Pilih Peran</option>
+                            <option value="siswa" className="text-slate-900 font-normal">Siswa RPL</option>
+                            <option value="admin" className="text-slate-900 font-normal">Administrator Lab</option>
+                        </select>
+                        {filters.role === 'all' && (
+                            <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-xs text-slate-400">
+                                Pilih Peran
+                            </span>
+                        )}
+                        <div className="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1.5 pointer-events-none">
+                            <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+                            {filters.role !== 'all' && (
+                                <button
+                                    type="button"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleFieldChange('role', 'all');
+                                    }}
+                                    title="Hapus pilihan peran"
+                                    className="pointer-events-auto p-1 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full cursor-pointer transition-colors"
+                                >
+                                    <X className="w-3.5 h-3.5" />
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                </div>
+
+                {/* Row 1 - Col 3: Kelas (Select) */}
+                <div className="flex items-center gap-3">
+                    <label className="w-32 shrink-0 font-medium text-slate-600 text-[11px] sm:text-xs">
+                        Kelas Siswa
+                    </label>
+                    <div className="relative flex-1">
+                        <select
+                            value={filters.studentClass}
+                            onChange={(e) => handleFieldChange('studentClass', e.target.value)}
+                            className={`w-full h-9 pl-3 pr-14 rounded border border-slate-300 bg-white text-xs appearance-none focus:outline-none focus:border-[#0256D0] focus:ring-1 focus:ring-[#0256D0] cursor-pointer ${
+                                filters.studentClass === 'all' ? 'text-transparent' : 'text-slate-900 font-medium'
+                            }`}
+                        >
+                            <option value="all" className="hidden" disabled>Pilih Kelas</option>
+                            {RPL_CLASSES.map((cls) => (
+                                <option key={cls} value={cls} className="text-slate-900 font-normal">
+                                    {cls}
+                                </option>
+                            ))}
+                        </select>
+                        {filters.studentClass === 'all' && (
+                            <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-xs text-slate-400">
+                                Pilih Kelas
+                            </span>
+                        )}
+                        <div className="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1.5 pointer-events-none">
+                            <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+                            {filters.studentClass !== 'all' && (
+                                <button
+                                    type="button"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleFieldChange('studentClass', 'all');
+                                    }}
+                                    title="Hapus pilihan kelas"
+                                    className="pointer-events-auto p-1 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full cursor-pointer transition-colors"
+                                >
+                                    <X className="w-3.5 h-3.5" />
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                </div>
+
+                {/* Row 2 - Col 1: Username Login (Input biasa) */}
+                <div className="flex items-center gap-3">
+                    <label className="w-32 shrink-0 font-medium text-slate-600 text-[11px] sm:text-xs">
+                        Username
+                    </label>
+                    <input
+                        type="text"
+                        placeholder="Masukkan Username"
+                        value={filters.username}
+                        onChange={(e) => handleFieldChange('username', e.target.value)}
+                        onKeyDown={handleKeyDown}
+                        className="flex-1 h-9 px-3 rounded border border-slate-300 bg-white text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#0256D0] focus:ring-1 focus:ring-[#0256D0]"
+                    />
+                </div>
+
+                {/* Row 2 - Col 2: NISN (Input biasa) */}
+                <div className="flex items-center gap-3">
+                    <label className="w-32 shrink-0 font-medium text-slate-600 text-[11px] sm:text-xs">
+                        NISN
+                    </label>
+                    <input
+                        type="text"
+                        placeholder="Masukkan Nomor NISN"
+                        value={filters.nisn}
+                        onChange={(e) => handleFieldChange('nisn', e.target.value)}
+                        onKeyDown={handleKeyDown}
+                        className="flex-1 h-9 px-3 rounded border border-slate-300 bg-white text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#0256D0] focus:ring-1 focus:ring-[#0256D0]"
+                    />
+                </div>
+
+                {/* Row 2 - Col 3: Spacer */}
+                <div className="hidden md:block"></div>
+            </div>
+
+            {/* Filter Action Buttons */}
+            <div className="flex items-center justify-end gap-2.5 mt-4 pt-3 border-t border-slate-100">
+                <button
+                    type="button"
+                    onClick={onApply}
+                    className="h-8 px-6 rounded bg-[#0256D0] hover:bg-blue-700 text-white font-bold text-xs shadow-2xs transition-colors cursor-pointer"
+                >
+                    Filter
+                </button>
+                <button
+                    type="button"
+                    onClick={onReset}
+                    className="h-8 px-5 rounded border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 font-medium text-xs transition-colors cursor-pointer"
+                >
+                    Reset
+                </button>
             </div>
         </div>
     );

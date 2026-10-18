@@ -21,7 +21,7 @@ export function SiswaTable({
             <table className="w-full text-left text-xs">
                 <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold uppercase tracking-wider text-[10px]">
                     <tr>
-                        <th className="py-3.5 px-5">Siswa & Kelas</th>
+                        <th className="py-3.5 px-5">Pengguna & Peran</th>
                         <th className="py-3.5 px-4">Username Login</th>
                         <th className="py-3.5 px-4">NISN & Kontak</th>
                         <th className="py-3.5 px-4">Password Saat Ini</th>
@@ -33,25 +33,34 @@ export function SiswaTable({
                     {students.length === 0 ? (
                         <tr>
                             <td colSpan={6} className="py-12 text-center text-slate-400">
-                                Tidak ada data siswa yang cocok dengan pencarian.
+                                Tidak ada data akun pengguna yang cocok dengan filter pencarian.
                             </td>
                         </tr>
                     ) : (
                         students.map((student) => {
                             const isRevealed = !!revealedPasswords[student.username];
+                            const isAdmin = student.role === 'admin';
                             return (
                                 <tr key={student.id} className="hover:bg-slate-50/70 transition-colors">
-                                    {/* Siswa & Kelas */}
+                                    {/* Pengguna & Kelas/Jabatan */}
                                     <td className="py-3.5 px-5">
                                         <div className="flex items-center gap-3">
-                                            <div className="w-8 h-8 rounded-lg bg-blue-50 text-[#0256D0] font-bold text-xs flex items-center justify-center shrink-0 border border-blue-200/60 shadow-2xs">
+                                            <div className={`w-8 h-8 rounded font-bold text-xs flex items-center justify-center shrink-0 border shadow-2xs ${
+                                                isAdmin
+                                                    ? 'bg-purple-50 text-purple-700 border-purple-200'
+                                                    : 'bg-blue-50 text-[#0256D0] border-blue-200/60'
+                                            }`}>
                                                 {student.avatar || student.name.substring(0, 2).toUpperCase()}
                                             </div>
                                             <div className="min-w-0">
                                                 <span className="font-bold text-slate-900 block truncate">
                                                     {student.name}
                                                 </span>
-                                                <span className="text-[11px] font-semibold text-blue-700 bg-blue-50 px-1.5 py-0.2 rounded border border-blue-200/60 inline-block mt-0.5">
+                                                <span className={`text-[11px] font-semibold px-1.5 py-0.2 border inline-block mt-0.5 rounded ${
+                                                    isAdmin
+                                                        ? 'text-purple-700 bg-purple-50 border-purple-200'
+                                                        : 'text-blue-700 bg-blue-50 border-blue-200/60'
+                                                }`}>
                                                     {student.class}
                                                 </span>
                                             </div>
@@ -59,7 +68,7 @@ export function SiswaTable({
                                     </td>
 
                                     {/* Username */}
-                                    <td className="py-3.5 px-4 font-mono font-semibold text-slate-800">
+                                    <td className="py-3.5 px-4 font-semibold text-slate-800">
                                         <div className="flex items-center gap-1.5">
                                             <span>{student.username}</span>
                                             <button
@@ -82,7 +91,7 @@ export function SiswaTable({
                                     {/* Password with Reveal Button */}
                                     <td className="py-3.5 px-4">
                                         <div className="flex items-center gap-2">
-                                            <span className="font-mono text-xs px-2 py-1 rounded bg-slate-100 border border-slate-200">
+                                            <span className="text-xs px-2 py-1">
                                                 {isRevealed ? student.password : '••••••••'}
                                             </span>
                                             <button
@@ -92,9 +101,9 @@ export function SiswaTable({
                                                 title={isRevealed ? 'Sembunyikan' : 'Lihat password'}
                                             >
                                                 {isRevealed ? (
-                                                    <EyeOff className="w-3.5 h-3.5" />
-                                                ) : (
                                                     <Eye className="w-3.5 h-3.5" />
+                                                ) : (
+                                                    <EyeOff className="w-3.5 h-3.5" />
                                                 )}
                                             </button>
                                         </div>
@@ -102,8 +111,8 @@ export function SiswaTable({
 
                                     {/* Status */}
                                     <td className="py-3.5 px-4 text-center">
-                                        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">
-                                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                                        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded text-[11px] font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">
+                                            {/* <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> */}
                                             <span>Aktif</span>
                                         </span>
                                     </td>
@@ -113,9 +122,9 @@ export function SiswaTable({
                                         <button
                                             type="button"
                                             onClick={() => onOpenResetModal(student)}
-                                            className="h-8 px-3 rounded-lg bg-blue-50/80 hover:bg-blue-100 text-[#0256D0] border border-blue-200/80 text-xs font-bold flex items-center gap-1.5 ml-auto transition-all cursor-pointer shadow-2xs group"
+                                            className="h-8 px-3 rounded bg-blue-50/80 hover:bg-blue-100 text-[#0256D0] border border-blue-200/80 text-xs font-bold flex items-center gap-1.5 ml-auto transition-all cursor-pointer shadow-2xs group"
                                         >
-                                            <KeyRound className="w-3.5 h-3.5 text-[#0256D0] group-hover:scale-110 transition-transform" />
+                                            {/* <KeyRound className="w-3.5 h-3.5 text-[#0256D0] group-hover:scale-110 transition-transform" /> */}
                                             <span>Beri Password Baru</span>
                                         </button>
                                     </td>

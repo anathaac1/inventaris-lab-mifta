@@ -11,14 +11,24 @@ import {
 } from '@/data/inventory-data';
 import { toast } from 'sonner';
 import { AdminPagination } from '@/components/inventory/admin-pagination';
-import { PeminjamanFilterBar } from './peminjaman-filter-bar';
+import { PeminjamanFilterBar, type PeminjamanFilterValues } from './peminjaman-filter-bar';
 import { PeminjamanTable } from './peminjaman-table';
+
+const DEFAULT_LOAN_FILTERS: PeminjamanFilterValues = {
+    borrowerName: '',
+    borrowerClass: 'all',
+    itemName: '',
+    code: '',
+    status: 'all'
+};
 
 export default function AdminPeminjaman() {
     const [loans, setLoans] = useState<LoanItem[]>([]);
     const [items, setItems] = useState<InventoryItem[]>([]);
-    const [searchQuery, setSearchQuery] = useState('');
-    const [statusTab, setStatusTab] = useState<'all' | 'active' | 'returned'>('all');
+
+    // Filter Form Values & Applied Filter State
+    const [filterForm, setFilterForm] = useState<PeminjamanFilterValues>(DEFAULT_LOAN_FILTERS);
+    const [appliedFilters, setAppliedFilters] = useState<PeminjamanFilterValues>(DEFAULT_LOAN_FILTERS);
 
     // Pagination State
     const [currentPage, setCurrentPage] = useState(1);
@@ -40,21 +50,39 @@ export default function AdminPeminjaman() {
         };
     }, []);
 
-    // Filter
+    // Filter based on appliedFilters
     const filteredLoans = loans.filter((loan) => {
-        const matchesSearch =
-            loan.borrowerName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            loan.borrowerClass.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            loan.itemName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            loan.code.toLowerCase().includes(searchQuery.toLowerCase());
+        const borrowerQuery = appliedFilters.borrowerName.toLowerCase().trim();
+        const matchesBorrower = !borrowerQuery || loan.borrowerName.toLowerCase().includes(borrowerQuery);
+
+        const matchesClass =
+            appliedFilters.borrowerClass === 'all' ||
+            loan.borrowerClass.toLowerCase().trim() === appliedFilters.borrowerClass.toLowerCase().trim();
+
+        const itemQuery = appliedFilters.itemName.toLowerCase().trim();
+        const matchesItem = !itemQuery || loan.itemName.toLowerCase().includes(itemQuery);
+
+        const codeQuery = appliedFilters.code.toLowerCase().trim();
+        const matchesCode = !codeQuery || loan.code.toLowerCase().includes(codeQuery);
 
         const matchesStatus =
-            statusTab === 'all' ||
-            (statusTab === 'active' && loan.status === 'Sedang Dipinjam') ||
-            (statusTab === 'returned' && loan.status === 'Dikembalikan');
+            appliedFilters.status === 'all' ||
+            (appliedFilters.status === 'active' && loan.status === 'Sedang Dipinjam') ||
+            (appliedFilters.status === 'returned' && loan.status === 'Dikembalikan');
 
-        return matchesSearch && matchesStatus;
+        return matchesBorrower && matchesClass && matchesItem && matchesCode && matchesStatus;
     });
+
+    const handleApplyFilter = () => {
+        setAppliedFilters({ ...filterForm });
+        setCurrentPage(1);
+    };
+
+    const handleResetFilter = () => {
+        setFilterForm(DEFAULT_LOAN_FILTERS);
+        setAppliedFilters(DEFAULT_LOAN_FILTERS);
+        setCurrentPage(1);
+    };
 
     // Pagination Calculations
     const totalPages = Math.max(1, Math.ceil(filteredLoans.length / itemsPerPage));
@@ -115,16 +143,10 @@ export default function AdminPeminjaman() {
             <div className="space-y-4">
                 <div className="bg-white rounded-xl border border-slate-200/90 shadow-2xs overflow-hidden">
                     <PeminjamanFilterBar
-                        searchQuery={searchQuery}
-                        onSearchChange={(q) => {
-                            setSearchQuery(q);
-                            setCurrentPage(1);
-                        }}
-                        statusTab={statusTab}
-                        onStatusTabChange={(tab) => {
-                            setStatusTab(tab);
-                            setCurrentPage(1);
-                        }}
+                        filters={filterForm}
+                        onFilterChange={setFilterForm}
+                        onApply={handleApplyFilter}
+                        onReset={handleResetFilter}
                         totalCount={loans.length}
                         activeCount={activeCount}
                         returnedCount={returnedCount}

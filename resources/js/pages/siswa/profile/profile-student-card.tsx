@@ -22,7 +22,7 @@ export function ProfileStudentCard({
                 <div>
                     <h2 className="text-base font-bold">{studentName}</h2>
                     <p className="text-xs text-blue-100 font-medium">{studentClass}</p>
-                    <p className="text-[11px] text-blue-200 font-mono mt-0.5">
+                    <p className="text-[11px] text-blue-200 mt-0.5">
                         Username: {studentUsername}
                     </p>
                 </div>

@@ -14,7 +14,7 @@ export function ClassDistribution({ classStats }: ClassDistributionProps) {
         <div className="bg-white rounded-xl border border-slate-200/90 p-5 shadow-2xs">
             <div className="flex items-center justify-between mb-3.5">
                 <h3 className="text-sm font-bold text-slate-900 flex items-center gap-1.5">
-                    <GraduationCap className="w-4 h-4 text-[#0256D0]" />
+                    {/* <GraduationCap className="w-4 h-4 text-[#0256D0]" /> */}
                     <span>Peminjam Per Kelas RPL</span>
                 </h3>
                 <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-blue-50 text-[#0256D0]">
@@ -32,7 +32,7 @@ export function ClassDistribution({ classStats }: ClassDistributionProps) {
                             {cls.name}
                         </span>
                         <span
-                            className={`text-[11px] font-bold px-2 py-0.5 rounded-full ${
+                            className={`text-[11px] font-bold px-2 py-0.5 rounded ${
                                 cls.active > 0
                                     ? 'bg-amber-100 text-amber-800'
                                     : 'bg-slate-200/70 text-slate-500'

@@ -151,7 +151,7 @@ export function SiswaCreateModal({
                                         value={formData.username}
                                         onChange={(e) => handleFieldChange('username', e.target.value)}
                                         placeholder="Contoh: farhan12"
-                                        className="w-full px-3 py-2 rounded-md border border-slate-300 bg-white font-mono text-xs text-slate-900 focus:outline-none focus:border-[#0256D0] focus:ring-1 focus:ring-[#0256D0]"
+                                        className="w-full px-3 py-2 rounded-md border border-slate-300 bg-white text-xs text-slate-900 focus:outline-none focus:border-[#0256D0] focus:ring-1 focus:ring-[#0256D0]"
                                     />
                                 </div>
 
@@ -260,7 +260,7 @@ export function SiswaCreateModal({
                             value={formData.password}
                             onChange={(e) => handleFieldChange('password', e.target.value)}
                             placeholder="Minimal 4 karakter (contoh: rpl2024!)"
-                            className="w-full px-3 py-2 rounded-md border border-slate-300 bg-white font-mono text-xs text-slate-900 focus:outline-none focus:border-[#0256D0] focus:ring-1 focus:ring-[#0256D0]"
+                            className="w-full px-3 py-2 rounded-md border border-slate-300 bg-white text-xs text-slate-900 focus:outline-none focus:border-[#0256D0] focus:ring-1 focus:ring-[#0256D0]"
                         />
                     </div>
 

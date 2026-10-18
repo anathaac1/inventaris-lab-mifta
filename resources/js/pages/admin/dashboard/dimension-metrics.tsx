@@ -32,14 +32,14 @@ export function DimensionMetrics({
             <div className="flex items-center justify-between text-xs px-1">
                 <span className="font-bold text-slate-700 uppercase tracking-wider text-[11px] flex items-center gap-1.5">
                     <SlidersHorizontal className="w-3.5 h-3.5 text-[#0256D0]" />
-                    <span>Dimensi Analitik (Klik untuk memilih fokus)</span>
+                    <span>Dimensi Analitik </span>
                 </span>
-                <span className="text-slate-400 text-[11px]">
-                    {activeTab === 'all' && 'Menampilkan Semua Metrik'}
-                    {activeTab === 'categories' && 'Fokus Distribusi Kategori'}
-                    {activeTab === 'loans' && 'Fokus Log Peminjaman'}
-                    {activeTab === 'classes' && 'Fokus Sebaran Kelas RPL'}
-                </span>
+                {/* <span className="text-slate-400 text-[11px]">
+                    {activeTab === 'all' && ''}
+                    {activeTab === 'categories' && ''}
+                    {activeTab === 'loans' && ''}
+                    {activeTab === 'classes' && ''}
+                </span> */}
             </div>
 
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
@@ -55,7 +55,7 @@ export function DimensionMetrics({
                 >
                     <div className="flex items-center justify-between">
                         <span className="text-xs font-bold text-slate-500">Total Unit Fisik</span>
-                        <div
+                        {/* <div
                             className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${
                                 activeTab === 'all'
                                     ? 'bg-blue-50 text-[#0256D0]'
@@ -63,7 +63,7 @@ export function DimensionMetrics({
                             }`}
                         >
                             <Layers className="w-4 h-4" />
-                        </div>
+                        </div> */}
                     </div>
                     <p className="text-2xl sm:text-3xl font-black text-slate-900 mt-2 font-mono">
                         {totalUnits}
@@ -86,7 +86,7 @@ export function DimensionMetrics({
                 >
                     <div className="flex items-center justify-between">
                         <span className="text-xs font-bold text-slate-500">Katalog Alat</span>
-                        <div
+                        {/* <div
                             className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${
                                 activeTab === 'categories'
                                     ? 'bg-blue-50 text-[#0256D0]'
@@ -94,7 +94,7 @@ export function DimensionMetrics({
                             }`}
                         >
                             <Box className="w-4 h-4" />
-                        </div>
+                        </div> */}
                     </div>
                     <p className="text-2xl sm:text-3xl font-black text-slate-900 mt-2 font-mono">
                         {catalogCount}
@@ -117,7 +117,7 @@ export function DimensionMetrics({
                 >
                     <div className="flex items-center justify-between">
                         <span className="text-xs font-bold text-slate-500">Sedang Dipinjam</span>
-                        <div
+                        {/* <div
                             className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${
                                 activeTab === 'loans'
                                     ? 'bg-amber-50 text-amber-600'
@@ -125,7 +125,7 @@ export function DimensionMetrics({
                             }`}
                         >
                             <ClipboardList className="w-4 h-4" />
-                        </div>
+                        </div> */}
                     </div>
                     <p className="text-2xl sm:text-3xl font-black text-slate-900 mt-2 font-mono">
                         {activeLoansCount}
@@ -148,7 +148,7 @@ export function DimensionMetrics({
                 >
                     <div className="flex items-center justify-between">
                         <span className="text-xs font-bold text-slate-500">Siswa Terdata</span>
-                        <div
+                        {/* <div
                             className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${
                                 activeTab === 'classes'
                                     ? 'bg-emerald-50 text-emerald-600'
@@ -156,7 +156,7 @@ export function DimensionMetrics({
                             }`}
                         >
                             <GraduationCap className="w-4 h-4" />
-                        </div>
+                        </div> */}
                     </div>
                     <p className="text-2xl sm:text-3xl font-black text-slate-900 mt-2 font-mono">
                         {studentCount}
