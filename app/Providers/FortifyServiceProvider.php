@@ -31,6 +31,43 @@ class FortifyServiceProvider extends ServiceProvider
         $this->configureActions();
         $this->configureViews();
         $this->configureRateLimiting();
+        $this->configureAuthentication();
+    }
+
+    /**
+     * Configure authentication and login redirection.
+     */
+    private function configureAuthentication(): void
+    {
+        Fortify::authenticateUsing(function (Request $request) {
+            $input = trim((string) ($request->input('email') ?? $request->input('username')));
+
+            $user = \App\Models\User::where('email', $input)
+                ->orWhere('email', $input . '@smkn1.sch.id')
+                ->first();
+
+            if ($user && \Illuminate\Support\Facades\Hash::check($request->password, $user->password)) {
+                return $user;
+            }
+
+            return null;
+        });
+
+        $this->app->singleton(
+            \Laravel\Fortify\Contracts\LoginResponse::class,
+            function () {
+                return new class implements \Laravel\Fortify\Contracts\LoginResponse {
+                    public function toResponse($request)
+                    {
+                        $user = auth()->user();
+                        if ($user && str_starts_with($user->email, 'admin')) {
+                            return redirect()->intended('/admin');
+                        }
+                        return redirect()->intended('/dashboard');
+                    }
+                };
+            }
+        );
     }
 
     /**

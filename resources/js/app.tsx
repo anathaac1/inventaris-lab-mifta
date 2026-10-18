@@ -1,27 +1,19 @@
 import { createInertiaApp } from '@inertiajs/react';
+import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { Toaster } from '@/components/ui/sonner';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { initializeTheme } from '@/hooks/use-appearance';
-import AppLayout from '@/layouts/app-layout';
-import AuthLayout from '@/layouts/auth-layout';
-import SettingsLayout from '@/layouts/settings/layout';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Pinjam Yuk!';
 
 void createInertiaApp({
     title: (title) => (title ? `${title} - ${appName}` : appName),
-    layout: (name) => {
-        switch (true) {
-            case ['welcome', 'dashboard', 'alat', 'peminjaman', 'profile', 'auth/login'].includes(name) || name.startsWith('admin/'):
-                return null;
-            case name.startsWith('auth/'):
-                return AuthLayout;
-            case name.startsWith('settings/'):
-                return [AppLayout, SettingsLayout];
-            default:
-                return AppLayout;
-        }
-    },
+    resolve: (name) =>
+        resolvePageComponent(
+            [`./pages/${name}.tsx`, `./pages/${name}/index.tsx`],
+            import.meta.glob('./pages/**/*.tsx')
+        ) as Promise<any>,
+    layout: () => null,
     strictMode: true,
     withApp(app) {
         return (

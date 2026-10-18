@@ -1,0 +1,106 @@
+import { Link } from '@inertiajs/react';
+import { ArrowUpRight, CheckCircle2, Clock } from 'lucide-react';
+import type { LoanItem } from '@/data/inventory-data';
+
+interface ActiveLoansMonitorProps {
+    activeLoans: LoanItem[];
+}
+
+export function ActiveLoansMonitor({ activeLoans }: ActiveLoansMonitorProps) {
+    return (
+        <div className="lg:col-span-2 bg-white rounded-xl border border-slate-200/90 shadow-2xs overflow-hidden">
+            <div className="p-5 border-b border-slate-100 flex items-center justify-between">
+                <div>
+                    <div className="flex items-center gap-2">
+                        <h3 className="text-sm font-bold text-slate-900">
+                            Pemantauan Sirkulasi & Peminjaman Aktif
+                        </h3>
+                        <span className="text-[10px] px-2 py-0.5 rounded-full font-bold bg-amber-50 text-amber-800 border border-amber-200">
+                            {activeLoans.length} Aktif
+                        </span>
+                    </div>
+                    <p className="text-xs text-slate-500 mt-0.5">
+                        Log perangkat lab yang sedang berada di luar ruang penyimpanan
+                    </p>
+                </div>
+
+                <Link
+                    href="/admin/peminjaman"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 hover:bg-slate-100 text-[#0256D0] text-xs font-semibold transition-colors"
+                    title="Buka modul log peminjaman lengkap untuk memproses pengembalian"
+                >
+                    <span>Buka Modul Pengembalian</span>
+                    <ArrowUpRight className="w-3.5 h-3.5 text-slate-400" />
+                </Link>
+            </div>
+
+            {activeLoans.length === 0 ? (
+                <div className="p-12 text-center">
+                    <div className="w-12 h-12 rounded-full bg-emerald-50 text-emerald-600 mx-auto flex items-center justify-center mb-3 border border-emerald-100">
+                        <CheckCircle2 className="w-6 h-6" />
+                    </div>
+                    <p className="text-xs font-bold text-slate-900">
+                        Semua Peralatan Lengkap di Ruang Penyimpanan
+                    </p>
+                    <p className="text-[11px] text-slate-500 mt-1 max-w-xs mx-auto">
+                        Tidak ada catatan peminjaman yang sedang berlangsung saat ini.
+                    </p>
+                </div>
+            ) : (
+                <div className="divide-y divide-slate-100">
+                    {activeLoans.map((loan) => (
+                        <div
+                            key={loan.id}
+                            className="p-4 sm:p-5 flex items-center justify-between gap-4 transition-colors hover:bg-slate-50/70"
+                        >
+                            <div className="min-w-0 flex items-start gap-3.5">
+                                {/* Borrower Initials */}
+                                <div className="w-10 h-10 rounded-xl bg-slate-100 text-[#0256D0] font-black text-xs flex items-center justify-center shrink-0 border border-slate-200/80 shadow-2xs">
+                                    {loan.borrowerName.substring(0, 2).toUpperCase()}
+                                </div>
+
+                                <div className="min-w-0">
+                                    <div className="flex items-center gap-2">
+                                        <span className="font-bold text-xs text-slate-900 truncate">
+                                            {loan.borrowerName}
+                                        </span>
+                                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-blue-50 text-[#0256D0] border border-blue-200/60 shrink-0">
+                                            {loan.borrowerClass}
+                                        </span>
+                                    </div>
+
+                                    <p className="text-xs text-slate-800 font-semibold mt-1 truncate">
+                                        {loan.itemName}{' '}
+                                        <span className="text-slate-400 font-mono text-[11px] font-normal">
+                                            ({loan.code})
+                                        </span>
+                                    </p>
+
+                                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-slate-500 mt-1.5">
+                                        <span className="flex items-center gap-1.5">
+                                            <Clock className="w-3.5 h-3.5 text-slate-400" />
+                                            <span>Batas: {loan.returnEstimate}</span>
+                                        </span>
+                                        {loan.notes && (
+                                            <span className="truncate max-w-xs text-slate-400">
+                                                • {loan.notes}
+                                            </span>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Status Tag (Read-only monitoring) */}
+                            <div className="shrink-0 flex items-center gap-2">
+                                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-amber-50 text-amber-800 border border-amber-200">
+                                    <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+                                    <span>Sedang Dipinjam</span>
+                                </span>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            )}
+        </div>
+    );
+}
