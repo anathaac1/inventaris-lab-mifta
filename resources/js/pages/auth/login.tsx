@@ -71,28 +71,28 @@ export default function Login({ status }: Props) {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-[#E0F2FE] via-[#EDE9FE] to-[#DBEAFE] flex flex-col justify-center items-center px-4 py-8 sm:p-6 selection:bg-[#0256D0] selection:text-white relative overflow-hidden">
+        <div className="min-h-screen bg-gradient-to-br from-[#F0F7FF] via-[#E4EFFD] to-[#D8E8FA] flex flex-col justify-center items-center px-4 py-8 sm:p-6 selection:bg-[#0256D0] selection:text-white relative overflow-hidden">
             <Head title="Masuk - Sistem Inventaris Lab RPL" />
 
-            {/* Colorful Dynamic Ambient Gradient Orbs */}
+            {/* Dynamic Ambient Gradient Orbs in Harmonious Brand Blue */}
             {/* Top-Left: Vivid Royal & Cyan Glow */}
-            <div className="absolute -top-24 -left-24 w-96 h-96 bg-gradient-to-br from-[#0284C7] via-[#38BDF8] to-[#0256D0] rounded-full blur-3xl opacity-50 pointer-events-none animate-pulse" />
+            <div className="absolute -top-24 -left-24 w-96 h-96 bg-gradient-to-br from-[#0284C7] via-[#38BDF8] to-[#0256D0] rounded-full blur-3xl opacity-40 pointer-events-none animate-pulse" />
 
-            {/* Top-Right: Vibrant Indigo & Purple Glow */}
-            <div className="absolute -top-20 -right-20 w-[420px] h-[420px] bg-gradient-to-bl from-[#6366F1] via-[#8B5CF6] to-[#3B82F6] rounded-full blur-3xl opacity-45 pointer-events-none" />
+            {/* Top-Right: Deep Royal & Cobalt Blue Glow */}
+            <div className="absolute -top-20 -right-20 w-[420px] h-[420px] bg-gradient-to-bl from-[#0369A1] via-[#0256D0] to-[#1D4ED8] rounded-full blur-3xl opacity-35 pointer-events-none" />
 
-            {/* Bottom-Left: Teal & Electric Blue Glow */}
-            <div className="absolute -bottom-24 -left-20 w-[440px] h-[440px] bg-gradient-to-tr from-[#06B6D4] via-[#0284C7] to-[#3B82F6] rounded-full blur-3xl opacity-50 pointer-events-none" />
+            {/* Bottom-Left: Soft Sky & Ocean Blue Glow */}
+            <div className="absolute -bottom-24 -left-20 w-[440px] h-[440px] bg-gradient-to-tr from-[#38BDF8] via-[#0284C7] to-[#0256D0] rounded-full blur-3xl opacity-35 pointer-events-none" />
 
-            {/* Bottom-Right: Deep Sapphire & Violet Glow */}
-            <div className="absolute -bottom-28 -right-24 w-[460px] h-[460px] bg-gradient-to-tl from-[#1D4ED8] via-[#7C3AED] to-[#0256D0] rounded-full blur-3xl opacity-50 pointer-events-none" />
+            {/* Bottom-Right: Deep Sapphire & Navy Blue Glow */}
+            <div className="absolute -bottom-28 -right-24 w-[460px] h-[460px] bg-gradient-to-tl from-[#1E3A8A] via-[#0256D0] to-[#0284C7] rounded-full blur-3xl opacity-30 pointer-events-none" />
 
             {/* Subtle Modern Architectural Dot Grid Mesh */}
             <div className="absolute inset-0 bg-[radial-gradient(#0256d015_1.5px,transparent_1.5px)] [background-size:24px_24px] pointer-events-none" />
 
             {/* Decorative Floating Glass Rings */}
-            <div className="absolute top-1/4 right-[12%] w-28 h-28 rounded-full border-2 border-blue-400/30 blur-[0.5px] pointer-events-none hidden md:block" />
-            <div className="absolute bottom-1/4 left-[10%] w-36 h-36 rounded-full border-2 border-indigo-400/25 blur-[0.5px] pointer-events-none hidden md:block" />
+            <div className="absolute top-1/4 right-[12%] w-28 h-28 rounded-full border-2 border-blue-400/25 blur-[0.5px] pointer-events-none hidden md:block" />
+            <div className="absolute bottom-1/4 left-[10%] w-36 h-36 rounded-full border-2 border-sky-300/30 blur-[0.5px] pointer-events-none hidden md:block" />
 
             {/* MAIN ORIGAMI FOLDING CONTAINER */}
             {/* Kursor ngarah ke kotak otomatis ngebuka, kursor keluar dari kotak otomatis ketutup */}
@@ -329,10 +329,10 @@ export default function Login({ status }: Props) {
                                 Lab RPL
                             </span>
                         </h2>
-                        <div className="mt-2.5 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/20 backdrop-blur-md text-white text-[11px] font-medium shadow-xs border border-white/30 animate-bounce">
+                        {/* <div className="mt-2.5 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/20 backdrop-blur-md text-white text-[11px] font-medium shadow-xs border border-white/30 animate-bounce">
                             <MousePointer className="w-3.5 h-3.5" />
                             <span>Arahkan kursor ke tengah untuk masuk</span>
-                        </div>
+                        </div> */}
                     </div>
                 </div>
             </div>

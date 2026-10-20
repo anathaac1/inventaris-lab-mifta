@@ -1,15 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Link, router } from '@inertiajs/react';
 import {
     Home,
     Box,
     ClipboardList,
     User,
-    Clock,
-    LogOut
+    LogOut,
+    ChevronDown
 } from 'lucide-react';
 import { getActiveSession, terminateSession, type SessionToken } from '@/data/auth-store';
 import { toast } from 'sonner';
+import { ProfileModal } from '@/pages/siswa/profile/profile-modal';
 
 interface MainLayoutProps {
     children: React.ReactNode;
@@ -19,6 +20,11 @@ interface MainLayoutProps {
 
 export function MainLayout({ children, currentTab = 'home' }: MainLayoutProps) {
     const [session, setSession] = useState<SessionToken | null>(null);
+    const [dropdownOpen, setDropdownOpen] = useState(false);
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [profileModalOpen, setProfileModalOpen] = useState(false);
+    const dropdownRef = useRef<HTMLDivElement>(null);
+    const mobileMenuRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         const active = getActiveSession();
@@ -36,6 +42,32 @@ export function MainLayout({ children, currentTab = 'home' }: MainLayoutProps) {
         return () => clearInterval(interval);
     }, []);
 
+    // Close dropdown on outside click or escape
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+                setDropdownOpen(false);
+            }
+            if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target as Node)) {
+                setMobileMenuOpen(false);
+            }
+        };
+
+        const handleEscape = (event: KeyboardEvent) => {
+            if (event.key === 'Escape') {
+                setDropdownOpen(false);
+                setMobileMenuOpen(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        document.addEventListener('keydown', handleEscape);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+            document.removeEventListener('keydown', handleEscape);
+        };
+    }, []);
+
     const handleLogout = () => {
         terminateSession();
         toast.info('Anda telah keluar dari sesi.');
@@ -43,6 +75,7 @@ export function MainLayout({ children, currentTab = 'home' }: MainLayoutProps) {
     };
 
     const studentName = session?.name || 'Ahmad Rizky Pratama';
+    const studentClass = session?.class || 'XII RPL A';
     const studentInitials = session?.name
         ? session.name.split(' ').map((n) => n[0]).slice(0, 2).join('').toUpperCase()
         : 'AR';
@@ -50,8 +83,7 @@ export function MainLayout({ children, currentTab = 'home' }: MainLayoutProps) {
     const navItems = [
         { id: 'home', label: 'Home', href: '/dashboard', icon: Home },
         { id: 'alat', label: 'Alat', href: '/alat', icon: Box },
-        { id: 'peminjaman', label: 'Peminjaman', href: '/peminjaman', icon: ClipboardList },
-        { id: 'profile', label: 'Profile', href: '/profile', icon: User },
+        { id: 'peminjaman', label: 'Peminjaman', href: '/peminjaman', icon: ClipboardList }
     ];
 
     return (
@@ -71,9 +103,6 @@ export function MainLayout({ children, currentTab = 'home' }: MainLayoutProps) {
                         <div>
                             <span className="text-base font-extrabold text-[#0256D0]">
                                 Pinjam<span className="text-zinc-900">Yuk!</span>
-                            </span>
-                            <span className="hidden sm:inline-block ml-1.5 text-[10px] font-bold px-1.5 py-0.2 rounded bg-blue-50 text-[#0256D0] border border-blue-200/60">
-                                Lab RPL
                             </span>
                         </div>
                     </Link>
@@ -100,36 +129,76 @@ export function MainLayout({ children, currentTab = 'home' }: MainLayoutProps) {
                         })}
                     </nav>
 
-                    {/* Right User Link & Admin Switch */}
-                    <div className="flex items-center gap-2">
-                        {/* 1-Hour Token Active Badge */}
-                        {/* <div className="hidden lg:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-[11px] font-medium text-emerald-800" title="Sesi aktif 1 jam">
-                            <Clock className="w-3 h-3 text-emerald-600" /> */}
-                            {/* <span>Token 1 Jam</span> */}
-                        {/* </div> */}
-
-                        {/* <Link
-                            href="/admin"
-                            className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-semibold bg-zinc-100 text-zinc-700 hover:bg-zinc-200 transition-colors border border-zinc-200"
-                            title="Buka CMS Admin"
+                    {/* Right User Link & Profile Dropdown */}
+                    <div className="relative shrink-0" ref={dropdownRef}>
+                        <button
+                            type="button"
+                            onClick={() => setDropdownOpen((prev) => !prev)}
+                            className={`flex items-center gap-2.5 px-2.5 py-1.5 rounded-xl transition-all group cursor-pointer border ${
+                                dropdownOpen
+                                    ? 'bg-zinc-100 border-zinc-300 shadow-2xs'
+                                    : 'border-transparent hover:bg-zinc-100'
+                            }`}
+                            title="Menu Profil Siswa"
+                            aria-expanded={dropdownOpen}
                         >
-                            <span>Admin CMS</span>
-                        </Link> */}
-
-                        <Link
-                            href="/profile"
-                            className="flex items-center gap-2 p-1 rounded hover:bg-zinc-100 transition-colors"
-                        >
-                            <div className="w-7 h-7 rounded-full bg-blue-100 text-[#0256D0] flex items-center justify-center font-bold text-xs border border-blue-200">
-                                <span className="text-[10px]">{studentInitials}</span>
+                            <div className="w-8 h-8 rounded-full bg-blue-100 text-[#0256D0] font-bold text-xs flex items-center justify-center shadow-xs border border-blue-200 group-hover:scale-105 transition-transform shrink-0">
+                                {studentInitials}
                             </div>
-                            <span className="text-xs font-medium text-zinc-700 hidden sm:inline max-w-[120px] truncate">
-                                {studentName}
-                            </span>
-                        </Link>
+                            <div className="hidden sm:block text-left leading-tight">
+                                <p className="text-xs font-bold text-zinc-900 leading-none truncate max-w-[130px]">
+                                    {studentName}
+                                </p>
+                                <p className="text-[10px] text-zinc-500 mt-0.5 truncate max-w-[130px]">
+                                    {studentClass}
+                                </p>
+                            </div>
+                            <ChevronDown
+                                className={`w-3.5 h-3.5 text-zinc-400 transition-transform duration-200 ${
+                                    dropdownOpen ? 'rotate-180 text-zinc-700' : ''
+                                }`}
+                            />
+                        </button>
+
+                        {/* Floating Dropdown Menu */}
+                        {dropdownOpen && (
+                            <div className="absolute right-0 mt-2 w-48 rounded-xl bg-[#202C33] text-[#E9EDEF] shadow-2xl border border-slate-700/60 py-1.5 z-50 animate-in fade-in zoom-in-95 duration-100">
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setDropdownOpen(false);
+                                        setProfileModalOpen(true);
+                                    }}
+                                    className="w-full flex items-center gap-3 px-4 py-2.5 text-xs text-[#E9EDEF] hover:bg-[#111B21] transition-colors cursor-pointer text-left"
+                                >
+                                    <User className="w-4 h-4 text-slate-400" />
+                                    <span>Profile Saya</span>
+                                </button>
+                                <div className="h-px bg-slate-700/50 my-1 mx-2"></div>
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setDropdownOpen(false);
+                                        handleLogout();
+                                    }}
+                                    className="w-full flex items-center gap-3 px-4 py-2.5 text-xs text-rose-400 hover:text-rose-300 hover:bg-[#111B21] transition-colors cursor-pointer text-left"
+                                >
+                                    <LogOut className="w-4 h-4" />
+                                    <span>Keluar</span>
+                                </button>
+                            </div>
+                        )}
                     </div>
                 </div>
             </header>
+
+            {/* Profile Pop-up Modal */}
+            <ProfileModal
+                isOpen={profileModalOpen}
+                onClose={() => setProfileModalOpen(false)}
+                session={session}
+                onLogout={handleLogout}
+            />
 
             {/* Main Content */}
             <main className="flex-1 max-w-5xl w-full mx-auto px-4 py-5 pb-20 md:pb-8">
@@ -137,7 +206,7 @@ export function MainLayout({ children, currentTab = 'home' }: MainLayoutProps) {
             </main>
 
             {/* Mobile Bottom Navigation */}
-            <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-zinc-200 px-4 py-1.5 flex items-center justify-around">
+            <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-zinc-200 px-4 py-1.5 flex items-center justify-center gap-6 translate-x-4">
                 {navItems.map((item) => {
                     const active = currentTab === item.id;
                     const Icon = item.icon;
@@ -158,6 +227,52 @@ export function MainLayout({ children, currentTab = 'home' }: MainLayoutProps) {
                         </Link>
                     );
                 })}
+
+                {/* Mobile Profile Trigger with Dropdown Options */}
+                <div className="relative" ref={mobileMenuRef}>
+                    {/* <button
+                        type="button"
+                        onClick={() => setMobileMenuOpen((prev) => !prev)}
+                        className={`flex flex-col items-center justify-center py-1 px-3 rounded transition-colors cursor-pointer ${
+                            mobileMenuOpen || currentTab === 'profile'
+                                ? 'text-blue-600 font-bold'
+                                : 'text-zinc-400 hover:text-zinc-600'
+                        }`}
+                    >
+                        <User className={`w-5 h-5 ${mobileMenuOpen || currentTab === 'profile' ? 'stroke-[2.5px]' : ''}`} />
+                        <span className="text-[10px] mt-0.5">
+                            Profile
+                        </span>
+                    </button> */}
+
+                    {mobileMenuOpen && (
+                        <div className="absolute bottom-full right-0 mb-3 w-48 rounded-xl bg-[#202C33] text-[#E9EDEF] shadow-2xl border border-slate-700/60 py-1.5 z-50 animate-in fade-in slide-in-from-bottom-2 duration-100">
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    setMobileMenuOpen(false);
+                                    setProfileModalOpen(true);
+                                }}
+                                className="w-full flex items-center gap-3 px-4 py-2.5 text-xs text-[#E9EDEF] hover:bg-[#111B21] transition-colors cursor-pointer text-left"
+                            >
+                                <User className="w-4 h-4 text-slate-400" />
+                                <span>Profile Saya</span>
+                            </button>
+                            <div className="h-px bg-slate-700/50 my-1 mx-2"></div>
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    setMobileMenuOpen(false);
+                                    handleLogout();
+                                }}
+                                className="w-full flex items-center gap-3 px-4 py-2.5 text-xs text-rose-400 hover:text-rose-300 hover:bg-[#111B21] transition-colors cursor-pointer text-left"
+                            >
+                                <LogOut className="w-4 h-4" />
+                                <span>Keluar</span>
+                            </button>
+                        </div>
+                    )}
+                </div>
             </div>
         </div>
     );

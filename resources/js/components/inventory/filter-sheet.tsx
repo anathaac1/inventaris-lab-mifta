@@ -98,7 +98,7 @@ export function FilterSheet({
                             type="button"
                             variant="outline"
                             onClick={onReset}
-                            className="w-1/3 py-5 rounded-2xl border-zinc-200 text-zinc-700 font-semibold text-sm cursor-pointer"
+                            className="w-1/3 py-5 rounded-2xl bg-white border-zinc-200 text-zinc-700 font-semibold text-sm cursor-pointer"
                         >
                             Reset
                         </Button>

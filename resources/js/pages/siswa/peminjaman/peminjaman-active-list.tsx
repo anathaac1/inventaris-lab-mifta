@@ -37,7 +37,7 @@ export function PeminjamanActiveList({
                 >
                     <div className="flex items-start justify-between gap-3">
                         <div className="flex gap-3">
-                            <div className="w-12 h-12 rounded-lg bg-zinc-50 border border-zinc-100 flex items-center justify-center shrink-0">
+                            <div className="w-12 h-12 rounded bg-zinc-50 border border-zinc-100 flex items-center justify-center shrink-0">
                                 <ItemIllustration
                                     type={loan.itemId.includes('laptop') ? 'laptop' : 'mouse'}
                                     className="w-8 h-8"
@@ -48,7 +48,7 @@ export function PeminjamanActiveList({
                                     <span className="text-[10px] uppercase px-1.5 py-0.5 rounded bg-zinc-100 text-zinc-600 font-semibold">
                                         {loan.code}
                                     </span>
-                                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200 font-semibold">
+                                    <span className="text-[10px] px-2 py-0.5 rounded bg-amber-50 text-amber-700 border border-amber-200 font-semibold">
                                         Sedang Dipinjam
                                     </span>
                                 </div>
@@ -63,26 +63,26 @@ export function PeminjamanActiveList({
                             variant="outline"
                             size="sm"
                             onClick={() => onReturnItem(loan)}
-                            className="text-xs h-8 border-blue-600 text-blue-600 hover:bg-blue-50 shrink-0 cursor-pointer"
+                            className="text-xs h-8 border-blue-600 text-blue-600 bg-white hover:bg-blue-50 focus:bg-white shrink-0 cursor-pointer"
                         >
-                            <RotateCcw className="w-3.5 h-3.5 mr-1.5" />
+                            {/* <RotateCcw className="w-3.5 h-3.5 mr-1.5" /> */}
                             Kembalikan
                         </Button>
                     </div>
 
-                    <div className="mt-3 pt-3 border-t border-zinc-100 grid grid-cols-2 gap-2 text-xs">
-                        <div className="flex items-center gap-1.5 text-zinc-500">
-                            <Calendar className="w-3.5 h-3.5 text-zinc-400" />
-                            <span>Pinjam: {loan.borrowDate}</span>
+                        <div className="mt-3 pt-3 border-t border-zinc-100 grid gap-2 text-xs">
+                            <div className="flex items-center gap-1.5 text-zinc-500">
+                                <Calendar className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
+                                <span>Pinjam: {loan.borrowDate}</span>
+                            </div>
+                            <div className="flex items-center gap-1.5 text-zinc-500">
+                                <Calendar className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
+                                <span>Kembali: {loan.returnEstimate}</span>
+                            </div>
                         </div>
-                        <div className="flex items-center gap-1.5 text-zinc-500">
-                            <Clock className="w-3.5 h-3.5 text-zinc-400" />
-                            <span>Kembali: {loan.returnEstimate}</span>
-                        </div>
-                    </div>
 
                     {loan.notes && (
-                        <div className="mt-2 text-[11px] text-zinc-500 bg-zinc-50 p-2 rounded-md border border-zinc-100">
+                        <div className="mt-2 text-[11px] text-zinc-500 bg-zinc-50 p-2 rounded border border-zinc-100">
                             <span className="font-semibold text-zinc-700">Keperluan:</span> {loan.notes}
                         </div>
                     )}

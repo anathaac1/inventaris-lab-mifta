@@ -113,7 +113,7 @@ export const DEFAULT_ACCOUNTS: UserAccount[] = [
     {
         id: 'acc-admin',
         username: 'admin',
-        name: 'Bambang Haryanto, S.T.',
+        name: 'Agus Wibowo',
         class: 'Kepala Lab RPL SMKN 1',
         email: 'admin@smkn1.sch.id',
         password: 'adminlab123',

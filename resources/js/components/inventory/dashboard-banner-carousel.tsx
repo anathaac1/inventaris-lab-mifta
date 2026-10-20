@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { ChevronLeft, ChevronRight, Sparkles, Zap, CheckCircle2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight} from 'lucide-react';
 
 interface SlideData {
     number: string;
     title: React.ReactNode;
     subtitle: React.ReactNode;
     theme: 'light' | 'dark';
-    badge: string;
-    icon: React.ReactNode;
+    // badge: string;
+    // icon: React.ReactNode;
     image: string;
     alt: string;
 }
@@ -18,8 +18,8 @@ export function DashboardBannerCarousel() {
         {
             number: '01',
             theme: 'light',
-            badge: 'Gunakan Bijak',
-            icon: <Sparkles className="w-4 h-4 text-[#0256D0]" />,
+            // badge: 'Gunakan Bijak',
+            // icon: <Sparkles className="w-4 h-4 text-[#0256D0]" />,
             title: (
                 <>
                     Apapun yang dipinjam,
@@ -40,8 +40,8 @@ export function DashboardBannerCarousel() {
         {
             number: '02',
             theme: 'dark',
-            badge: 'Cepat & Simpel',
-            icon: <Zap className="w-4 h-4 text-[#38BDF8]" />,
+            // badge: 'Cepat & Simpel',
+            // icon: <Zap className="w-4 h-4 text-[#38BDF8]" />,
             title: (
                 <>
                     Peminjaman cepat
@@ -62,8 +62,8 @@ export function DashboardBannerCarousel() {
         {
             number: '03',
             theme: 'light',
-            badge: 'Proses Praktis',
-            icon: <Sparkles className="w-4 h-4 text-[#0256D0]" />,
+            // badge: 'Proses Praktis',
+            // icon: <Sparkles className="w-4 h-4 text-[#0256D0]" />,
             title: (
                 <>
                     Proses peminjaman
@@ -84,8 +84,8 @@ export function DashboardBannerCarousel() {
         {
             number: '04',
             theme: 'dark',
-            badge: 'Tertib & Otomatis',
-            icon: <CheckCircle2 className="w-4 h-4 text-[#38BDF8]" />,
+            // badge: 'Tertib & Otomatis',
+            // icon: <CheckCircle2 className="w-4 h-4 text-[#38BDF8]" />,
             title: (
                 <>
                     Kembaliin barang,
@@ -224,7 +224,7 @@ export function DashboardBannerCarousel() {
                         }`}
                     />
 
-                    <span
+                    {/* <span
                         className={`hidden sm:inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold border transition-colors duration-300 ${
                             isDark
                                 ? 'bg-sky-950/70 text-sky-300 border-sky-800/60'
@@ -233,7 +233,7 @@ export function DashboardBannerCarousel() {
                     >
                         {currentSlide.icon}
                         {currentSlide.badge}
-                    </span>
+                    </span> */}
                 </div>
 
                 {/* Middle: Main Headline & Subtitle */}
@@ -287,7 +287,7 @@ export function DashboardBannerCarousel() {
                 type="button"
                 onClick={prevSlide}
                 aria-label="Previous slide"
-                className={`hidden sm:flex absolute left-2 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full shadow-xs items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-20 cursor-pointer ${
+                className={`hidden sm:flex absolute left-2 top-1/2 -translate-y-1/2 w-7 h-7 rounded shadow-xs items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-20 cursor-pointer ${
                     isDark
                         ? 'bg-slate-900/90 border border-slate-700 text-slate-200 hover:bg-slate-800'
                         : 'bg-white/90 border border-slate-200 text-slate-700 hover:bg-white'

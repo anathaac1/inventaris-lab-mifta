@@ -42,7 +42,7 @@ export function ProfileModal({ isOpen, onClose, session, onLogout }: ProfileModa
         setConfirmPassword('');
     };
 
-    const adminName = session?.name || 'Bambang Haryanto, S.Kom';
+    const adminName = session?.name || 'Agus Wibowo';
     const adminUsername = session?.username || 'admin';
     const adminInitials = adminName
         .split(' ')
@@ -61,9 +61,9 @@ export function ProfileModal({ isOpen, onClose, session, onLogout }: ProfileModa
                                 <User className="w-4 h-4 text-[#0256D0]" />
                                 <span>Profil Administrator</span>
                             </DialogTitle>
-                            <p className="text-xs text-slate-500 mt-0.5">
+                            {/* <p className="text-xs text-slate-500 mt-0.5">
                                 Informasi akun penanggung jawab dan pengelolaan akses laboratorium
-                            </p>
+                            </p> */}
                         </div>
                     </DialogHeader>
 

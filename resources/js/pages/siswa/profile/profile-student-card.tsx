@@ -27,11 +27,11 @@ export function ProfileStudentCard({
                     </p>
                 </div>
             </div>
-            <div className="hidden sm:block text-right">
+            {/* <div className="hidden sm:block text-right">
                 <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/20 text-white font-semibold">
                     Siswa Aktif
                 </span>
-            </div>
+            </div> */}
         </div>
     );
 }

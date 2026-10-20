@@ -24,7 +24,7 @@ interface AdminLayoutProps {
 export function AdminLayout({
     children,
     currentTab = 'dashboard',
-    title = 'Admin Panel'
+    title = 'Ringkasan & Metrik'
 }: AdminLayoutProps) {
     const [counts, setCounts] = useState({
         items: 0,
@@ -183,7 +183,7 @@ export function AdminLayout({
                                 BH
                             </div>
                             <div className="hidden sm:block text-left leading-tight">
-                                <p className="text-xs font-bold text-white leading-none">Bambang H.</p>
+                                <p className="text-xs font-bold text-white leading-none">Agus Wibowo</p>
                                 <p className="text-[10px] text-blue-200 mt-0.5">Kepala Lab</p>
                             </div>
                             <ChevronDown
@@ -205,7 +205,7 @@ export function AdminLayout({
                                     className="w-full flex items-center gap-3 px-4 py-2.5 text-xs text-[#E9EDEF] hover:bg-[#111B21] transition-colors cursor-pointer text-left"
                                 >
                                     <User className="w-4 h-4 text-slate-400" />
-                                    <span>Lihat Profil</span>
+                                    <span>Profile Saya</span>
                                 </button>
                                 <div className="h-px bg-slate-700/50 my-1 mx-2"></div>
                                 <button

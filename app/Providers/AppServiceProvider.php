@@ -85,7 +85,7 @@ class AppServiceProvider extends ServiceProvider
                 \App\Models\User::firstOrCreate(
                     ['email' => 'admin@smkn1.sch.id'],
                     [
-                        'name' => 'Bambang Haryanto, S.T. (Admin Lab)',
+                        'name' => 'Agus Wibowo (Admin Lab)',
                         'password' => \Illuminate\Support\Facades\Hash::make('adminlab123'),
                     ]
                 );

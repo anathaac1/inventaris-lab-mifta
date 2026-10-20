@@ -32,7 +32,7 @@ export function PeminjamanHistoryList({ loans }: PeminjamanHistoryListProps) {
                 >
                     <div className="flex items-start justify-between gap-3">
                         <div className="flex gap-3">
-                            <div className="w-12 h-12 rounded-lg bg-zinc-50 border border-zinc-100 flex items-center justify-center shrink-0">
+                            <div className="w-12 h-12 rounded bg-zinc-50 border border-zinc-100 flex items-center justify-center shrink-0">
                                 <ItemIllustration
                                     type={loan.itemId.includes('laptop') ? 'laptop' : 'mouse'}
                                     className="w-8 h-8 opacity-75"
@@ -43,8 +43,8 @@ export function PeminjamanHistoryList({ loans }: PeminjamanHistoryListProps) {
                                     <span className="text-[10px] uppercase px-1.5 py-0.5 rounded bg-zinc-100 text-zinc-600 font-semibold">
                                         {loan.code}
                                     </span>
-                                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-semibold flex items-center gap-1">
-                                        <CheckCircle2 className="w-3 h-3" />
+                                    <span className="text-[10px] px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200 font-semibold flex items-center gap-1">
+                                        {/* <CheckCircle2 className="w-3 h-3" /> */}
                                         Dikembalikan
                                     </span>
                                 </div>

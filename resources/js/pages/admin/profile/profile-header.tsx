@@ -1,4 +1,4 @@
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, ChevronLeft } from 'lucide-react';
 import { Link } from '@inertiajs/react';
 
 export function ProfileHeader() {
@@ -6,10 +6,10 @@ export function ProfileHeader() {
         <div className="flex items-center gap-2.5">
             <Link
                 href="/admin"
-                className="w-9 h-9 rounded-xl flex items-center justify-center text-slate-500 hover:text-slate-900 hover:bg-slate-200/60 transition-colors cursor-pointer"
+                className="w-9 h-9 rounded flex items-center justify-center text-slate-500 hover:text-slate-900 hover:bg-slate-200/60 transition-colors cursor-pointer"
                 title="Kembali ke Dashboard Admin"
             >
-                <ArrowLeft className="w-5 h-5" />
+                <ChevronLeft className="w-5 h-5" />
             </Link>
             <div>
                 <h1 className="text-xl font-bold tracking-tight text-slate-900">

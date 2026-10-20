@@ -48,7 +48,7 @@ export default function AdminProfile() {
         router.visit('/login');
     };
 
-    const adminName = session?.name || 'Bambang Haryanto, S.Kom';
+    const adminName = session?.name || 'Agus Wibowo';
     const adminUsername = session?.username || 'admin';
     const adminInitials = adminName
         .split(' ')
