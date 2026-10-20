@@ -16,7 +16,20 @@ import { ProfileNavLinks } from './profile-nav-links';
 import { ProfileSecurityCard } from './profile-security-card';
 import { ProfilePasswordModal } from './profile-password-modal';
 
-export default function Profile() {
+interface ProfileProps {
+    initialUser?: {
+        id: string;
+        name: string;
+        username: string;
+        class?: string;
+        email?: string;
+        nisn?: string;
+        phone?: string;
+        role?: string;
+    } | null;
+}
+
+export default function Profile({ initialUser }: ProfileProps) {
     const [session, setSession] = useState<SessionToken | null>(null);
     const [passwordModalOpen, setPasswordModalOpen] = useState(false);
     const [oldPassword, setOldPassword] = useState('');
@@ -34,15 +47,27 @@ export default function Profile() {
             return;
         }
 
-        if (session) {
-            updateStudentPassword(session.username, newPassword);
+        if (newPassword.length < 4) {
+            toast.error('Kata sandi minimal 4 karakter!');
+            return;
         }
 
-        toast.success('Kata sandi berhasil diperbarui!');
-        setPasswordModalOpen(false);
-        setOldPassword('');
-        setNewPassword('');
-        setConfirmPassword('');
+        const username = session?.username || initialUser?.username || 'siswa1';
+        updateStudentPassword(username, newPassword);
+
+        router.post('/profile/password', {
+            old_password: oldPassword,
+            new_password: newPassword,
+        }, {
+            preserveScroll: true,
+            onSuccess: () => {
+                toast.success('Kata sandi berhasil diperbarui!');
+                setPasswordModalOpen(false);
+                setOldPassword('');
+                setNewPassword('');
+                setConfirmPassword('');
+            }
+        });
     };
 
     const handleLogout = () => {
@@ -51,9 +76,9 @@ export default function Profile() {
         router.visit('/login');
     };
 
-    const studentName = session?.name || USER_PROFILE.name;
-    const studentClass = session?.class || USER_PROFILE.class;
-    const studentUsername = session?.username || 'siswa1';
+    const studentName = initialUser?.name || session?.name || USER_PROFILE.name;
+    const studentClass = initialUser?.class || session?.class || USER_PROFILE.class;
+    const studentUsername = initialUser?.username || session?.username || 'siswa1';
     const avatarInitials = studentName
         .split(' ')
         .map((n) => n[0])

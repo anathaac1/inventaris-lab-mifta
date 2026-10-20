@@ -9,21 +9,22 @@ import {
 } from '@/data/auth-store';
 import { toast } from 'sonner';
 import { AdminPagination } from '@/components/inventory/admin-pagination';
-import { SiswaFilterBar, type SiswaFilterValues } from './siswa-filter-bar';
+import { SiswaFilterBar } from './siswa-filter-bar';
 import { SiswaTable } from './siswa-table';
 import { SiswaResetPasswordModal } from './siswa-reset-password-modal';
 import { SiswaCreateModal, type NewUserFormData } from './siswa-create-modal';
 
-const DEFAULT_SISWA_FILTERS: SiswaFilterValues = {
-    name: '',
-    username: '',
-    role: 'all',
-    studentClass: 'all',
-    nisn: ''
-};
+interface AdminSiswaProps {
+    initialStudents?: UserAccount[];
+}
 
-export default function AdminSiswa() {
-    const [accounts, setAccounts] = useState<UserAccount[]>([]);
+export default function AdminSiswa({ initialStudents }: AdminSiswaProps) {
+    const [accounts, setAccounts] = useState<UserAccount[]>(() => {
+        if (initialStudents && initialStudents.length > 0) {
+            return initialStudents;
+        }
+        return getStoredAccounts();
+    });
 
     // Filter Form Values & Applied Filter State
     const [filterForm, setFilterForm] = useState<SiswaFilterValues>(DEFAULT_SISWA_FILTERS);
@@ -56,45 +57,40 @@ export default function AdminSiswa() {
         };
     }, []);
 
-    // Filter accounts based on appliedFilters
-    const filteredAccounts = accounts.filter((acc) => {
-        const matchesRole =
-            appliedFilters.role === 'all' || acc.role === appliedFilters.role;
+    // Filter students only (exclude admin from student table)
+    const students = accounts.filter((a) => a.role === 'siswa');
 
+    const filteredStudents = students.filter((s) => {
         const matchesClass =
-            appliedFilters.studentClass === 'all' ||
-            acc.class.trim().toLowerCase() === appliedFilters.studentClass.trim().toLowerCase();
-
-        const nameQuery = appliedFilters.name.toLowerCase().trim();
-        const matchesName = !nameQuery || acc.name.toLowerCase().includes(nameQuery);
-
-        const usernameQuery = appliedFilters.username.toLowerCase().trim();
-        const matchesUsername = !usernameQuery || acc.username.toLowerCase().includes(usernameQuery);
-
-        const nisnQuery = appliedFilters.nisn.toLowerCase().trim();
-        const matchesNisn = !nisnQuery || (acc.nisn && acc.nisn.toLowerCase().includes(nisnQuery));
-
-        return matchesRole && matchesClass && matchesName && matchesUsername && matchesNisn;
+            selectedClass === 'ALL' ||
+            s.class.trim().toLowerCase() === selectedClass.trim().toLowerCase();
+        const query = searchQuery.toLowerCase().trim();
+        const matchesQuery =
+            !query ||
+            s.name.toLowerCase().includes(query) ||
+            s.username.toLowerCase().includes(query) ||
+            s.class.toLowerCase().includes(query) ||
+            (s.nisn && s.nisn.includes(query));
+        return matchesClass && matchesQuery;
     });
 
-    const handleApplyFilter = () => {
-        setAppliedFilters({ ...filterForm });
-        setCurrentPage(1);
-    };
-
-    const handleResetFilter = () => {
-        setFilterForm(DEFAULT_SISWA_FILTERS);
-        setAppliedFilters(DEFAULT_SISWA_FILTERS);
-        setCurrentPage(1);
-    };
-
     // Pagination Calculations
-    const totalPages = Math.max(1, Math.ceil(filteredAccounts.length / itemsPerPage));
+    const totalPages = Math.max(1, Math.ceil(filteredStudents.length / itemsPerPage));
     const safeCurrentPage = Math.min(currentPage, totalPages);
-    const paginatedAccounts = filteredAccounts.slice(
+    const paginatedStudents = filteredStudents.slice(
         (safeCurrentPage - 1) * itemsPerPage,
         safeCurrentPage * itemsPerPage
     );
+
+    const handleSearchChange = (val: string) => {
+        setSearchQuery(val);
+        setCurrentPage(1);
+    };
+
+    const handleClassChange = (cls: string) => {
+        setSelectedClass(cls);
+        setCurrentPage(1);
+    };
 
     const togglePasswordReveal = (username: string) => {
         setRevealedPasswords((prev) => ({
@@ -182,16 +178,17 @@ export default function AdminSiswa() {
             <div className="space-y-4">
                 <div className="bg-white rounded-xl border border-slate-200/90 shadow-2xs overflow-hidden">
                     <SiswaFilterBar
-                        filters={filterForm}
-                        onFilterChange={setFilterForm}
-                        onApply={handleApplyFilter}
-                        onReset={handleResetFilter}
-                        totalAccounts={accounts.length}
+                        searchQuery={searchQuery}
+                        onSearchChange={handleSearchChange}
+                        selectedClass={selectedClass}
+                        onClassChange={handleClassChange}
+                        totalStudents={students.length}
+                        students={students}
                         onOpenCreateModal={() => setIsCreateModalOpen(true)}
                     />
 
                     <SiswaTable
-                        students={paginatedAccounts}
+                        students={paginatedStudents}
                         revealedPasswords={revealedPasswords}
                         onTogglePasswordReveal={togglePasswordReveal}
                         onCopy={copyToClipboard}
@@ -201,12 +198,12 @@ export default function AdminSiswa() {
                     <AdminPagination
                         currentPage={safeCurrentPage}
                         totalPages={totalPages}
-                        totalItems={filteredAccounts.length}
+                        totalItems={filteredStudents.length}
                         itemsPerPage={itemsPerPage}
                         onPageChange={setCurrentPage}
                         onItemsPerPageChange={setItemsPerPage}
                         itemsPerPageOptions={[10, 20, 50, 100]}
-                        itemLabel="akun pengguna"
+                        itemLabel="akun siswa"
                     />
                 </div>
             </div>
