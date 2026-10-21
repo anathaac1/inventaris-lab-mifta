@@ -80,17 +80,44 @@ class Peminjaman extends Model
 
     public function getBorrowDateAttribute(): ?string
     {
-        return $this->borrow_date?->translatedFormat('j F Y') ?? ($this->attributes['borrow_date'] ?? null);
+        $raw = $this->attributes['borrow_date'] ?? null;
+        if (! $raw) {
+            return null;
+        }
+
+        try {
+            return \Illuminate\Support\Carbon::parse($raw)->translatedFormat('j F Y');
+        } catch (\Throwable) {
+            return (string) $raw;
+        }
     }
 
     public function getReturnEstimateAttribute(): ?string
     {
-        return $this->return_estimate?->translatedFormat('j F Y') ?? ($this->attributes['return_estimate'] ?? null);
+        $raw = $this->attributes['return_estimate'] ?? null;
+        if (! $raw) {
+            return null;
+        }
+
+        try {
+            return \Illuminate\Support\Carbon::parse($raw)->translatedFormat('j F Y');
+        } catch (\Throwable) {
+            return (string) $raw;
+        }
     }
 
     public function getReturnDateAttribute(): ?string
     {
-        return $this->return_date?->translatedFormat('j F Y') ?? ($this->attributes['return_date'] ?? null);
+        $raw = $this->attributes['return_date'] ?? null;
+        if (! $raw) {
+            return null;
+        }
+
+        try {
+            return \Illuminate\Support\Carbon::parse($raw)->translatedFormat('j F Y');
+        } catch (\Throwable) {
+            return (string) $raw;
+        }
     }
 
     public function getBorrowerNameAttribute(): ?string
