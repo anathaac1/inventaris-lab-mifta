@@ -13,8 +13,13 @@ class DashboardController extends Controller
     /**
      * Display student dashboard with active items and user loans.
      */
-    public function index(Request $request): Response
+    public function index(Request $request): Response|\Illuminate\Http\RedirectResponse
     {
+        $user = $request->user();
+        if ($user && ($user->role === 'admin' || str_starts_with($user->email, 'admin') || $user->username === 'admin')) {
+            return redirect('/admin');
+        }
+
         $items = Alat::where('is_visible_to_students', true)
             ->latest()
             ->get();

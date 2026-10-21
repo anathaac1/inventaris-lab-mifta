@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     if (Auth::check()) {
         $user = Auth::user();
-        if ($user && ($user->role === 'admin' || str_starts_with($user->email, 'admin'))) {
+        if ($user && ($user->role === 'admin' || str_starts_with($user->email, 'admin') || $user->username === 'admin')) {
             return redirect('/admin');
         }
         return redirect('/dashboard');
