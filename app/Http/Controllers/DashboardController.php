@@ -20,9 +20,10 @@ class DashboardController extends Controller
             return redirect('/admin');
         }
 
-        $items = Alat::where('is_visible_to_students', true)
-            ->latest()
-            ->get();
+        try {
+            $items = Alat::where('is_visible_to_students', true)
+                ->latest()
+                ->get();
 
             $query = Peminjaman::with('alat')
                 ->where('status', 'Sedang Dipinjam')
