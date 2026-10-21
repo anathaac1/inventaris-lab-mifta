@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link, router } from '@inertiajs/react';
+import { Link, router, usePage } from '@inertiajs/react';
 import {
     LayoutDashboard,
     Box,
@@ -26,6 +26,9 @@ export function AdminLayout({
     currentTab = 'dashboard',
     title = 'Ringkasan & Metrik'
 }: AdminLayoutProps) {
+    const pageProps = usePage().props as any;
+    const currentUser = pageProps.auth?.user;
+
     const [counts, setCounts] = useState({
         items: 0,
         activeLoans: 0,
@@ -40,13 +43,13 @@ export function AdminLayout({
         setSession(getActiveSession());
 
         const updateCounts = () => {
-            const items = getStoredItems();
-            const loans = getStoredLoans();
-            const accounts = getStoredAccounts();
+            const items = pageProps.initialItems || getStoredItems();
+            const loans = pageProps.initialLoans || getStoredLoans();
+            const accounts = pageProps.initialStudents || getStoredAccounts();
             setCounts({
                 items: items.length,
-                activeLoans: loans.filter((l) => l.status === 'Sedang Dipinjam').length,
-                students: accounts.filter((a) => a.role === 'siswa').length
+                activeLoans: loans.filter((l: any) => l.status === 'Sedang Dipinjam').length,
+                students: accounts.filter((a: any) => a.role === 'siswa').length || accounts.length
             });
             setSession(getActiveSession());
         };
@@ -62,7 +65,7 @@ export function AdminLayout({
             window.removeEventListener('inventory_loans_changed', updateCounts);
             window.removeEventListener('inventory_accounts_changed', updateCounts);
         };
-    }, []);
+    }, [pageProps.initialItems, pageProps.initialLoans, pageProps.initialStudents]);
 
     // Close dropdown on outside click or escape
     useEffect(() => {
@@ -88,9 +91,22 @@ export function AdminLayout({
 
     const handleLogout = () => {
         terminateSession();
-        toast.info('Sesi administrator telah berakhir.');
-        router.visit('/login');
+        router.post('/logout', {}, {
+            onFinish: () => {
+                toast.info('Sesi administrator telah berakhir.');
+                router.visit('/login');
+            }
+        });
     };
+
+    const adminName = currentUser?.name || session?.name || 'Bambang Haryanto, S.T.';
+    const adminRole = currentUser?.class || 'Kepala Lab';
+    const adminInitials = adminName
+        .split(' ')
+        .map((n: string) => n[0])
+        .slice(0, 2)
+        .join('')
+        .toUpperCase();
 
     const navTabs = [
         {
@@ -180,11 +196,11 @@ export function AdminLayout({
                             aria-expanded={dropdownOpen}
                         >
                             <div className="w-8 h-8 rounded-full bg-white text-[#0256D0] font-black text-xs flex items-center justify-center shadow-xs border border-white/40 group-hover:scale-105 transition-transform shrink-0">
-                                BH
+                                {adminInitials}
                             </div>
                             <div className="hidden sm:block text-left leading-tight">
-                                <p className="text-xs font-bold text-white leading-none">Agus Wibowo</p>
-                                <p className="text-[10px] text-blue-200 mt-0.5">Kepala Lab</p>
+                                <p className="text-xs font-bold text-white leading-none">{adminName}</p>
+                                <p className="text-[10px] text-blue-200 mt-0.5">{adminRole}</p>
                             </div>
                             <ChevronDown
                                 className={`w-3.5 h-3.5 text-blue-200 transition-transform duration-200 ${
@@ -230,6 +246,7 @@ export function AdminLayout({
                 isOpen={profileModalOpen}
                 onClose={() => setProfileModalOpen(false)}
                 session={session}
+                user={currentUser}
                 onLogout={handleLogout}
             />
 

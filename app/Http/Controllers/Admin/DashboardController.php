@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Alat;
 use App\Models\Peminjaman;
+use App\Models\User;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -14,10 +15,12 @@ class DashboardController extends Controller
     {
         $items = Alat::latest()->get();
         $loans = Peminjaman::with('alat')->latest()->get();
+        $students = User::where('role', 'siswa')->get();
 
-        return Inertia::render('admin/dashboard', [
+        return Inertia::render('admin/dashboard/index', [
             'initialItems' => $items,
             'initialLoans' => $loans,
+            'initialStudents' => $students,
         ]);
     }
 }

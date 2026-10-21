@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { router } from '@inertiajs/react';
 import { User, Lock, LogOut, ChevronRight, School, BookOpen } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { ProfileStudentCard } from './profile-student-card';
@@ -12,15 +13,16 @@ interface ProfileModalProps {
     isOpen: boolean;
     onClose: () => void;
     session: SessionToken | null;
+    user?: any;
     onLogout: () => void;
 }
 
-export function ProfileModal({ isOpen, onClose, session, onLogout }: ProfileModalProps) {
+export function ProfileModal({ isOpen, onClose, session, user, onLogout }: ProfileModalProps) {
     const [passwordModalOpen, setPasswordModalOpen] = useState(false);
     const [oldPassword, setOldPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
-   
+
 
     const handleChangePassword = (e: React.SyntheticEvent) => {
         e.preventDefault();
@@ -34,22 +36,33 @@ export function ProfileModal({ isOpen, onClose, session, onLogout }: ProfileModa
             return;
         }
 
-        const username = session?.username || 'siswa1';
+        const username = user?.username || session?.username || 'siswa1';
         updateStudentPassword(username, newPassword);
 
-        toast.success('Kata sandi siswa berhasil diperbarui!');
-        setPasswordModalOpen(false);
-        setOldPassword('');
-        setNewPassword('');
-        setConfirmPassword('');
+        router.post('/profile/password', {
+            old_password: oldPassword,
+            new_password: newPassword,
+        }, {
+            preserveScroll: true,
+            onSuccess: () => {
+                toast.success('Kata sandi siswa berhasil diperbarui!');
+                setPasswordModalOpen(false);
+                setOldPassword('');
+                setNewPassword('');
+                setConfirmPassword('');
+            },
+            onError: (errors) => {
+                toast.error(Object.values(errors)[0] as string || 'Gagal memperbarui kata sandi.');
+            }
+        });
     };
-    
-    const studentName = session?.name || USER_PROFILE.name;
-    const studentClass = session?.class || USER_PROFILE.class;
-    const studentUsername = session?.username || 'siswa1';
+
+    const studentName = user?.name || session?.name || USER_PROFILE.name;
+    const studentClass = user?.class || session?.class || USER_PROFILE.class;
+    const studentUsername = user?.username || session?.username || (user?.email ? user.email.split('@')[0] : 'siswa1');
     const avatarInitials = studentName
         .split(' ')
-        .map((n) => n[0])
+        .map((n: string) => n[0])
         .slice(0, 2)
         .join('')
         .toUpperCase();

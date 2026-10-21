@@ -16,7 +16,7 @@ class PeminjamanController extends Controller
     {
         $loans = Peminjaman::with('alat')->latest()->get();
 
-        return Inertia::render('admin/peminjaman', [
+        return Inertia::render('admin/peminjaman/index', [
             'initialLoans' => $loans,
         ]);
     }

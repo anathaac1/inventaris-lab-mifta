@@ -1,11 +1,8 @@
 import { useState, useEffect } from 'react';
-import { Head } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
 import { MainLayout } from '@/components/inventory/main-layout';
 import {
     getStoredLoans,
-    saveStoredLoans,
-    getStoredItems,
-    saveStoredItems,
     type LoanItem
 } from '@/data/inventory-data';
 import { toast } from 'sonner';
@@ -15,57 +12,53 @@ import { PeminjamanTabs } from './peminjaman-tabs';
 import { PeminjamanActiveList } from './peminjaman-active-list';
 import { PeminjamanHistoryList } from './peminjaman-history-list';
 
-export default function Peminjaman() {
+interface PeminjamanProps {
+    initialActiveLoans?: LoanItem[];
+    initialLoanHistory?: LoanItem[];
+}
+
+export default function Peminjaman({ initialActiveLoans, initialLoanHistory }: PeminjamanProps) {
     const [activeTab, setActiveTab] = useState<'aktif' | 'riwayat'>('aktif');
-    const [loans, setLoans] = useState<LoanItem[]>([]);
+    const [activeLoans, setActiveLoans] = useState<LoanItem[]>(() => {
+        if (initialActiveLoans) return initialActiveLoans;
+        return getStoredLoans().filter((item) => item.status === 'Sedang Dipinjam');
+    });
+    const [loanHistory, setLoanHistory] = useState<LoanItem[]>(() => {
+        if (initialLoanHistory) return initialLoanHistory;
+        return getStoredLoans().filter((item) => item.status === 'Dikembalikan');
+    });
 
     useEffect(() => {
-        setLoans(getStoredLoans());
-        const handleLoansChange = () => setLoans(getStoredLoans());
+        if (initialActiveLoans) setActiveLoans(initialActiveLoans);
+    }, [initialActiveLoans]);
+
+    useEffect(() => {
+        if (initialLoanHistory) setLoanHistory(initialLoanHistory);
+    }, [initialLoanHistory]);
+
+    useEffect(() => {
+        const handleLoansChange = () => {
+            if (!initialActiveLoans && !initialLoanHistory) {
+                const stored = getStoredLoans();
+                setActiveLoans(stored.filter((item) => item.status === 'Sedang Dipinjam'));
+                setLoanHistory(stored.filter((item) => item.status === 'Dikembalikan'));
+            }
+        };
         window.addEventListener('inventory_loans_changed', handleLoansChange);
         return () => window.removeEventListener('inventory_loans_changed', handleLoansChange);
-    }, []);
-
-    const activeLoans = loans.filter((item) => item.status === 'Sedang Dipinjam');
-    const loanHistory = loans.filter((item) => item.status === 'Dikembalikan');
+    }, [initialActiveLoans, initialLoanHistory]);
 
     const handleReturnItem = (loan: LoanItem) => {
-        const returnDate = new Date().toLocaleDateString('id-ID', {
-            day: 'numeric',
-            month: 'long',
-            year: 'numeric'
-        });
-
-        const updatedLoans: LoanItem[] = loans.map((l) =>
-            l.id === loan.id
-                ? {
-                      ...l,
-                      status: 'Dikembalikan' as const,
-                      returnDate
-                  }
-                : l
-        );
-
-        saveStoredLoans(updatedLoans);
-        setLoans(updatedLoans);
-
-        // Restore item stock
-        const currentItems = getStoredItems();
-        const updatedItems = currentItems.map((item) => {
-            if (
-                item.id === loan.itemId ||
-                item.name.toLowerCase() === loan.itemName.toLowerCase()
-            ) {
-                return {
-                    ...item,
-                    stock: Math.min(item.total, item.stock + 1)
-                };
+        router.post(`/peminjaman/${loan.id}/kembalikan`, {}, {
+            preserveScroll: true,
+            onSuccess: () => {
+                toast.success(`Alat ${loan.itemName} (${loan.code}) berhasil dikembalikan!`);
+            },
+            onError: (errors) => {
+                const firstErr = Object.values(errors)[0] as string;
+                toast.error(firstErr || 'Gagal memproses pengembalian alat.');
             }
-            return item;
         });
-        saveStoredItems(updatedItems);
-
-        toast.success(`Alat ${loan.itemName} (${loan.code}) berhasil dikembalikan!`);
     };
 
     return (

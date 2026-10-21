@@ -15,16 +15,23 @@ class PeminjamanController extends Controller
     /**
      * Display student loans page.
      */
-    public function index(): Response
+    public function index(Request $request): Response
     {
-        $loans = Peminjaman::with('alat')
-            ->latest()
-            ->get();
+        $query = Peminjaman::with('alat')->latest();
+
+        if ($user = $request->user()) {
+            $query->where(function ($q) use ($user) {
+                $q->where('user_id', $user->id)
+                    ->orWhere('borrower_name', $user->name);
+            });
+        }
+
+        $loans = $query->get();
 
         $activeLoans = $loans->where('status', 'Sedang Dipinjam')->values();
         $loanHistory = $loans->where('status', 'Dikembalikan')->values();
 
-        return Inertia::render('peminjaman', [
+        return Inertia::render('siswa/peminjaman/index', [
             'initialActiveLoans' => $activeLoans,
             'initialLoanHistory' => $loanHistory,
         ]);
@@ -53,8 +60,10 @@ class PeminjamanController extends Controller
 
             $alat->decrement('stock');
 
+            $userId = $request->user()?->id ?? \App\Models\User::where('name', $validated['borrower_name'])->value('id');
+
             Peminjaman::create([
-                'user_id' => $request->user()?->id,
+                'user_id' => $userId,
                 'alat_id' => $alat->id,
                 'borrower_name' => $validated['borrower_name'],
                 'borrower_class' => $validated['borrower_class'],

@@ -17,8 +17,16 @@ interface ItemDetailModalProps {
 export function ItemDetailModal({ item, open, isOpen, onClose, onLoanSuccess }: ItemDetailModalProps) {
     const isModalOpen = open ?? isOpen ?? false;
     const [isBorrowing, setIsBorrowing] = useState(false);
-    const [borrowDate, setBorrowDate] = useState('2024-08-03');
-    const [returnEstimate, setReturnEstimate] = useState('2024-08-05');
+
+    const getTodayString = () => new Date().toISOString().split('T')[0];
+    const getEstimateString = () => {
+        const d = new Date();
+        d.setDate(d.getDate() + 2);
+        return d.toISOString().split('T')[0];
+    };
+
+    const [borrowDate, setBorrowDate] = useState(getTodayString());
+    const [returnEstimate, setReturnEstimate] = useState(getEstimateString());
     const [notes, setNotes] = useState('Praktikum Pemrograman Web & Aplikasi');
     const [loading, setLoading] = useState(false);
 
@@ -28,16 +36,13 @@ export function ItemDetailModal({ item, open, isOpen, onClose, onLoanSuccess }: 
         e.preventDefault();
         setLoading(true);
 
-        setTimeout(() => {
-            setLoading(false);
-            setIsBorrowing(false);
-            onClose();
+        if (onLoanSuccess) {
+            onLoanSuccess(item, borrowDate, returnEstimate, notes);
+        }
 
-            if (onLoanSuccess) {
-                onLoanSuccess(item, borrowDate, returnEstimate, notes);
-            }
-            toast.success(`Berhasil mengajukan peminjaman ${item.name}!`);
-        }, 500);
+        setLoading(false);
+        setIsBorrowing(false);
+        onClose();
     };
 
     return (

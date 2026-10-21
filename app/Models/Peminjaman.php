@@ -38,6 +38,7 @@ class Peminjaman extends Model
         'returnDate',
         'borrowerName',
         'borrowerClass',
+        'iconType',
     ];
 
     public function user(): BelongsTo
@@ -50,9 +51,14 @@ class Peminjaman extends Model
         return $this->belongsTo(Alat::class);
     }
 
-    public function getItemIdAttribute(): int|string|null
+    public function getItemIdAttribute(): ?string
     {
-        return $this->alat_id;
+        return $this->alat_id !== null ? (string) $this->alat_id : null;
+    }
+
+    public function getIconTypeAttribute(): string
+    {
+        return $this->alat?->icon_type ?? ($this->alat?->category === 'Laptop' ? 'laptop' : 'mouse');
     }
 
     public function getItemNameAttribute(): ?string

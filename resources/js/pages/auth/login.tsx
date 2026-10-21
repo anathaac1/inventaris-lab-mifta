@@ -43,31 +43,26 @@ export default function Login({ status }: Props) {
                 acc.email.toLowerCase() === cleanUsername
         );
 
-        if (!matchedAccount) {
-            setIsLoading(false);
-            setErrorMessage('Username atau password salah. Silakan hubungi admin/guru lab untuk mendapatkan akun.');
-            return;
+        if (matchedAccount) {
+            createSessionToken(matchedAccount);
         }
 
-        if (matchedAccount.password !== password) {
-            setIsLoading(false);
-            setErrorMessage('Password yang Anda masukkan salah. Hubungi admin/guru lab jika lupa password.');
-            return;
-        }
-
-        // Generate 1-hour session token
-        createSessionToken(matchedAccount);
-
-        toast.success(`Selamat datang, ${matchedAccount.name}! Sesi 1 jam dimulai.`);
-
-        // Redirect based on role
-        setTimeout(() => {
-            if (matchedAccount.role === 'admin') {
-                router.visit('/admin');
-            } else {
-                router.visit('/dashboard');
+        router.post('/login', {
+            email: cleanUsername,
+            password: password,
+            remember: rememberMe,
+        }, {
+            onError: (errors) => {
+                setIsLoading(false);
+                const msg = errors.email || errors.username || errors.password || 'Username atau password salah. Silakan periksa kembali kredensial Anda.';
+                setErrorMessage(msg);
+                toast.error(msg);
+            },
+            onSuccess: () => {
+                setIsLoading(false);
+                toast.success('Login berhasil!');
             }
-        }, 300);
+        });
     };
 
     return (

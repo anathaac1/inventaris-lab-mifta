@@ -41,20 +41,53 @@ function useAnimatedCounter(target: number, duration: number = 1000) {
     return value;
 }
 
-export default function AdminDashboard() {
-    const [items, setItems] = useState<InventoryItem[]>([]);
-    const [loans, setLoans] = useState<LoanItem[]>([]);
+interface AdminDashboardProps {
+    initialItems?: InventoryItem[];
+    initialLoans?: LoanItem[];
+    initialStudents?: any[];
+}
+
+export default function AdminDashboard({ initialItems, initialLoans, initialStudents }: AdminDashboardProps) {
+    const [items, setItems] = useState<InventoryItem[]>(() => {
+        if (initialItems && initialItems.length > 0) return initialItems;
+        return getStoredItems();
+    });
+    const [loans, setLoans] = useState<LoanItem[]>(() => {
+        if (initialLoans && initialLoans.length > 0) return initialLoans;
+        return getStoredLoans();
+    });
+    const [students, setStudents] = useState<any[]>(() => {
+        if (initialStudents && initialStudents.length > 0) return initialStudents;
+        return getStoredAccounts().filter((a) => a.role === 'siswa');
+    });
     const [activeTab, setActiveTab] = useState<DimensionTab>('all');
     const [isAnimated, setIsAnimated] = useState(false);
 
     useEffect(() => {
-        setItems(getStoredItems());
-        setLoans(getStoredLoans());
+        if (initialItems) setItems(initialItems);
+    }, [initialItems]);
 
+    useEffect(() => {
+        if (initialLoans) setLoans(initialLoans);
+    }, [initialLoans]);
+
+    useEffect(() => {
+        if (initialStudents) setStudents(initialStudents);
+    }, [initialStudents]);
+
+    useEffect(() => {
         const timer = setTimeout(() => setIsAnimated(true), 50);
 
-        const handleItemsChange = () => setItems(getStoredItems());
-        const handleLoansChange = () => setLoans(getStoredLoans());
+        const handleItemsChange = () => {
+            if (!initialItems || initialItems.length === 0) {
+                setItems(getStoredItems());
+            }
+        };
+        const handleLoansChange = () => {
+            if (!initialLoans || initialLoans.length === 0) {
+                setLoans(getStoredLoans());
+            }
+        };
 
         window.addEventListener('inventory_items_changed', handleItemsChange);
         window.addEventListener('inventory_loans_changed', handleLoansChange);
@@ -64,14 +97,14 @@ export default function AdminDashboard() {
             window.removeEventListener('inventory_items_changed', handleItemsChange);
             window.removeEventListener('inventory_loans_changed', handleLoansChange);
         };
-    }, []);
+    }, [initialItems, initialLoans]);
 
     // Summary calculations
     const totalItems = items.length;
     const totalPhysicalUnits = items.reduce((sum, item) => sum + (item.total || 0), 0);
     const totalAvailableStock = items.reduce((sum, item) => sum + (item.stock || 0), 0);
     const activeLoans = loans.filter((loan) => loan.status === 'Sedang Dipinjam');
-    const accounts = getStoredAccounts().filter((a) => a.role === 'siswa');
+    const studentCount = students.length;
 
     const availabilityPercentage = totalPhysicalUnits > 0
         ? Math.round((totalAvailableStock / totalPhysicalUnits) * 100)
@@ -83,7 +116,7 @@ export default function AdminDashboard() {
     const animatedPercentage = useAnimatedCounter(availabilityPercentage, 1000);
     const animatedCatalogCount = useAnimatedCounter(totalItems, 900);
     const animatedActiveLoans = useAnimatedCounter(activeLoans.length, 800);
-    const animatedStudentCount = useAnimatedCounter(accounts.length, 800);
+    const animatedStudentCount = useAnimatedCounter(studentCount, 800);
 
     // Category breakdown
     const categoryStats: CategoryStatItem[] = [

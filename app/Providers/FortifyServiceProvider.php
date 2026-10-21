@@ -44,6 +44,7 @@ class FortifyServiceProvider extends ServiceProvider
 
             $user = \App\Models\User::where('email', $input)
                 ->orWhere('email', $input . '@smkn1.sch.id')
+                ->orWhere('username', $input)
                 ->first();
 
             if ($user && \Illuminate\Support\Facades\Hash::check($request->password, $user->password)) {
@@ -60,7 +61,7 @@ class FortifyServiceProvider extends ServiceProvider
                     public function toResponse($request)
                     {
                         $user = auth()->user();
-                        if ($user && str_starts_with($user->email, 'admin')) {
+                        if ($user && ($user->role === 'admin' || str_starts_with($user->email, 'admin'))) {
                             return redirect()->intended('/admin');
                         }
                         return redirect()->intended('/dashboard');

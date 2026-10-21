@@ -15,7 +15,7 @@ class AlatController extends Controller
     {
         $items = Alat::latest()->get();
 
-        return Inertia::render('admin/alat', [
+        return Inertia::render('admin/alat/index', [
             'initialItems' => $items,
         ]);
     }

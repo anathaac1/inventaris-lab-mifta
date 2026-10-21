@@ -62,8 +62,12 @@ export default function AdminProfile({ initialAdmin }: AdminProfileProps) {
 
     const handleLogout = () => {
         terminateSession();
-        toast.info('Sesi administrator telah berakhir.');
-        router.visit('/login');
+        router.post('/logout', {}, {
+            onFinish: () => {
+                toast.info('Sesi administrator telah berakhir.');
+                router.visit('/login');
+            }
+        });
     };
 
     const adminName = session?.name || 'Agus Wibowo';

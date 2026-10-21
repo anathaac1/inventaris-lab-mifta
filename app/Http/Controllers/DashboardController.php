@@ -19,12 +19,20 @@ class DashboardController extends Controller
             ->latest()
             ->get();
 
-        $activeLoans = Peminjaman::with('alat')
+        $query = Peminjaman::with('alat')
             ->where('status', 'Sedang Dipinjam')
-            ->latest()
-            ->get();
+            ->latest();
 
-        return Inertia::render('dashboard', [
+        if ($user = $request->user()) {
+            $query->where(function ($q) use ($user) {
+                $q->where('user_id', $user->id)
+                    ->orWhere('borrower_name', $user->name);
+            });
+        }
+
+        $activeLoans = $query->get();
+
+        return Inertia::render('siswa/dashboard/index', [
             'initialItems' => $items,
             'initialActiveLoans' => $activeLoans,
         ]);

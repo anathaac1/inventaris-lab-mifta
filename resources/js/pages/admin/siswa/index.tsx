@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Head } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
 import { AdminLayout } from '@/layouts/admin-layout';
 import {
     getStoredAccounts,
@@ -55,15 +55,23 @@ export default function AdminSiswa({ initialStudents }: AdminSiswaProps) {
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     useEffect(() => {
-        setAccounts(getStoredAccounts());
+        if (initialStudents) {
+            setAccounts(initialStudents);
+        }
+    }, [initialStudents]);
 
-        const handleAccountsChange = () => setAccounts(getStoredAccounts());
+    useEffect(() => {
+        const handleAccountsChange = () => {
+            if (!initialStudents || initialStudents.length === 0) {
+                setAccounts(getStoredAccounts());
+            }
+        };
         window.addEventListener('inventory_accounts_changed', handleAccountsChange);
 
         return () => {
             window.removeEventListener('inventory_accounts_changed', handleAccountsChange);
         };
-    }, []);
+    }, [initialStudents]);
 
     // Filter accounts based on appliedFilters
     const filteredAccounts = accounts.filter((acc) => {
@@ -134,26 +142,32 @@ export default function AdminSiswa({ initialStudents }: AdminSiswaProps) {
 
         setIsSubmitting(true);
 
-        const success = updateStudentPassword(selectedStudent.username, newPassword.trim());
+        updateStudentPassword(selectedStudent.username, newPassword.trim());
 
-        if (success) {
-            setAccounts(getStoredAccounts());
-            toast.success(
-                `Password baru untuk ${selectedStudent.name} (${selectedStudent.username}) berhasil disimpan: "${newPassword}"`,
-                { duration: 6000 }
-            );
-            setIsResetModalOpen(false);
-            setNewPassword('');
-        } else {
-            toast.error('Gagal memperbarui password.');
-        }
-
-        setIsSubmitting(false);
+        router.post('/admin/siswa/reset-password', {
+            username: selectedStudent.username,
+            new_password: newPassword.trim(),
+        }, {
+            preserveScroll: true,
+            onSuccess: () => {
+                toast.success(
+                    `Password baru untuk ${selectedStudent.name} (${selectedStudent.username}) berhasil diperbarui: "${newPassword}"`,
+                    { duration: 6000 }
+                );
+                setIsResetModalOpen(false);
+                setNewPassword('');
+                setIsSubmitting(false);
+            },
+            onError: (errors) => {
+                setIsSubmitting(false);
+                toast.error(Object.values(errors)[0] as string || 'Gagal memperbarui password.');
+            }
+        });
     };
 
     const handleCreateUser = (formData: NewUserFormData) => {
         setIsCreatingUser(true);
-        const result = createUserAccount({
+        createUserAccount({
             username: formData.username,
             name: formData.name,
             role: formData.role,
@@ -164,16 +178,28 @@ export default function AdminSiswa({ initialStudents }: AdminSiswaProps) {
             phone: formData.phone
         });
 
-        if (result.success) {
-            setAccounts(getStoredAccounts());
-            toast.success(result.message);
-            setIsCreateModalOpen(false);
-            setCurrentPage(1);
-        } else {
-            toast.error(result.message);
-        }
-
-        setIsCreatingUser(false);
+        router.post('/admin/siswa', {
+            name: formData.name,
+            username: formData.username,
+            role: formData.role,
+            class: formData.class,
+            email: formData.email,
+            password: formData.password,
+            nisn: formData.nisn || null,
+            phone: formData.phone || null,
+        }, {
+            preserveScroll: true,
+            onSuccess: () => {
+                toast.success(`Akun ${formData.name} berhasil dibuat!`);
+                setIsCreateModalOpen(false);
+                setIsCreatingUser(false);
+                setCurrentPage(1);
+            },
+            onError: (errors) => {
+                setIsCreatingUser(false);
+                toast.error(Object.values(errors)[0] as string || 'Gagal membuat akun.');
+            }
+        });
     };
 
     const copyToClipboard = (text: string, label: string) => {

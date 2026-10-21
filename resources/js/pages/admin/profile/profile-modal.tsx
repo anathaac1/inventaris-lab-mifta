@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { router } from '@inertiajs/react';
 import { User, Lock, LogOut, ChevronRight, X } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { ProfileBanner } from './profile-banner';
@@ -11,10 +12,11 @@ interface ProfileModalProps {
     isOpen: boolean;
     onClose: () => void;
     session: SessionToken | null;
+    user?: any;
     onLogout: () => void;
 }
 
-export function ProfileModal({ isOpen, onClose, session, onLogout }: ProfileModalProps) {
+export function ProfileModal({ isOpen, onClose, session, user, onLogout }: ProfileModalProps) {
     const [passwordModalOpen, setPasswordModalOpen] = useState(false);
     const [oldPassword, setOldPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
@@ -32,18 +34,29 @@ export function ProfileModal({ isOpen, onClose, session, onLogout }: ProfileModa
             return;
         }
 
-        const username = session?.username || 'admin';
+        const username = user?.username || session?.username || 'admin';
         updateStudentPassword(username, newPassword);
 
-        toast.success('Kata sandi administrator berhasil diperbarui!');
-        setPasswordModalOpen(false);
-        setOldPassword('');
-        setNewPassword('');
-        setConfirmPassword('');
+        router.post('/admin/profile/password', {
+            old_password: oldPassword,
+            new_password: newPassword,
+        }, {
+            preserveScroll: true,
+            onSuccess: () => {
+                toast.success('Kata sandi administrator berhasil diperbarui!');
+                setPasswordModalOpen(false);
+                setOldPassword('');
+                setNewPassword('');
+                setConfirmPassword('');
+            },
+            onError: (errors) => {
+                toast.error(Object.values(errors)[0] as string || 'Gagal memperbarui kata sandi.');
+            }
+        });
     };
 
-    const adminName = session?.name || 'Agus Wibowo';
-    const adminUsername = session?.username || 'admin';
+    const adminName = user?.name || session?.name || 'Bambang Haryanto, S.T.';
+    const adminUsername = user?.username || session?.username || 'admin';
     const adminInitials = adminName
         .split(' ')
         .map((n) => n[0])

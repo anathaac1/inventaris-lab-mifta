@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Link, router } from '@inertiajs/react';
+import { Link, router, usePage } from '@inertiajs/react';
 import {
     Home,
     Box,
@@ -19,6 +19,8 @@ interface MainLayoutProps {
 }
 
 export function MainLayout({ children, currentTab = 'home' }: MainLayoutProps) {
+    const { auth } = usePage().props as any;
+    const currentUser = auth?.user;
     const [session, setSession] = useState<SessionToken | null>(null);
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -30,17 +32,19 @@ export function MainLayout({ children, currentTab = 'home' }: MainLayoutProps) {
         const active = getActiveSession();
         setSession(active);
 
-        // Check 1-hour expiration every 10 seconds
-        const interval = setInterval(() => {
-            const current = getActiveSession();
-            if (!current) {
-                toast.error('Sesi login 1 jam Anda telah berakhir. Silakan masuk kembali.');
-                router.visit('/login');
-            }
-        }, 10000);
+        // Check 1-hour expiration every 10 seconds only if no backend auth
+        if (!currentUser) {
+            const interval = setInterval(() => {
+                const current = getActiveSession();
+                if (!current) {
+                    toast.error('Sesi login 1 jam Anda telah berakhir. Silakan masuk kembali.');
+                    router.visit('/login');
+                }
+            }, 10000);
 
-        return () => clearInterval(interval);
-    }, []);
+            return () => clearInterval(interval);
+        }
+    }, [currentUser]);
 
     // Close dropdown on outside click or escape
     useEffect(() => {
@@ -70,15 +74,22 @@ export function MainLayout({ children, currentTab = 'home' }: MainLayoutProps) {
 
     const handleLogout = () => {
         terminateSession();
-        toast.info('Anda telah keluar dari sesi.');
-        router.visit('/login');
+        router.post('/logout', {}, {
+            onFinish: () => {
+                toast.info('Anda telah keluar dari sesi.');
+                router.visit('/login');
+            }
+        });
     };
 
-    const studentName = session?.name || 'Ahmad Rizky Pratama';
-    const studentClass = session?.class || 'XII RPL A';
-    const studentInitials = session?.name
-        ? session.name.split(' ').map((n) => n[0]).slice(0, 2).join('').toUpperCase()
-        : 'AR';
+    const studentName = currentUser?.name || session?.name || 'Ahmad Rizky Pratama';
+    const studentClass = currentUser?.class || session?.class || 'XII RPL A';
+    const studentInitials = studentName
+        .split(' ')
+        .map((n: string) => n[0])
+        .slice(0, 2)
+        .join('')
+        .toUpperCase();
 
     const navItems = [
         { id: 'home', label: 'Home', href: '/dashboard', icon: Home },
@@ -197,6 +208,7 @@ export function MainLayout({ children, currentTab = 'home' }: MainLayoutProps) {
                 isOpen={profileModalOpen}
                 onClose={() => setProfileModalOpen(false)}
                 session={session}
+                user={currentUser}
                 onLogout={handleLogout}
             />
 

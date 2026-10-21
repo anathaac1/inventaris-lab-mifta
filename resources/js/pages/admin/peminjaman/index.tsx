@@ -1,13 +1,9 @@
 import { useState, useEffect } from 'react';
-import { Head } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
 import { AdminLayout } from '@/layouts/admin-layout';
 import {
     getStoredLoans,
-    saveStoredLoans,
-    getStoredItems,
-    saveStoredItems,
-    type LoanItem,
-    type InventoryItem
+    type LoanItem
 } from '@/data/inventory-data';
 import { toast } from 'sonner';
 import { AdminPagination } from '@/components/inventory/admin-pagination';
@@ -22,9 +18,15 @@ const DEFAULT_LOAN_FILTERS: PeminjamanFilterValues = {
     status: 'all'
 };
 
-export default function AdminPeminjaman() {
-    const [loans, setLoans] = useState<LoanItem[]>([]);
-    const [items, setItems] = useState<InventoryItem[]>([]);
+interface AdminPeminjamanProps {
+    initialLoans?: LoanItem[];
+}
+
+export default function AdminPeminjaman({ initialLoans }: AdminPeminjamanProps) {
+    const [loans, setLoans] = useState<LoanItem[]>(() => {
+        if (initialLoans && initialLoans.length > 0) return initialLoans;
+        return getStoredLoans();
+    });
 
     // Filter Form Values & Applied Filter State
     const [filterForm, setFilterForm] = useState<PeminjamanFilterValues>(DEFAULT_LOAN_FILTERS);
@@ -35,20 +37,22 @@ export default function AdminPeminjaman() {
     const [itemsPerPage, setItemsPerPage] = useState(10);
 
     useEffect(() => {
-        setLoans(getStoredLoans());
-        setItems(getStoredItems());
+        if (initialLoans) setLoans(initialLoans);
+    }, [initialLoans]);
 
-        const handleLoansChange = () => setLoans(getStoredLoans());
-        const handleItemsChange = () => setItems(getStoredItems());
+    useEffect(() => {
+        const handleLoansChange = () => {
+            if (!initialLoans || initialLoans.length === 0) {
+                setLoans(getStoredLoans());
+            }
+        };
 
         window.addEventListener('inventory_loans_changed', handleLoansChange);
-        window.addEventListener('inventory_items_changed', handleItemsChange);
 
         return () => {
             window.removeEventListener('inventory_loans_changed', handleLoansChange);
-            window.removeEventListener('inventory_items_changed', handleItemsChange);
         };
-    }, []);
+    }, [initialLoans]);
 
     // Filter based on appliedFilters
     const filteredLoans = loans.filter((loan) => {
@@ -100,37 +104,15 @@ export default function AdminPeminjaman() {
         const targetLoan = loans.find((l) => l.id === loanId);
         if (!targetLoan) return;
 
-        const updatedLoans: LoanItem[] = loans.map((l) =>
-            l.id === loanId
-                ? {
-                      ...l,
-                      status: 'Dikembalikan' as const,
-                      returnDate: new Date().toLocaleDateString('id-ID', {
-                          day: 'numeric',
-                          month: 'long',
-                          year: 'numeric'
-                      })
-                  }
-                : l
-        );
-
-        // Increment stock
-        const updatedItems = items.map((item) => {
-            if (item.id === targetLoan.itemId || item.name.toLowerCase() === targetLoan.itemName.toLowerCase()) {
-                return {
-                    ...item,
-                    stock: Math.min(item.total, item.stock + 1)
-                };
+        router.post(`/admin/peminjaman/${loanId}/kembalikan`, {}, {
+            preserveScroll: true,
+            onSuccess: () => {
+                toast.success(`Alat "${targetLoan.itemName}" telah dikonfirmasi kembali.`);
+            },
+            onError: (errors) => {
+                toast.error(Object.values(errors)[0] as string || 'Gagal memproses pengembalian alat.');
             }
-            return item;
         });
-
-        saveStoredLoans(updatedLoans);
-        saveStoredItems(updatedItems);
-        setLoans(updatedLoans);
-        setItems(updatedItems);
-
-        toast.success(`Alat "${targetLoan.itemName}" telah dikonfirmasi kembali.`);
     };
 
     return (

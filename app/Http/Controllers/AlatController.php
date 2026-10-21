@@ -31,7 +31,7 @@ class AlatController extends Controller
 
         $items = $query->latest()->get();
 
-        return Inertia::render('alat', [
+        return Inertia::render('siswa/alat/index', [
             'initialItems' => $items,
             'filters' => $request->only(['search', 'category']),
         ]);

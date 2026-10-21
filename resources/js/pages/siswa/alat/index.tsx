@@ -1,39 +1,55 @@
 import { useState, useMemo, useEffect } from 'react';
-import { Head } from '@inertiajs/react';
+import { Head, router, usePage } from '@inertiajs/react';
 import { MainLayout } from '@/components/inventory/main-layout';
 import { ItemDetailModal } from '@/components/inventory/item-detail-modal';
 import { FilterSheet } from '@/components/inventory/filter-sheet';
 import {
     getStoredItems,
-    saveStoredItems,
-    getStoredLoans,
-    saveStoredLoans,
     CATEGORIES,
-    type InventoryItem,
-    type LoanItem
+    type InventoryItem
 } from '@/data/inventory-data';
 import { getActiveSession } from '@/data/auth-store';
+import { toast } from 'sonner';
 
 import { AlatHeader } from './alat-header';
 import { AlatSearchBar } from './alat-search-bar';
 import { AlatCategoryChips } from './alat-category-chips';
 import { AlatGrid } from './alat-grid';
 
-export default function Alat() {
-    const [items, setItems] = useState<InventoryItem[]>([]);
-    const [searchQuery, setSearchQuery] = useState('');
-    const [selectedCategory, setSelectedCategory] = useState<string>('Semua');
+interface AlatProps {
+    initialItems?: InventoryItem[];
+    filters?: {
+        search?: string;
+        category?: string;
+    };
+}
+
+export default function Alat({ initialItems, filters }: AlatProps) {
+    const { auth } = usePage().props as any;
+    const [items, setItems] = useState<InventoryItem[]>(() => {
+        if (initialItems && initialItems.length > 0) return initialItems;
+        return getStoredItems();
+    });
+    const [searchQuery, setSearchQuery] = useState(filters?.search || '');
+    const [selectedCategory, setSelectedCategory] = useState<string>(filters?.category || 'Semua');
     const [selectedStatus, setSelectedStatus] = useState<string>('Semua');
     const [filterSheetOpen, setFilterSheetOpen] = useState(false);
     const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
     const [detailModalOpen, setDetailModalOpen] = useState(false);
 
     useEffect(() => {
-        setItems(getStoredItems());
-        const handleItemsChange = () => setItems(getStoredItems());
+        if (initialItems) setItems(initialItems);
+    }, [initialItems]);
+
+    useEffect(() => {
+        const handleItemsChange = () => {
+            if (!initialItems || initialItems.length === 0) {
+                setItems(getStoredItems());
+            }
+        };
         window.addEventListener('inventory_items_changed', handleItemsChange);
         return () => window.removeEventListener('inventory_items_changed', handleItemsChange);
-    }, []);
+    }, [initialItems]);
 
     const filteredItems = useMemo(() => {
         return items.filter((item) => {
@@ -62,35 +78,26 @@ export default function Alat() {
         notes: string
     ) => {
         const session = getActiveSession();
-        const newLoan: LoanItem = {
-            id: `loan-${Date.now()}`,
-            itemId: item.id,
-            itemName: item.name,
-            code: item.code,
-            category: item.category,
-            borrowDate,
-            returnEstimate,
-            status: 'Sedang Dipinjam',
-            borrowerName: session?.name || 'Ahmad Rizky Pratama',
-            borrowerClass: session?.class || 'XII RPL A',
-            notes
-        };
+        const borrowerName = auth?.user?.name || session?.name || 'Ahmad Rizky Pratama';
+        const borrowerClass = auth?.user?.class || session?.class || 'XII RPL A';
 
-        const allLoans = getStoredLoans();
-        saveStoredLoans([newLoan, ...allLoans]);
-
-        const updatedItems = items.map((i) => {
-            if (i.id === item.id) {
-                return {
-                    ...i,
-                    stock: Math.max(0, i.stock - 1),
-                    status: i.stock - 1 <= 0 ? ('Dipinjam' as const) : ('Tersedia' as const)
-                };
+        router.post('/peminjaman', {
+            alat_id: item.id,
+            borrower_name: borrowerName,
+            borrower_class: borrowerClass,
+            borrow_date: borrowDate,
+            return_estimate: returnEstimate,
+            notes: notes || null
+        }, {
+            preserveScroll: true,
+            onSuccess: () => {
+                toast.success(`Berhasil mengajukan peminjaman ${item.name}!`);
+            },
+            onError: (errors) => {
+                const firstErr = Object.values(errors)[0] as string;
+                toast.error(firstErr || 'Gagal mengajukan peminjaman.');
             }
-            return i;
         });
-        saveStoredItems(updatedItems);
-        setItems(updatedItems);
     };
 
     return (

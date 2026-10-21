@@ -39,7 +39,7 @@ export function PeminjamanActiveList({
                         <div className="flex gap-3">
                             <div className="w-12 h-12 rounded bg-zinc-50 border border-zinc-100 flex items-center justify-center shrink-0">
                                 <ItemIllustration
-                                    type={loan.itemId.includes('laptop') ? 'laptop' : 'mouse'}
+                                    type={loan.category?.toLowerCase() === 'laptop' || String(loan.itemId ?? '').includes('laptop') || loan.itemName?.toLowerCase().includes('laptop') ? 'laptop' : 'mouse'}
                                     className="w-8 h-8"
                                 />
                             </div>

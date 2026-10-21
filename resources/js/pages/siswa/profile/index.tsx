@@ -72,8 +72,12 @@ export default function Profile({ initialUser }: ProfileProps) {
 
     const handleLogout = () => {
         terminateSession();
-        toast.info('Sesi Anda telah berakhir.');
-        router.visit('/login');
+        router.post('/logout', {}, {
+            onFinish: () => {
+                toast.info('Sesi Anda telah berakhir.');
+                router.visit('/login');
+            }
+        });
     };
 
     const studentName = initialUser?.name || session?.name || USER_PROFILE.name;
