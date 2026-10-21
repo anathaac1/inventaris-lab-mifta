@@ -13,7 +13,11 @@ class AlatController extends Controller
 {
     public function index(Request $request): Response
     {
-        $items = Alat::latest()->get();
+        try {
+            $items = Alat::latest()->get();
+        } catch (\Throwable) {
+            $items = collect();
+        }
 
         return Inertia::render('admin/alat/index', [
             'initialItems' => $items,

@@ -13,9 +13,15 @@ class DashboardController extends Controller
 {
     public function index(): Response
     {
-        $items = Alat::latest()->get();
-        $loans = Peminjaman::with('alat')->latest()->get();
-        $students = User::where('role', 'siswa')->get();
+        try {
+            $items = Alat::latest()->get();
+            $loans = Peminjaman::with('alat')->latest()->get();
+            $students = User::where('role', 'siswa')->get();
+        } catch (\Throwable) {
+            $items = collect();
+            $loans = collect();
+            $students = collect();
+        }
 
         return Inertia::render('admin/dashboard/index', [
             'initialItems' => $items,

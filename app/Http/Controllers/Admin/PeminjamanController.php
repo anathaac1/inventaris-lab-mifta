@@ -14,7 +14,11 @@ class PeminjamanController extends Controller
 {
     public function index(): Response
     {
-        $loans = Peminjaman::with('alat')->latest()->get();
+        try {
+            $loans = Peminjaman::with('alat')->latest()->get();
+        } catch (\Throwable) {
+            $loans = collect();
+        }
 
         return Inertia::render('admin/peminjaman/index', [
             'initialLoans' => $loans,

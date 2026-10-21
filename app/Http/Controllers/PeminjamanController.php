@@ -17,19 +17,24 @@ class PeminjamanController extends Controller
      */
     public function index(Request $request): Response
     {
-        $query = Peminjaman::with('alat')->latest();
+        try {
+            $query = Peminjaman::with('alat')->latest();
 
-        if ($user = $request->user()) {
-            $query->where(function ($q) use ($user) {
-                $q->where('user_id', $user->id)
-                    ->orWhere('borrower_name', $user->name);
-            });
+            if ($user = $request->user()) {
+                $query->where(function ($q) use ($user) {
+                    $q->where('user_id', $user->id)
+                        ->orWhere('borrower_name', $user->name);
+                });
+            }
+
+            $loans = $query->get();
+
+            $activeLoans = $loans->where('status', 'Sedang Dipinjam')->values();
+            $loanHistory = $loans->where('status', 'Dikembalikan')->values();
+        } catch (\Throwable) {
+            $activeLoans = collect();
+            $loanHistory = collect();
         }
-
-        $loans = $query->get();
-
-        $activeLoans = $loans->where('status', 'Sedang Dipinjam')->values();
-        $loanHistory = $loans->where('status', 'Dikembalikan')->values();
 
         return Inertia::render('siswa/peminjaman/index', [
             'initialActiveLoans' => $activeLoans,

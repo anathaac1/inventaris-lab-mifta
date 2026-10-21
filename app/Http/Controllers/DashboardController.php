@@ -15,22 +15,27 @@ class DashboardController extends Controller
      */
     public function index(Request $request): Response
     {
-        $items = Alat::where('is_visible_to_students', true)
-            ->latest()
-            ->get();
+        try {
+            $items = Alat::where('is_visible_to_students', true)
+                ->latest()
+                ->get();
 
-        $query = Peminjaman::with('alat')
-            ->where('status', 'Sedang Dipinjam')
-            ->latest();
+            $query = Peminjaman::with('alat')
+                ->where('status', 'Sedang Dipinjam')
+                ->latest();
 
-        if ($user = $request->user()) {
-            $query->where(function ($q) use ($user) {
-                $q->where('user_id', $user->id)
-                    ->orWhere('borrower_name', $user->name);
-            });
+            if ($user = $request->user()) {
+                $query->where(function ($q) use ($user) {
+                    $q->where('user_id', $user->id)
+                        ->orWhere('borrower_name', $user->name);
+                });
+            }
+
+            $activeLoans = $query->get();
+        } catch (\Throwable) {
+            $items = collect();
+            $activeLoans = collect();
         }
-
-        $activeLoans = $query->get();
 
         return Inertia::render('siswa/dashboard/index', [
             'initialItems' => $items,

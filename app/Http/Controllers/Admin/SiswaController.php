@@ -17,23 +17,27 @@ class SiswaController extends Controller
      */
     public function index(Request $request): Response
     {
-        $students = User::where('role', 'siswa')
-            ->latest()
-            ->get()
-            ->map(function ($u) {
-                return [
-                    'id' => (string) $u->id,
-                    'username' => $u->username ?? explode('@', $u->email)[0],
-                    'name' => $u->name,
-                    'class' => $u->class ?? 'X RPL A',
-                    'email' => $u->email,
-                    'password' => '••••••••',
-                    'role' => 'siswa',
-                    'nisn' => $u->nisn ?? '-',
-                    'phone' => $u->phone ?? '-',
-                    'avatar' => strtoupper(substr($u->name, 0, 2)),
-                ];
-            });
+        try {
+            $students = User::where('role', 'siswa')
+                ->latest()
+                ->get()
+                ->map(function ($u) {
+                    return [
+                        'id' => (string) $u->id,
+                        'username' => $u->username ?? explode('@', $u->email)[0],
+                        'name' => $u->name,
+                        'class' => $u->class ?? 'X RPL A',
+                        'email' => $u->email,
+                        'password' => '••••••••',
+                        'role' => 'siswa',
+                        'nisn' => $u->nisn ?? '-',
+                        'phone' => $u->phone ?? '-',
+                        'avatar' => strtoupper(substr($u->name, 0, 2)),
+                    ];
+                });
+        } catch (\Throwable) {
+            $students = collect();
+        }
 
         return Inertia::render('admin/siswa/index', [
             'initialStudents' => $students,

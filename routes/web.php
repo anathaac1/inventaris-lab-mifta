@@ -11,7 +11,7 @@ use App\Http\Controllers\PeminjamanController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
-Route::inertia('/', 'welcome')->name('home');
+Route::redirect('/', '/login')->name('home');
 
 // Student Facing Routes
 Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');

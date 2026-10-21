@@ -118,7 +118,7 @@ export function ProfileModal({ isOpen, onClose, session, user, onLogout }: Profi
                         {/* Action Buttons */}
                         <div className="bg-white border border-slate-200/90 rounded-xl divide-y divide-slate-100 shadow-2xs overflow-hidden">
                             {/* Ubah Kata Sandi */}
-                            {/* <button
+                            <button
                                 type="button"
                                 onClick={() => setPasswordModalOpen(true)}
                                 className="w-full flex items-center justify-between p-3.5 hover:bg-slate-50 transition-colors text-left group cursor-pointer"
@@ -137,32 +137,7 @@ export function ProfileModal({ isOpen, onClose, session, user, onLogout }: Profi
                                     </div>
                                 </div>
                                 <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-slate-600" />
-                            </button> */}
-
-                            {/* Keluar dari Aplikasi */}
-                            {/* <button
-                                type="button"
-                                onClick={() => {
-                                    onClose();
-                                    onLogout();
-                                }}
-                                className="w-full flex items-center justify-between p-3.5 hover:bg-rose-50 text-rose-600 transition-colors text-left group cursor-pointer"
-                            >
-                                <div className="flex items-center gap-3">
-                                    <div className="w-8 h-8 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center shrink-0 group-hover:bg-rose-100 transition-colors">
-                                        <LogOut className="w-4 h-4 text-rose-600 group-hover:scale-110 transition-transform" />
-                                    </div>
-                                    <div>
-                                        <p className="text-xs font-semibold text-rose-600">
-                                            Keluar dari Aplikasi
-                                        </p> 
-                                        <p className="text-[11px] text-rose-400">
-                                            Akhiri sesi login siswa dan kembali ke halaman masuk
-                                        </p> 
-                                    </div>
-                                </div>
-                                <ChevronRight className="w-4 h-4 text-rose-400 group-hover:translate-x-0.5 transition-transform" />
-                            </button> */}
+                            </button>
                         </div>
                     </div>
                 </DialogContent>

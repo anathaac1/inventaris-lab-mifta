@@ -16,7 +16,11 @@ class ProfileController extends Controller
      */
     public function index(Request $request): Response
     {
-        $user = $request->user() ?? User::where('role', 'siswa')->first();
+        try {
+            $user = $request->user() ?? User::where('role', 'siswa')->first();
+        } catch (\Throwable) {
+            $user = null;
+        }
 
         return Inertia::render('siswa/profile/index', [
             'initialUser' => $user ? [

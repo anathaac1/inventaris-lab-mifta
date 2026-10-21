@@ -17,7 +17,11 @@ class ProfileController extends Controller
      */
     public function index(Request $request): Response
     {
-        $admin = $request->user() ?? User::where('role', 'admin')->first();
+        try {
+            $admin = $request->user() ?? User::where('role', 'admin')->first();
+        } catch (\Throwable) {
+            $admin = null;
+        }
 
         return Inertia::render('admin/profile/index', [
             'initialAdmin' => $admin ? [
