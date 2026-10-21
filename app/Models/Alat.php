@@ -10,6 +10,8 @@ class Alat extends Model
 {
     use HasFactory;
 
+    protected $table = 'alats';
+
     protected $fillable = [
         'name',
         'category',
