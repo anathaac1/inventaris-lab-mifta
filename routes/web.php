@@ -9,9 +9,19 @@ use App\Http\Controllers\AlatController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PeminjamanController;
 use App\Http\Controllers\ProfileController;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
-Route::redirect('/', '/login')->name('home');
+Route::get('/', function () {
+    if (Auth::check()) {
+        $user = Auth::user();
+        if ($user && ($user->role === 'admin' || str_starts_with($user->email, 'admin') || $user->username === 'admin')) {
+            return redirect('/admin');
+        }
+        return redirect('/dashboard');
+    }
+    return redirect('/login');
+})->name('home');
 
 // Student Facing Routes
 Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');

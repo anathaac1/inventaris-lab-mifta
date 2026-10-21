@@ -33,7 +33,7 @@ class AppServiceProvider extends ServiceProvider
     {
         try {
             if (\Illuminate\Support\Facades\Schema::hasTable('users')) {
-                \App\Models\User::firstOrCreate(
+                \App\Models\User::updateOrCreate(
                     ['email' => 'siswa1@smkn1.sch.id'],
                     [
                         'username' => 'siswa1',
@@ -46,7 +46,7 @@ class AppServiceProvider extends ServiceProvider
                     ]
                 );
 
-                \App\Models\User::firstOrCreate(
+                \App\Models\User::updateOrCreate(
                     ['email' => 'siswa2@smkn1.sch.id'],
                     [
                         'username' => 'siswa2',
@@ -59,7 +59,7 @@ class AppServiceProvider extends ServiceProvider
                     ]
                 );
 
-                \App\Models\User::firstOrCreate(
+                \App\Models\User::updateOrCreate(
                     ['email' => 'siswa3@smkn1.sch.id'],
                     [
                         'username' => 'siswa3',
@@ -72,7 +72,7 @@ class AppServiceProvider extends ServiceProvider
                     ]
                 );
 
-                \App\Models\User::firstOrCreate(
+                \App\Models\User::updateOrCreate(
                     ['email' => 'siswa4@smkn1.sch.id'],
                     [
                         'username' => 'siswa4',
@@ -85,7 +85,7 @@ class AppServiceProvider extends ServiceProvider
                     ]
                 );
 
-                \App\Models\User::firstOrCreate(
+                \App\Models\User::updateOrCreate(
                     ['email' => 'siswa5@smkn1.sch.id'],
                     [
                         'username' => 'siswa5',
@@ -98,7 +98,7 @@ class AppServiceProvider extends ServiceProvider
                     ]
                 );
 
-                \App\Models\User::firstOrCreate(
+                \App\Models\User::updateOrCreate(
                     ['email' => 'siswa6@smkn1.sch.id'],
                     [
                         'username' => 'siswa6',
@@ -111,7 +111,7 @@ class AppServiceProvider extends ServiceProvider
                     ]
                 );
 
-                \App\Models\User::firstOrCreate(
+                \App\Models\User::updateOrCreate(
                     ['email' => 'admin@smkn1.sch.id'],
                     [
                         'username' => 'admin',

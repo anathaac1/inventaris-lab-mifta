@@ -48,6 +48,9 @@ class FortifyServiceProvider extends ServiceProvider
                 ->first();
 
             if ($user && \Illuminate\Support\Facades\Hash::check($request->password, $user->password)) {
+                if (($user->username === 'admin' || str_starts_with($user->email, 'admin')) && $user->role !== 'admin') {
+                    $user->update(['role' => 'admin']);
+                }
                 return $user;
             }
 
@@ -60,11 +63,24 @@ class FortifyServiceProvider extends ServiceProvider
                 return new class implements \Laravel\Fortify\Contracts\LoginResponse {
                     public function toResponse($request)
                     {
-                        $user = auth()->user();
-                        if ($user && ($user->role === 'admin' || str_starts_with($user->email, 'admin'))) {
-                            return redirect()->intended('/admin');
+                        $user = $request->user() ?? auth()->user();
+                        $isAdmin = $user && ($user->role === 'admin' || str_starts_with($user->email, 'admin') || $user->username === 'admin');
+
+                        $intended = session()->get('url.intended');
+
+                        if ($isAdmin) {
+                            if ($intended && str_contains($intended, '/admin')) {
+                                return redirect()->intended('/admin');
+                            }
+                            session()->forget('url.intended');
+                            return redirect('/admin');
                         }
-                        return redirect()->intended('/dashboard');
+
+                        if ($intended && !str_contains($intended, '/admin')) {
+                            return redirect()->intended('/dashboard');
+                        }
+                        session()->forget('url.intended');
+                        return redirect('/dashboard');
                     }
                 };
             }
