@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Plus } from 'lucide-react';
+import { X, Plus, ChevronDown } from 'lucide-react';
 import type { InventoryItem } from '@/data/inventory-data';
 import { ItemIllustration } from '@/components/inventory/item-illustration';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
@@ -29,8 +29,8 @@ export interface AlatFormData {
     name: string;
     code: string;
     category: 'Laptop' | 'Peripheral' | 'Tools' | 'Elektrikal';
-    stock: number;
-    total: number;
+    stock: number | '';
+    total: number | '';
     description: string;
     iconType: IconType;
     isVisibleToStudents: boolean;
@@ -96,9 +96,9 @@ export function AlatFormModal({
                             <ItemIllustration type={formData.iconType} className="w-6 h-6" />
                         </div>
                         <div className="min-w-0">
-                            <span className="text-[10px] font-bold text-[#0256D0] uppercase tracking-wider block">
+                            {/* <span className="text-[10px] font-bold text-[#0256D0] uppercase tracking-wider block">
                                 Sedang Mengedit Data Terkini
-                            </span>
+                            </span> */}
                             <p className="font-bold text-xs text-slate-900 truncate">
                                 {formData.name} <span className="text-slate-500 font-mono">({formData.code})</span>
                             </p>
@@ -112,26 +112,26 @@ export function AlatFormModal({
                 <form onSubmit={onSubmit} className="space-y-4 text-xs pt-2">
                     {/* Nama & Kode */}
                     <div className="grid grid-cols-3 gap-3">
-                        <div className="col-span-2 space-y-1">
-                            <label className="font-semibold text-slate-700">Nama Perangkat</label>
+                        <div className="col-span-2 space-y-2">
+                            <label className="mb-1 block font-semibold text-slate-700">Nama Perangkat</label>
                             <input
                                 type="text"
                                 required
                                 value={formData.name}
                                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                                 placeholder="Contoh: Laptop Lenovo"
-                                className="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs focus:outline-none focus:border-slate-800"
+                                className="w-full px-3 py-2 rounded border border-slate-200 text-xs text-slate-900 placeholder:text-slate-400 bg-white focus:outline-none focus:border-slate-800"
                             />
                         </div>
                         <div className="space-y-1">
-                            <label className="font-semibold text-slate-700">Kode Inventaris</label>
+                            <label className="mb-1 block font-semibold text-slate-700">Kode Inventaris</label>
                             <input
                                 type="text"
                                 required
                                 value={formData.code}
                                 onChange={(e) => setFormData({ ...formData, code: e.target.value })}
                                 placeholder="EL-001"
-                                className="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs focus:outline-none focus:border-slate-800"
+                                className="w-full px-3 py-2 rounded border border-slate-200 text-xs text-slate-900 placeholder:text-slate-400 bg-white focus:outline-none focus:border-slate-800"
                             />
                         </div>
                     </div>
@@ -139,89 +139,117 @@ export function AlatFormModal({
                     {/* Kategori & Ikon */}
                     <div className="grid grid-cols-2 gap-3">
                         <div className="space-y-1">
-                            <label className="font-semibold text-slate-700">Kategori</label>
-                            <select
-                                value={formData.category}
-                                onChange={(e) =>
-                                    setFormData({
-                                        ...formData,
-                                        category: e.target.value as InventoryItem['category']
-                                    })
-                                }
-                                className="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs bg-white focus:outline-none focus:border-slate-800 cursor-pointer"
-                            >
-                                <option value="Laptop">Laptop</option>
-                                <option value="Peripheral">Peripheral</option>
-                                <option value="Tools">Tools</option>
-                                <option value="Elektrikal">Elektrikal</option>
-                            </select>
+                            <label className="mb-1 block font-semibold text-slate-700">Kategori</label>
+                            <div className="relative">
+                                <select
+                                    value={formData.category}
+                                    onChange={(e) =>
+                                        setFormData({
+                                            ...formData,
+                                            category: e.target.value as InventoryItem['category']
+                                        })
+                                    }
+                                    className="w-full h-9 pl-3 pr-8 rounded border border-slate-200 text-xs text-slate-900 bg-white focus:outline-none focus:border-slate-800 cursor-pointer"
+                                >
+                                    <option value="Laptop">Laptop</option>
+                                    <option value="Peripheral">Peripheral</option>
+                                    <option value="Tools">Tools</option>
+                                    <option value="Elektrikal">Elektrikal</option>
+                                </select>
+                                <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                            </div>
                         </div>
 
                         <div className="space-y-1">
-                            <label className="font-semibold text-slate-700">Ikon Ilustrasi</label>
-                            <select
-                                value={formData.iconType}
-                                onChange={(e) =>
-                                    setFormData({
-                                        ...formData,
-                                        iconType: e.target.value as IconType
-                                    })
-                                }
-                                className="w-full px-3 py-2 rounded border border-slate-200 text-xs bg-white focus:outline-none focus:border-slate-800 capitalize cursor-pointer"
-                            >
-                                {ICON_OPTIONS.map((ico) => (
-                                    <option key={ico} value={ico}>
-                                        {ico}
-                                    </option>
-                                ))}
-                            </select>
+                            <label className="mb-1 block font-semibold text-slate-700">Ikon Ilustrasi</label>
+                            <div className="relative">
+                                <select
+                                    value={formData.iconType}
+                                    onChange={(e) =>
+                                        setFormData({
+                                            ...formData,
+                                            iconType: e.target.value as IconType
+                                        })
+                                    }
+                                    className="w-full h-9 pl-3 pr-8 rounded border border-slate-200 text-xs text-slate-900 bg-white focus:outline-none focus:border-slate-800 capitalize cursor-pointer"
+                                >
+                                    {ICON_OPTIONS.map((ico) => (
+                                        <option key={ico} value={ico}>
+                                            {ico}
+                                        </option>
+                                    ))}
+                                </select>
+                                <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                            </div>
                         </div>
                     </div>
 
+                    
+                       
                     {/* Stok & Total */}
                     <div className="grid grid-cols-2 gap-3">
-                        <div className="space-y-1">
-                            <label className="font-semibold text-slate-700">Stok Siap Pakai</label>
-                            <input
-                                type="number"
-                                min="0"
-                                required
-                                value={formData.stock}
-                                onChange={(e) => setFormData({ ...formData, stock: Number(e.target.value) })}
-                                className="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs focus:outline-none focus:border-slate-800"
-                            />
-                        </div>
-                        <div className="space-y-1">
-                            <label className="font-semibold text-slate-700">Total Unit Fisik Lab</label>
-                            <input
-                                type="number"
-                                min="0"
-                                required
-                                value={formData.total}
-                                onChange={(e) => setFormData({ ...formData, total: Number(e.target.value) })}
-                                className="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs focus:outline-none focus:border-slate-800"
-                            />
-                        </div>
+                        {([
+                            { label: "Stok Siap Pakai", key: "stock" },
+                            { label: "Total Unit Fisik Lab", key: "total" },
+                       ] as const).map(({ label, key }) => (
+                            <div key={key} className="space-y-1">
+                                <label className="mb-1 block font-semibold text-slate-700">{label}</label>
+
+                                <div className="flex items-center justify-between rounded border border-slate-200 bg-white p-1">
+                                    <button
+                                        type="button"
+                                        disabled={Number(formData[key] || 0) <= 0}
+                                        onClick={() => setFormData({
+                                            ...formData,
+                                            [key]: Math.max(0, Number(formData[key] || 0) - 1)
+                                        })}
+                                        className="px-3 py-1 text-slate-500 hover:text-blue-600 disabled:opacity-40 cursor-pointer"
+                                    >−</button>
+
+                                    <input
+                                        type="number"
+                                        min="0"
+                                        required
+                                        value={formData[key]}
+                                        onChange={(e) => setFormData({
+                                            ...formData,
+                                            [key]: e.target.value === "" ? "" : Math.max(0, Number(e.target.value))
+                                        })}
+                                        className="w-full min-w-0 bg-transparent text-center text-xs text-slate-600 outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                    />
+
+                                    <button
+                                        type="button"
+                                        onClick={() => setFormData({
+                                            ...formData,
+                                            [key]: Number(formData[key] || 0) + 1
+                                        })}
+                                        className="px-3 py-1 text-slate-500 hover:text-blue-600 cursor-pointer"
+                                    >+</button>
+                                </div>
+                            </div>
+                        ))}
                     </div>
+
 
                     {/* Deskripsi */}
                     <div className="space-y-1">
-                        <label className="font-semibold text-slate-700">Deskripsi Alat</label>
+                        <label className="mb-1 block font-semibold text-slate-700">Deskripsi Alat</label>
                         <textarea
                             rows={2}
                             required
                             value={formData.description}
                             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                             placeholder="Tuliskan spesifikasi umum atau panduan praktikum..."
-                            className="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs focus:outline-none focus:border-slate-800"
+                            className="w-full px-3 py-2 rounded border border-slate-200 text-xs text-slate-900 placeholder:text-slate-400 bg-white focus:outline-none focus:border-slate-800"
                         />
                     </div>
 
                     {/* Spesifikasi Teknis Dinamis */}
-                    <div className="space-y-2 p-3 rounded-xl bg-slate-50 border border-slate-200">
+                    <div className="space-y-2 p-3 rounded    bg-slate-50 border border-slate-200">
                         <div className="flex items-center justify-between">
                             <label className="font-semibold text-slate-800 block">
-                                Spesifikasi Lengkap (CRUD Teknis)
+                                Spesifikasi Lengkap
                             </label>
                             <button
                                 type="button"
@@ -241,14 +269,14 @@ export function AlatFormModal({
                                         value={spec.key}
                                         onChange={(e) => handleUpdateSpecRow(idx, 'key', e.target.value)}
                                         placeholder="Label (Processor/RAM/Port)"
-                                        className="w-2/5 px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-medium"
+                                        className="w-2/5 px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white text-xs text-slate-900 placeholder:text-slate-400 font-medium focus:outline-none focus:border-slate-800"
                                     />
                                     <input
                                         type="text"
                                         value={spec.value}
                                         onChange={(e) => handleUpdateSpecRow(idx, 'value', e.target.value)}
                                         placeholder="Nilai (Intel i5/8 GB/USB-C)"
-                                        className="flex-1 px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white text-xs"
+                                        className="flex-1 px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-slate-800"
                                     />
                                     {formData.specs.length > 1 && (
                                         <button
@@ -266,7 +294,7 @@ export function AlatFormModal({
                     </div>
 
                     {/* Visibility to Student Toggle */}
-                    <div className="p-3.5 rounded-xl border border-slate-200 bg-slate-50 flex items-center justify-between">
+                    <div className="p-3.5 rounded border border-slate-200 bg-slate-50 flex items-center justify-between">
                         <div>
                             <p className="font-semibold text-slate-900">Status Alat (Aktif)</p>
                             <p className="text-[11px] text-slate-500">

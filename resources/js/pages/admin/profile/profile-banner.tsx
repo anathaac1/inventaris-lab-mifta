@@ -1,5 +1,3 @@
-import { ShieldCheck, Clock } from 'lucide-react';
-
 interface ProfileBannerProps {
     adminName: string;
     adminUsername: string;
@@ -20,16 +18,12 @@ export function ProfileBanner({ adminName, adminUsername, adminInitials }: Profi
             <div className="relative z-10 flex items-center justify-between gap-4">
                 <div className="flex items-center gap-4 min-w-0">
                     {/* Avatar */}
-                    <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl bg-white/15 backdrop-blur-md border border-white/30 flex items-center justify-center text-white shrink-0 font-black text-xl shadow-xs">
+                    <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl bg-white/15 backdrop-blur-md border border-white/20 flex items-center justify-center text-white shrink-0 font-black text-xl shadow-xs">
                         {adminInitials}
                     </div>
 
                     {/* Identity */}
                     <div className="min-w-0">
-                        {/* <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/15 backdrop-blur-xs text-[10px] font-bold uppercase tracking-wider text-blue-100 border border-white/20 mb-1">
-                            <ShieldCheck className="w-3 h-3 text-emerald-300" />
-                            <span>Kepala Laboratorium</span>
-                        </span> */}
                         <h2 className="text-base sm:text-lg font-bold text-white truncate">
                             {adminName}
                         </h2>
@@ -41,12 +35,6 @@ export function ProfileBanner({ adminName, adminUsername, adminInitials }: Profi
                         </p>
                     </div>
                 </div>
-
-                {/* Status Badge */}
-                {/* <div className="hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/15 border border-white/20 text-xs text-white shrink-0">
-                    <Clock className="w-3.5 h-3.5 text-emerald-300" />
-                    <span>Sesi Aktif</span>
-                </div> */}
             </div>
         </div>
     );

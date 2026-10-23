@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { Head, router } from '@inertiajs/react';
 import { AdminLayout } from '@/layouts/admin-layout';
 import {
-    getStoredItems,
     type InventoryItem
 } from '@/data/inventory-data';
 import { toast } from 'sonner';
@@ -25,11 +24,8 @@ interface AdminAlatProps {
     initialItems?: InventoryItem[];
 }
 
-export default function AdminAlat({ initialItems }: AdminAlatProps) {
-    const [items, setItems] = useState<InventoryItem[]>(() => {
-        if (initialItems && initialItems.length > 0) return initialItems;
-        return getStoredItems();
-    });
+export default function AdminAlat({ initialItems = [] }: AdminAlatProps) {
+    const items = initialItems;
 
     // Filter Form Values & Applied Filter State
     const [filterForm, setFilterForm] = useState<AlatFilterValues>(DEFAULT_ALAT_FILTERS);
@@ -50,27 +46,13 @@ export default function AdminAlat({ initialItems }: AdminAlatProps) {
         name: '',
         code: '',
         category: 'Laptop',
-        stock: 10,
-        total: 10,
+        stock: '',
+        total: '',
         description: '',
         iconType: 'laptop',
         isVisibleToStudents: true,
-        specs: [{ key: 'Tipe', value: '' }]
+        specs: [{ key: '', value: '' }]
     });
-
-    useEffect(() => {
-        if (initialItems) setItems(initialItems);
-    }, [initialItems]);
-
-    useEffect(() => {
-        const handleItemsChange = () => {
-            if (!initialItems || initialItems.length === 0) {
-                setItems(getStoredItems());
-            }
-        };
-        window.addEventListener('inventory_items_changed', handleItemsChange);
-        return () => window.removeEventListener('inventory_items_changed', handleItemsChange);
-    }, [initialItems]);
 
     // Filter items based on appliedFilters
     const filteredItems = items.filter((item) => {
@@ -147,17 +129,14 @@ export default function AdminAlat({ initialItems }: AdminAlatProps) {
         setEditingItem(null);
         setFormData({
             name: '',
-            code: `EL-${String(items.length + 1).padStart(3, '0')}`,
+            code: '',
             category: 'Laptop',
-            stock: 10,
-            total: 10,
+            stock: '',
+            total: '',
             description: '',
             iconType: 'laptop',
             isVisibleToStudents: true,
-            specs: [
-                { key: 'Tipe', value: 'Standar Lab RPL' },
-                { key: 'Kondisi', value: 'Prima / Siap Pakai' }
-            ]
+            specs: [{ key: '', value: '' }]
         });
         setIsFormModalOpen(true);
     };

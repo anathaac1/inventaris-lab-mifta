@@ -1,105 +1,66 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Link, router, usePage } from '@inertiajs/react';
 import {
     LayoutDashboard,
     Box,
     ClipboardList,
     Users,
-    ChevronRight,
-    User,
     LogOut,
-    ChevronDown
+    ChevronRight,
+    ChevronDown,
+    User
 } from 'lucide-react';
-import { getStoredItems, getStoredLoans } from '@/data/inventory-data';
-import { getStoredAccounts, terminateSession, getActiveSession, type SessionToken } from '@/data/auth-store';
-import { toast } from 'sonner';
 import { ProfileModal } from '@/pages/admin/profile/profile-modal';
 
 interface AdminLayoutProps {
     children: React.ReactNode;
     currentTab?: 'dashboard' | 'alat' | 'peminjaman' | 'siswa' | 'profile';
     title?: string;
+    description?: string;
+    actions?: React.ReactNode;
 }
 
 export function AdminLayout({
     children,
     currentTab = 'dashboard',
-    title = 'Ringkasan & Metrik'
+    title = 'Dashboard Admin'
 }: AdminLayoutProps) {
-    const pageProps = usePage().props as any;
-    const currentUser = pageProps.auth?.user;
-
-    const [counts, setCounts] = useState({
-        items: 0,
-        activeLoans: 0,
-        students: 6
-    });
-    const [dropdownOpen, setDropdownOpen] = useState(false);
     const [profileModalOpen, setProfileModalOpen] = useState(false);
-    const [session, setSession] = useState<SessionToken | null>(null);
+    const [dropdownOpen, setDropdownOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
 
+    // Close dropdown on click outside
     useEffect(() => {
-        setSession(getActiveSession());
-
-        const updateCounts = () => {
-            const items = pageProps.initialItems || getStoredItems();
-            const loans = pageProps.initialLoans || getStoredLoans();
-            const accounts = pageProps.initialStudents || getStoredAccounts();
-            setCounts({
-                items: items.length,
-                activeLoans: loans.filter((l: any) => l.status === 'Sedang Dipinjam').length,
-                students: accounts.filter((a: any) => a.role === 'siswa').length || accounts.length
-            });
-            setSession(getActiveSession());
-        };
-
-        updateCounts();
-
-        window.addEventListener('inventory_items_changed', updateCounts);
-        window.addEventListener('inventory_loans_changed', updateCounts);
-        window.addEventListener('inventory_accounts_changed', updateCounts);
-
-        return () => {
-            window.removeEventListener('inventory_items_changed', updateCounts);
-            window.removeEventListener('inventory_loans_changed', updateCounts);
-            window.removeEventListener('inventory_accounts_changed', updateCounts);
-        };
-    }, [pageProps.initialItems, pageProps.initialLoans, pageProps.initialStudents]);
-
-    // Close dropdown on outside click or escape
-    useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
+        function handleClickOutside(event: MouseEvent) {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
                 setDropdownOpen(false);
             }
-        };
-
-        const handleEscape = (event: KeyboardEvent) => {
-            if (event.key === 'Escape') {
-                setDropdownOpen(false);
-            }
-        };
-
+        }
         document.addEventListener('mousedown', handleClickOutside);
-        document.addEventListener('keydown', handleEscape);
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-            document.removeEventListener('keydown', handleEscape);
-        };
+        return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
+    const { auth, adminCounts } = usePage().props as unknown as {
+        auth?: { user?: { name: string; username: string; role: string; class?: string } };
+        adminCounts?: { items: number; activeLoans: number; students: number };
+    };
+    const currentUser = auth?.user;
+
+    const counts = adminCounts || {
+        items: 0,
+        activeLoans: 0,
+        students: 0
+    };
+
     const handleLogout = () => {
-        terminateSession();
         router.post('/logout', {}, {
             onFinish: () => {
-                toast.info('Sesi administrator telah berakhir.');
                 router.visit('/login');
             }
         });
     };
 
-    const adminName = currentUser?.name || session?.name || 'Bambang Haryanto, S.T.';
+    const adminName = currentUser?.name || 'Bambang Haryanto, S.T.';
     const adminRole = currentUser?.class || 'Kepala Lab';
     const adminInitials = adminName
         .split(' ')
@@ -245,7 +206,7 @@ export function AdminLayout({
             <ProfileModal
                 isOpen={profileModalOpen}
                 onClose={() => setProfileModalOpen(false)}
-                session={session}
+                session={null}
                 user={currentUser}
                 onLogout={handleLogout}
             />

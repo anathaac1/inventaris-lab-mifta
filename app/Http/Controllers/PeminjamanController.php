@@ -15,8 +15,13 @@ class PeminjamanController extends Controller
     /**
      * Display student loans page.
      */
-    public function index(Request $request): Response
+    public function index(Request $request): Response|RedirectResponse
     {
+        $user = $request->user();
+        if ($user && ($user->role === 'admin' || str_starts_with($user->email, 'admin') || $user->username === 'admin')) {
+            return redirect('/admin/peminjaman');
+        }
+
         try {
             $query = Peminjaman::with('alat')->latest();
 

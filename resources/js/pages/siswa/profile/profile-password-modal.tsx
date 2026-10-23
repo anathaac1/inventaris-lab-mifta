@@ -39,7 +39,7 @@ export function ProfilePasswordModal({
                     </DialogTitle>
                 </DialogHeader>
 
-                <form onSubmit={onSubmit} className="space-y-4 mt-2">
+                {/* <form onSubmit={onSubmit} className="space-y-4 mt-2">
                     <div>
                         <label className="block text-xs font-semibold text-zinc-700 mb-1">
                             Kata Sandi Lama
@@ -50,7 +50,7 @@ export function ProfilePasswordModal({
                             value={oldPassword}
                             onChange={(e) => onOldPasswordChange(e.target.value)}
                             placeholder="Masukkan kata sandi lama..."
-                            className="w-full px-3 py-2 text-sm border border-zinc-200 rounded-lg focus:outline-none focus:border-blue-500"
+                            className="w-full px-3 py-2 text-sm border border-zinc-200 rounded-lg text-slate-900 bg-white placeholder:text-slate-400 focus:outline-none focus:border-blue-500"
                         />
                     </div>
 
@@ -65,7 +65,7 @@ export function ProfilePasswordModal({
                             value={newPassword}
                             onChange={(e) => onNewPasswordChange(e.target.value)}
                             placeholder="Minimal 4 karakter..."
-                            className="w-full px-3 py-2 text-sm border border-zinc-200 rounded-lg focus:outline-none focus:border-blue-500"
+                            className="w-full px-3 py-2 text-sm border border-zinc-200 rounded-lg text-slate-900 bg-white placeholder:text-slate-400 focus:outline-none focus:border-blue-500"
                         />
                     </div>
 
@@ -80,7 +80,7 @@ export function ProfilePasswordModal({
                             value={confirmPassword}
                             onChange={(e) => onConfirmPasswordChange(e.target.value)}
                             placeholder="Ulangi kata sandi baru..."
-                            className="w-full px-3 py-2 text-sm border border-zinc-200 rounded-lg focus:outline-none focus:border-blue-500"
+                            className="w-full px-3 py-2 text-sm border border-zinc-200 rounded-lg text-slate-900 bg-white placeholder:text-slate-400 focus:outline-none focus:border-blue-500"
                         />
                     </div>
 
@@ -102,7 +102,7 @@ export function ProfilePasswordModal({
                             Simpan Perubahan
                         </Button>
                     </div>
-                </form>
+                </form> */}
             </DialogContent>
         </Dialog>
     );

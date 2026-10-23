@@ -1,8 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Head, router } from '@inertiajs/react';
 import { AdminLayout } from '@/layouts/admin-layout';
 import {
-    getStoredLoans,
     type LoanItem
 } from '@/data/inventory-data';
 import { toast } from 'sonner';
@@ -22,11 +21,8 @@ interface AdminPeminjamanProps {
     initialLoans?: LoanItem[];
 }
 
-export default function AdminPeminjaman({ initialLoans }: AdminPeminjamanProps) {
-    const [loans, setLoans] = useState<LoanItem[]>(() => {
-        if (initialLoans && initialLoans.length > 0) return initialLoans;
-        return getStoredLoans();
-    });
+export default function AdminPeminjaman({ initialLoans = [] }: AdminPeminjamanProps) {
+    const loans = initialLoans;
 
     // Filter Form Values & Applied Filter State
     const [filterForm, setFilterForm] = useState<PeminjamanFilterValues>(DEFAULT_LOAN_FILTERS);
@@ -35,24 +31,6 @@ export default function AdminPeminjaman({ initialLoans }: AdminPeminjamanProps) 
     // Pagination State
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(10);
-
-    useEffect(() => {
-        if (initialLoans) setLoans(initialLoans);
-    }, [initialLoans]);
-
-    useEffect(() => {
-        const handleLoansChange = () => {
-            if (!initialLoans || initialLoans.length === 0) {
-                setLoans(getStoredLoans());
-            }
-        };
-
-        window.addEventListener('inventory_loans_changed', handleLoansChange);
-
-        return () => {
-            window.removeEventListener('inventory_loans_changed', handleLoansChange);
-        };
-    }, [initialLoans]);
 
     // Filter based on appliedFilters
     const filteredLoans = loans.filter((loan) => {

@@ -63,7 +63,7 @@ export function PeminjamanActiveList({
                             variant="outline"
                             size="sm"
                             onClick={() => onReturnItem(loan)}
-                            className="text-xs h-8 border-blue-600 text-blue-600 bg-white hover:bg-blue-50 focus:bg-white shrink-0 cursor-pointer"
+                            className="text-xs h-8 border-blue-600 text-blue-600 bg-white hover:bg-blue-50 hover:text-blue-600 focus:bg-white focus:text-blue-600 active:text-blue-600 shrink-0 cursor-pointer"
                         >
                             {/* <RotateCcw className="w-3.5 h-3.5 mr-1.5" /> */}
                             Kembalikan

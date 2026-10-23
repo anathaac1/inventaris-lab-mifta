@@ -91,13 +91,13 @@ export function SiswaTable({
                                     {/* Password with Reveal Button */}
                                     <td className="py-3.5 px-4">
                                         <div className="flex items-center gap-2">
-                                            <span className="text-xs px-2 py-1">
-                                                {isRevealed ? student.password : '••••••••'}
+                                            <span className={`text-xs px-2 py-1 font-mono ${isRevealed ? 'text-blue-600 font-semibold' : 'text-slate-600'}`}>
+                                                {isRevealed ? (student.password && student.password !== '••••••••' ? student.password : 'siswa123') : '••••••••'}
                                             </span>
                                             <button
                                                 type="button"
                                                 onClick={() => onTogglePasswordReveal(student.username)}
-                                                className="text-slate-400 hover:text-slate-700 p-1 rounded"
+                                                className="text-slate-400 hover:text-slate-700 p-1 rounded cursor-pointer"
                                                 title={isRevealed ? 'Sembunyikan' : 'Lihat password'}
                                             >
                                                 {isRevealed ? (

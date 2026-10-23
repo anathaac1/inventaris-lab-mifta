@@ -32,6 +32,8 @@ Route::post('peminjaman', [PeminjamanController::class, 'store'])->name('peminja
 Route::post('peminjaman/{peminjaman}/kembalikan', [PeminjamanController::class, 'returnItem'])->name('peminjaman.kembalikan');
 
 Route::get('profile', [ProfileController::class, 'index'])->name('profile.index');
+Route::put('profile', [ProfileController::class, 'update'])->name('profile.update');
+Route::post('profile', [ProfileController::class, 'update'])->name('profile.update_post');
 Route::post('profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
 
 // Admin CMS Routes
@@ -53,6 +55,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::delete('siswa/{user}', [AdminSiswaController::class, 'destroy'])->name('siswa.destroy');
 
     Route::get('profile', [AdminProfileController::class, 'index'])->name('profile.index');
+    Route::put('profile', [AdminProfileController::class, 'update'])->name('profile.update');
+    Route::post('profile', [AdminProfileController::class, 'update'])->name('profile.update_post');
     Route::post('profile/password', [AdminProfileController::class, 'updatePassword'])->name('profile.password');
 });
 

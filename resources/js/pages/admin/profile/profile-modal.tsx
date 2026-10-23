@@ -1,26 +1,57 @@
 import React, { useState } from 'react';
 import { router } from '@inertiajs/react';
-import { User, Lock, LogOut, ChevronRight, X } from 'lucide-react';
+import { Lock, Edit3, ChevronRight } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { ProfileBanner } from './profile-banner';
 import { ProfileInfoCard } from './profile-info-card';
 import { ProfilePasswordModal } from './profile-password-modal';
-import { updateStudentPassword, type SessionToken } from '@/data/auth-store';
+import { AdminProfileEditModal, type AdminProfileFormData } from './admin-profile-edit-modal';
 import { toast } from 'sonner';
 
 interface ProfileModalProps {
     isOpen: boolean;
     onClose: () => void;
-    session: SessionToken | null;
+    session?: any;
     user?: any;
-    onLogout: () => void;
+    onLogout?: () => void;
 }
 
-export function ProfileModal({ isOpen, onClose, session, user, onLogout }: ProfileModalProps) {
+export function ProfileModal({ isOpen, onClose, session, user }: ProfileModalProps) {
+    const [editModalOpen, setEditModalOpen] = useState(false);
     const [passwordModalOpen, setPasswordModalOpen] = useState(false);
     const [oldPassword, setOldPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const [isSubmittingEdit, setIsSubmittingEdit] = useState(false);
+
+    const adminName = user?.name || session?.name || 'Bambang Haryanto, S.T.';
+    const adminUsername = user?.username || session?.username || 'admin';
+    const adminEmail = user?.email || session?.email || 'admin@smkn1.sch.id';
+    const adminClass = user?.class || session?.class || 'Kepala Lab RPL SMKN 1';
+    const adminPhone = user?.phone || session?.phone || '0811-2233-4455';
+
+    const handleEditProfileSubmit = (formData: AdminProfileFormData) => {
+        setIsSubmittingEdit(true);
+        router.post('/admin/profile', {
+            _method: 'PUT',
+            name: formData.name,
+            username: formData.username,
+            email: formData.email,
+            class: formData.class,
+            phone: formData.phone,
+        }, {
+            preserveScroll: true,
+            onSuccess: () => {
+                toast.success('Profil administrator berhasil diperbarui di database!');
+                setEditModalOpen(false);
+                setIsSubmittingEdit(false);
+            },
+            onError: (errors) => {
+                setIsSubmittingEdit(false);
+                toast.error(Object.values(errors)[0] as string || 'Gagal memperbarui profil.');
+            }
+        });
+    };
 
     const handleChangePassword = (e: React.SyntheticEvent) => {
         e.preventDefault();
@@ -33,9 +64,6 @@ export function ProfileModal({ isOpen, onClose, session, user, onLogout }: Profi
             toast.error('Kata sandi minimal harus 4 karakter!');
             return;
         }
-
-        const username = user?.username || session?.username || 'admin';
-        updateStudentPassword(username, newPassword);
 
         router.post('/admin/profile/password', {
             old_password: oldPassword,
@@ -55,11 +83,9 @@ export function ProfileModal({ isOpen, onClose, session, user, onLogout }: Profi
         });
     };
 
-    const adminName = user?.name || session?.name || 'Bambang Haryanto, S.T.';
-    const adminUsername = user?.username || session?.username || 'admin';
     const adminInitials = adminName
         .split(' ')
-        .map((n) => n[0])
+        .map((n: string) => n[0])
         .slice(0, 2)
         .join('')
         .toUpperCase();
@@ -67,17 +93,19 @@ export function ProfileModal({ isOpen, onClose, session, user, onLogout }: Profi
     return (
         <>
             <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-                <DialogContent className="max-w-lg w-full rounded-2xl bg-white p-5 sm:p-6 border border-slate-200 shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto">
+                <DialogContent showCloseButton={false} className="max-w-lg w-full rounded-2xl bg-white p-5 sm:p-6 border border-slate-200 shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto">
                     <DialogHeader className="pb-3 border-b border-slate-100 flex flex-row items-center justify-between">
-                        <div>
-                            <DialogTitle className="text-base font-bold text-slate-900 flex items-center gap-2">
-                                <User className="w-4 h-4 text-[#0256D0]" />
-                                <span>Profil Administrator</span>
-                            </DialogTitle>
-                            {/* <p className="text-xs text-slate-500 mt-0.5">
-                                Informasi akun penanggung jawab dan pengelolaan akses laboratorium
-                            </p> */}
-                        </div>
+                        <DialogTitle className="text-base font-bold text-slate-900 flex items-center justify-between w-full">
+                            <span>Profil Administrator</span>
+                            <button
+                                type="button"
+                                onClick={() => setEditModalOpen(true)}
+                                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 font-medium text-xs transition-colors cursor-pointer border border-blue-200/60"
+                            >
+                                <Edit3 className="w-3.5 h-3.5" />
+                                <span>Edit Profil</span>
+                            </button>
+                        </DialogTitle>
                     </DialogHeader>
 
                     <div className="space-y-4 pt-3">
@@ -112,35 +140,24 @@ export function ProfileModal({ isOpen, onClose, session, user, onLogout }: Profi
                                 </div>
                                 <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-slate-600" />
                             </button>
-
-                            {/* Keluar (Logout) */}
-                            {/* <button
-                                type="button"
-                                onClick={() => {
-                                    onClose();
-                                    onLogout();
-                                }}
-                                className="w-full flex items-center justify-between p-3.5 hover:bg-rose-50 text-rose-600 transition-colors text-left group cursor-pointer"
-                            >
-                                <div className="flex items-center gap-3">
-                                    <div className="w-8 h-8 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center shrink-0 group-hover:bg-rose-100 transition-colors">
-                                        <LogOut className="w-4 h-4 text-rose-600 group-hover:scale-110 transition-transform" />
-                                    </div>
-                                    <div>
-                                        <p className="text-xs font-semibold text-rose-600">
-                                            Keluar
-                                        </p>
-                                        <p className="text-[11px] text-rose-400">
-                                            Akhiri sesi administrator dan kembali ke login
-                                        </p>
-                                    </div>
-                                </div>
-                                <ChevronRight className="w-4 h-4 text-rose-400 group-hover:translate-x-0.5 transition-transform" />
-                            </button> */}
                         </div>
                     </div>
                 </DialogContent>
             </Dialog>
+
+            <AdminProfileEditModal
+                isOpen={editModalOpen}
+                onClose={() => setEditModalOpen(false)}
+                onSubmit={handleEditProfileSubmit}
+                isSubmitting={isSubmittingEdit}
+                initialData={{
+                    name: adminName,
+                    username: adminUsername,
+                    email: adminEmail,
+                    class: adminClass,
+                    phone: adminPhone,
+                }}
+            />
 
             <ProfilePasswordModal
                 isOpen={passwordModalOpen}

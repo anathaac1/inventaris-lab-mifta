@@ -2,9 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Head, router } from '@inertiajs/react';
 import { AdminLayout } from '@/layouts/admin-layout';
 import {
-    getStoredAccounts,
-    updateStudentPassword,
-    createUserAccount,
     type UserAccount
 } from '@/data/auth-store';
 import { toast } from 'sonner';
@@ -26,13 +23,14 @@ const DEFAULT_SISWA_FILTERS: SiswaFilterValues = {
     nisn: ''
 };
 
-export default function AdminSiswa({ initialStudents }: AdminSiswaProps) {
-    const [accounts, setAccounts] = useState<UserAccount[]>(() => {
-        if (initialStudents && initialStudents.length > 0) {
-            return initialStudents;
+export default function AdminSiswa({ initialStudents = [] }: AdminSiswaProps) {
+    const [accounts, setAccounts] = useState<UserAccount[]>(initialStudents);
+
+    useEffect(() => {
+        if (initialStudents) {
+            setAccounts(initialStudents);
         }
-        return getStoredAccounts();
-    });
+    }, [initialStudents]);
 
     // Filter Form Values & Applied Filter State
     const [filterForm, setFilterForm] = useState<SiswaFilterValues>(DEFAULT_SISWA_FILTERS);
@@ -53,25 +51,6 @@ export default function AdminSiswa({ initialStudents }: AdminSiswaProps) {
     const [selectedStudent, setSelectedStudent] = useState<UserAccount | null>(null);
     const [newPassword, setNewPassword] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
-
-    useEffect(() => {
-        if (initialStudents) {
-            setAccounts(initialStudents);
-        }
-    }, [initialStudents]);
-
-    useEffect(() => {
-        const handleAccountsChange = () => {
-            if (!initialStudents || initialStudents.length === 0) {
-                setAccounts(getStoredAccounts());
-            }
-        };
-        window.addEventListener('inventory_accounts_changed', handleAccountsChange);
-
-        return () => {
-            window.removeEventListener('inventory_accounts_changed', handleAccountsChange);
-        };
-    }, [initialStudents]);
 
     // Filter accounts based on appliedFilters
     const filteredAccounts = accounts.filter((acc) => {
@@ -142,7 +121,13 @@ export default function AdminSiswa({ initialStudents }: AdminSiswaProps) {
 
         setIsSubmitting(true);
 
-        updateStudentPassword(selectedStudent.username, newPassword.trim());
+        setAccounts((prev) =>
+            prev.map((acc) =>
+                acc.username.toLowerCase() === selectedStudent.username.toLowerCase()
+                    ? { ...acc, password: newPassword.trim() }
+                    : acc
+            )
+        );
 
         router.post('/admin/siswa/reset-password', {
             username: selectedStudent.username,
@@ -167,16 +152,6 @@ export default function AdminSiswa({ initialStudents }: AdminSiswaProps) {
 
     const handleCreateUser = (formData: NewUserFormData) => {
         setIsCreatingUser(true);
-        createUserAccount({
-            username: formData.username,
-            name: formData.name,
-            role: formData.role,
-            class: formData.class,
-            email: formData.email,
-            password: formData.password,
-            nisn: formData.nisn,
-            phone: formData.phone
-        });
 
         router.post('/admin/siswa', {
             name: formData.name,

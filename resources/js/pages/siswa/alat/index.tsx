@@ -1,17 +1,14 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { Head, router, usePage } from '@inertiajs/react';
 import { MainLayout } from '@/components/inventory/main-layout';
 import { ItemDetailModal } from '@/components/inventory/item-detail-modal';
 import { FilterSheet } from '@/components/inventory/filter-sheet';
 import {
-    getStoredItems,
     CATEGORIES,
     type InventoryItem
 } from '@/data/inventory-data';
-import { getActiveSession } from '@/data/auth-store';
 import { toast } from 'sonner';
 
-import { AlatHeader } from './alat-header';
 import { AlatSearchBar } from './alat-search-bar';
 import { AlatCategoryChips } from './alat-category-chips';
 import { AlatGrid } from './alat-grid';
@@ -24,32 +21,15 @@ interface AlatProps {
     };
 }
 
-export default function Alat({ initialItems, filters }: AlatProps) {
+export default function Alat({ initialItems = [], filters }: AlatProps) {
     const { auth } = usePage().props as any;
-    const [items, setItems] = useState<InventoryItem[]>(() => {
-        if (initialItems && initialItems.length > 0) return initialItems;
-        return getStoredItems();
-    });
+    const items = initialItems;
     const [searchQuery, setSearchQuery] = useState(filters?.search || '');
     const [selectedCategory, setSelectedCategory] = useState<string>(filters?.category || 'Semua');
     const [selectedStatus, setSelectedStatus] = useState<string>('Semua');
     const [filterSheetOpen, setFilterSheetOpen] = useState(false);
     const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
     const [detailModalOpen, setDetailModalOpen] = useState(false);
-
-    useEffect(() => {
-        if (initialItems) setItems(initialItems);
-    }, [initialItems]);
-
-    useEffect(() => {
-        const handleItemsChange = () => {
-            if (!initialItems || initialItems.length === 0) {
-                setItems(getStoredItems());
-            }
-        };
-        window.addEventListener('inventory_items_changed', handleItemsChange);
-        return () => window.removeEventListener('inventory_items_changed', handleItemsChange);
-    }, [initialItems]);
 
     const filteredItems = useMemo(() => {
         return items.filter((item) => {
@@ -77,9 +57,8 @@ export default function Alat({ initialItems, filters }: AlatProps) {
         returnEstimate: string,
         notes: string
     ) => {
-        const session = getActiveSession();
-        const borrowerName = auth?.user?.name || session?.name || 'Ahmad Rizky Pratama';
-        const borrowerClass = auth?.user?.class || session?.class || 'XII RPL A';
+        const borrowerName = auth?.user?.name || 'Ahmad Rizky Pratama';
+        const borrowerClass = auth?.user?.class || 'XII RPL A';
 
         router.post('/peminjaman', {
             alat_id: item.id,
@@ -105,9 +84,6 @@ export default function Alat({ initialItems, filters }: AlatProps) {
             <Head title="Semua Alat - Sistem Inventory Lab RPL" />
 
             <div className="space-y-4">
-                {/* Header with Back Arrow & Item Count */}
-                <AlatHeader totalItems={filteredItems.length} />
-
                 {/* Search Bar + Filter Button */}
                 <AlatSearchBar
                     searchQuery={searchQuery}

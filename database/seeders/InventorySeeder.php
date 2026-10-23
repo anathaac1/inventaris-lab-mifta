@@ -104,7 +104,7 @@ class InventorySeeder extends Seeder
                 'code' => 'EL-001',
                 'stock' => 36,
                 'total' => 40,
-                'description' => 'Laptop Lenovo ThinkPad dengan spesifikasi Intel Core i5, RAM 8GB, SSD 256GB. Cocok untuk kegiatan praktikum apalagi buat ngoding ✨',
+                'description' => 'Laptop Lenovo ThinkPad dengan spesifikasi Intel Core i5, RAM 8GB, SSD 256GB. Cocok untuk kegiatan praktikum apalagi buat ngoding.',
                 'specs' => [
                     'Tipe' => 'Lenovo ThinkPad L14',
                     'Processor' => 'Intel Core i5-1135G7',
@@ -349,44 +349,98 @@ class InventorySeeder extends Seeder
             );
         }
 
-        // 3. Seed Initial Loans
-        $siswa1 = $createdUsers['siswa1'] ?? User::first();
-        if ($siswa1 && isset($createdAlats['EL-001'])) {
-            Peminjaman::create([
-                'user_id' => $siswa1->id,
-                'alat_id' => $createdAlats['EL-001']->id,
-                'borrower_name' => $siswa1->name,
-                'borrower_class' => $siswa1->class ?? 'XII RPL A',
-                'borrow_date' => '2024-08-03',
-                'return_estimate' => '2024-08-05',
+        // 3. Seed Initial Loans (6 Active Loans + History)
+        $activeLoansData = [
+            [
+                'username' => 'siswa1',
+                'alat_code' => 'EL-001',
+                'borrow_date' => '2026-10-14',
+                'return_estimate' => '2026-10-17',
                 'status' => 'Sedang Dipinjam',
-                'notes' => 'Praktikum Pemrograman Web Lanjut',
-            ]);
+                'notes' => 'Praktikum Web Service & REST API',
+            ],
+            [
+                'username' => 'siswa2',
+                'alat_code' => 'EL-002',
+                'borrow_date' => '2026-10-15',
+                'return_estimate' => '2026-10-18',
+                'status' => 'Sedang Dipinjam',
+                'notes' => 'Desain Wireframe & Prototyping UI/UX',
+            ],
+            [
+                'username' => 'siswa3',
+                'alat_code' => 'PR-001',
+                'borrow_date' => '2026-10-16',
+                'return_estimate' => '2026-10-19',
+                'status' => 'Sedang Dipinjam',
+                'notes' => 'Praktikum Basis Data MySQL & Query Lanjut',
+            ],
+            [
+                'username' => 'siswa4',
+                'alat_code' => 'PR-003',
+                'borrow_date' => '2026-10-16',
+                'return_estimate' => '2026-10-19',
+                'status' => 'Sedang Dipinjam',
+                'notes' => 'Praktikum Multimedia & Video Editing',
+            ],
+            [
+                'username' => 'siswa5',
+                'alat_code' => 'EL-003',
+                'borrow_date' => '2026-10-17',
+                'return_estimate' => '2026-10-20',
+                'status' => 'Sedang Dipinjam',
+                'notes' => 'Praktikum Pemrograman Dasar',
+            ],
+            [
+                'username' => 'siswa6',
+                'alat_code' => 'PR-006',
+                'borrow_date' => '2026-10-17',
+                'return_estimate' => '2026-10-20',
+                'status' => 'Sedang Dipinjam',
+                'notes' => 'Praktikum Algoritma Pemrograman',
+            ],
+        ];
+
+        foreach ($activeLoansData as $loanData) {
+            $user = $createdUsers[$loanData['username']] ?? null;
+            $alat = $createdAlats[$loanData['alat_code']] ?? null;
+
+            if ($user && $alat) {
+                Peminjaman::updateOrCreate(
+                    [
+                        'user_id' => $user->id,
+                        'alat_id' => $alat->id,
+                        'status' => 'Sedang Dipinjam',
+                    ],
+                    [
+                        'borrower_name' => $user->name,
+                        'borrower_class' => $user->class ?? 'XII RPL A',
+                        'borrow_date' => $loanData['borrow_date'],
+                        'return_estimate' => $loanData['return_estimate'],
+                        'notes' => $loanData['notes'],
+                    ]
+                );
+            }
         }
 
-        if ($siswa1 && isset($createdAlats['PR-001'])) {
-            Peminjaman::create([
-                'user_id' => $siswa1->id,
-                'alat_id' => $createdAlats['PR-001']->id,
-                'borrower_name' => $siswa1->name,
-                'borrower_class' => $siswa1->class ?? 'XII RPL A',
-                'borrow_date' => '2024-08-03',
-                'return_estimate' => '2024-08-05',
-                'status' => 'Sedang Dipinjam',
-                'notes' => 'Navigasi praktikum coding',
-            ]);
-
-            Peminjaman::create([
-                'user_id' => $siswa1->id,
-                'alat_id' => $createdAlats['PR-001']->id,
-                'borrower_name' => $siswa1->name,
-                'borrower_class' => $siswa1->class ?? 'XII RPL A',
-                'borrow_date' => '2024-08-01',
-                'return_estimate' => '2024-08-02',
-                'return_date' => '2024-08-05',
-                'status' => 'Dikembalikan',
-                'notes' => 'Praktikum Web',
-            ]);
+        // Additional history loans
+        $siswa4 = $createdUsers['siswa4'] ?? null;
+        if ($siswa4 && isset($createdAlats['PR-006'])) {
+            Peminjaman::updateOrCreate(
+                [
+                    'user_id' => $siswa4->id,
+                    'alat_id' => $createdAlats['PR-006']->id,
+                    'borrow_date' => '2026-10-11',
+                ],
+                [
+                    'borrower_name' => $siswa4->name,
+                    'borrower_class' => $siswa4->class ?? 'XI RPL B',
+                    'return_estimate' => '2026-10-13',
+                    'return_date' => '2026-10-13',
+                    'status' => 'Dikembalikan',
+                    'notes' => 'Input data evaluasi praktikum',
+                ]
+            );
         }
     }
 }

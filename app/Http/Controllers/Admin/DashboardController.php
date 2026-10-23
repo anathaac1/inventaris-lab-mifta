@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Alat;
 use App\Models\Peminjaman;
 use App\Models\User;
+use Database\Seeders\InventorySeeder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -20,9 +21,19 @@ class DashboardController extends Controller
             return redirect('/dashboard');
         }
 
-        $items = Alat::latest()->get();
-        $loans = Peminjaman::with('alat')->latest()->get();
-        $students = User::where('role', 'siswa')->get();
+        try {
+            if (Alat::count() === 0 || Peminjaman::where('status', 'Sedang Dipinjam')->count() < 6) {
+                (new InventorySeeder())->run();
+            }
+
+            $items = Alat::latest()->get();
+            $loans = Peminjaman::with('alat')->latest()->get();
+            $students = User::where('role', 'siswa')->get();
+        } catch (\Throwable) {
+            $items = collect();
+            $loans = collect();
+            $students = collect();
+        }
 
         return Inertia::render('admin/dashboard/index', [
             'initialItems' => $items,

@@ -1,5 +1,5 @@
 import React from 'react';
-import { UserPlus, X, ChevronDown } from 'lucide-react';
+import { UserPlus, ChevronDown, X } from 'lucide-react';
 import { RPL_CLASSES } from '@/data/auth-store';
 
 export interface SiswaFilterValues {
@@ -47,9 +47,9 @@ export function SiswaFilterBar({
 
                 </span>
                 <div className="flex items-center gap-3">
-                    <span className="text-xs text-slate-500 hidden sm:inline">
+                    {/* <span className="text-xs text-slate-500 hidden sm:inline">
                         Total: <strong>{totalAccounts} Akun</strong>
-                    </span>
+                    </span> */}
                     <button
                         type="button"
                         onClick={onOpenCreateModal}
@@ -78,7 +78,7 @@ export function SiswaFilterBar({
                     />
                 </div>
 
-                {/* Row 1 - Col 2: Peran Akun (Select) */}
+                {/* Row 1 - Col 2: Peran Akun */}
                 <div className="flex items-center gap-3">
                     <label className="w-32 shrink-0 font-medium text-slate-600 text-[11px] sm:text-xs">
                         Peran Akun
@@ -87,39 +87,29 @@ export function SiswaFilterBar({
                         <select
                             value={filters.role}
                             onChange={(e) => handleFieldChange('role', e.target.value)}
-                            className={`w-full h-9 pl-3 pr-14 rounded border border-slate-300 bg-white text-xs appearance-none focus:outline-none focus:border-[#0256D0] focus:ring-1 focus:ring-[#0256D0] cursor-pointer ${
-                                filters.role === 'all' ? 'text-transparent' : 'text-slate-900 font-medium'
-                            }`}
+                            className="w-full h-9 pl-3 pr-12 rounded border border-slate-300 bg-white text-xs text-slate-900 font-medium focus:outline-none focus:border-[#0256D0] focus:ring-1 focus:ring-[#0256D0] cursor-pointer"
                         >
-                            <option value="all" className="hidden" disabled>Pilih Peran</option>
-                            <option value="siswa" className="text-slate-900 font-normal">Siswa RPL</option>
-                            <option value="admin" className="text-slate-900 font-normal">Administrator Lab</option>
+                            <option value="all">Semua Peran</option>
+                            <option value="siswa">Siswa RPL</option>
+                            <option value="admin">Administrator Lab</option>
                         </select>
-                        {filters.role === 'all' && (
-                            <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-xs text-slate-400">
-                                Pilih Peran
-                            </span>
-                        )}
-                        <div className="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1.5 pointer-events-none">
-                            <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+                        <div className="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1">
                             {filters.role !== 'all' && (
                                 <button
                                     type="button"
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        handleFieldChange('role', 'all');
-                                    }}
-                                    title="Hapus pilihan peran"
-                                    className="pointer-events-auto p-1 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full cursor-pointer transition-colors"
+                                    onClick={() => handleFieldChange('role', 'all')}
+                                    className="p-0.5 rounded-full hover:bg-slate-200 text-slate-400 hover:text-slate-600 transition-colors cursor-pointer"
+                                    title="Reset Peran Akun"
                                 >
-                                    <X className="w-3.5 h-3.5" />
+                                    <X className="w-3 h-3" />
                                 </button>
                             )}
+                            <ChevronDown className="w-3.5 h-3.5 text-slate-400 pointer-events-none" />
                         </div>
                     </div>
                 </div>
 
-                {/* Row 1 - Col 3: Kelas (Select) */}
+                {/* Row 1 - Col 3: Kelas */}
                 <div className="flex items-center gap-3">
                     <label className="w-32 shrink-0 font-medium text-slate-600 text-[11px] sm:text-xs">
                         Kelas Siswa
@@ -128,37 +118,27 @@ export function SiswaFilterBar({
                         <select
                             value={filters.studentClass}
                             onChange={(e) => handleFieldChange('studentClass', e.target.value)}
-                            className={`w-full h-9 pl-3 pr-14 rounded border border-slate-300 bg-white text-xs appearance-none focus:outline-none focus:border-[#0256D0] focus:ring-1 focus:ring-[#0256D0] cursor-pointer ${
-                                filters.studentClass === 'all' ? 'text-transparent' : 'text-slate-900 font-medium'
-                            }`}
+                            className="w-full h-9 pl-3 pr-12 rounded border border-slate-300 bg-white text-xs text-slate-900 font-medium focus:outline-none focus:border-[#0256D0] focus:ring-1 focus:ring-[#0256D0] cursor-pointer"
                         >
-                            <option value="all" className="hidden" disabled>Pilih Kelas</option>
+                            <option value="all">Semua Kelas</option>
                             {RPL_CLASSES.map((cls) => (
-                                <option key={cls} value={cls} className="text-slate-900 font-normal">
+                                <option key={cls} value={cls}>
                                     {cls}
                                 </option>
                             ))}
                         </select>
-                        {filters.studentClass === 'all' && (
-                            <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-xs text-slate-400">
-                                Pilih Kelas
-                            </span>
-                        )}
-                        <div className="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1.5 pointer-events-none">
-                            <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+                        <div className="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1">
                             {filters.studentClass !== 'all' && (
                                 <button
                                     type="button"
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        handleFieldChange('studentClass', 'all');
-                                    }}
-                                    title="Hapus pilihan kelas"
-                                    className="pointer-events-auto p-1 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full cursor-pointer transition-colors"
+                                    onClick={() => handleFieldChange('studentClass', 'all')}
+                                    className="p-0.5 rounded-full hover:bg-slate-200 text-slate-400 hover:text-slate-600 transition-colors cursor-pointer"
+                                    title="Reset Kelas Siswa"
                                 >
-                                    <X className="w-3.5 h-3.5" />
+                                    <X className="w-3 h-3" />
                                 </button>
                             )}
+                            <ChevronDown className="w-3.5 h-3.5 text-slate-400 pointer-events-none" />
                         </div>
                     </div>
                 </div>

@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { Head, router, usePage } from '@inertiajs/react';
 import { Laptop, Mouse, Wrench, Zap } from 'lucide-react';
 import { MainLayout } from '@/components/inventory/main-layout';
@@ -6,12 +6,9 @@ import { ItemDetailModal } from '@/components/inventory/item-detail-modal';
 import { FilterSheet } from '@/components/inventory/filter-sheet';
 import { DashboardBannerCarousel } from '@/components/inventory/dashboard-banner-carousel';
 import {
-    getStoredItems,
-    getStoredLoans,
     type InventoryItem,
     type LoanItem
 } from '@/data/inventory-data';
-import { getActiveSession, type SessionToken } from '@/data/auth-store';
 import { toast } from 'sonner';
 
 import { DashboardGreeting } from './dashboard-greeting';
@@ -25,55 +22,16 @@ interface DashboardProps {
     initialActiveLoans?: LoanItem[];
 }
 
-export default function Dashboard({ initialItems, initialActiveLoans }: DashboardProps) {
+export default function Dashboard({ initialItems = [], initialActiveLoans = [] }: DashboardProps) {
     const { auth } = usePage().props as any;
-    const [items, setItems] = useState<InventoryItem[]>(() => {
-        if (initialItems && initialItems.length > 0) return initialItems;
-        return getStoredItems();
-    });
+    const items = initialItems;
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('Semua');
     const [selectedStatus, setSelectedStatus] = useState('Semua');
     const [filterSheetOpen, setFilterSheetOpen] = useState(false);
     const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
     const [detailModalOpen, setDetailModalOpen] = useState(false);
-    const [activeLoans, setActiveLoans] = useState<LoanItem[]>(() => {
-        if (initialActiveLoans && initialActiveLoans.length > 0) return initialActiveLoans;
-        return getStoredLoans().filter((l) => l.status === 'Sedang Dipinjam');
-    });
-    const [session, setSession] = useState<SessionToken | null>(null);
-
-    useEffect(() => {
-        if (initialItems) setItems(initialItems);
-    }, [initialItems]);
-
-    useEffect(() => {
-        if (initialActiveLoans) setActiveLoans(initialActiveLoans);
-    }, [initialActiveLoans]);
-
-    useEffect(() => {
-        setSession(getActiveSession());
-
-        const handleItemsChange = () => {
-            if (!initialItems || initialItems.length === 0) {
-                setItems(getStoredItems());
-            }
-        };
-        const handleLoansChange = () => {
-            if (!initialActiveLoans || initialActiveLoans.length === 0) {
-                const updatedLoans = getStoredLoans();
-                setActiveLoans(updatedLoans.filter((l) => l.status === 'Sedang Dipinjam'));
-            }
-        };
-
-        window.addEventListener('inventory_items_changed', handleItemsChange);
-        window.addEventListener('inventory_loans_changed', handleLoansChange);
-
-        return () => {
-            window.removeEventListener('inventory_items_changed', handleItemsChange);
-            window.removeEventListener('inventory_loans_changed', handleLoansChange);
-        };
-    }, [initialItems, initialActiveLoans]);
+    const activeLoans = initialActiveLoans;
 
     const categories: CategoryOption[] = [
         { name: 'Laptop', icon: Laptop },
@@ -108,8 +66,8 @@ export default function Dashboard({ initialItems, initialActiveLoans }: Dashboar
         returnEstimate: string,
         notes: string
     ) => {
-        const borrowerName = auth?.user?.name || session?.name || 'Ahmad Rizky Pratama';
-        const borrowerClass = auth?.user?.class || session?.class || 'XII RPL A';
+        const borrowerName = auth?.user?.name || 'Ahmad Rizky Pratama';
+        const borrowerClass = auth?.user?.class || 'XII RPL A';
 
         router.post('/peminjaman', {
             alat_id: item.id,
@@ -130,9 +88,8 @@ export default function Dashboard({ initialItems, initialActiveLoans }: Dashboar
         });
     };
 
-    const studentName = auth?.user?.name || session?.name || 'Ahmad Rizky Pratama';
-    const loginTimestamp = session?.createdAt || Date.now();
-    const loginDate = new Date(loginTimestamp);
+    const studentName = auth?.user?.name || 'Ahmad Rizky Pratama';
+    const loginDate = new Date();
 
     const loginDateStr = loginDate.toLocaleDateString('id-ID', {
         day: 'numeric',

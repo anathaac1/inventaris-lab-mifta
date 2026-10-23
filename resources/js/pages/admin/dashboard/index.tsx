@@ -3,12 +3,9 @@ import { Head } from '@inertiajs/react';
 import { Laptop, Mouse, Wrench, Zap } from 'lucide-react';
 import { AdminLayout } from '@/layouts/admin-layout';
 import {
-    getStoredItems,
-    getStoredLoans,
     type InventoryItem,
     type LoanItem
 } from '@/data/inventory-data';
-import { getStoredAccounts } from '@/data/auth-store';
 import { HeroOperationalBanner } from './hero-operational-banner';
 import { DimensionMetrics, type DimensionTab } from './dimension-metrics';
 import { ActiveLoansMonitor } from './active-loans-monitor';
@@ -47,57 +44,17 @@ interface AdminDashboardProps {
     initialStudents?: any[];
 }
 
-export default function AdminDashboard({ initialItems, initialLoans, initialStudents }: AdminDashboardProps) {
-    const [items, setItems] = useState<InventoryItem[]>(() => {
-        if (initialItems && initialItems.length > 0) return initialItems;
-        return getStoredItems();
-    });
-    const [loans, setLoans] = useState<LoanItem[]>(() => {
-        if (initialLoans && initialLoans.length > 0) return initialLoans;
-        return getStoredLoans();
-    });
-    const [students, setStudents] = useState<any[]>(() => {
-        if (initialStudents && initialStudents.length > 0) return initialStudents;
-        return getStoredAccounts().filter((a) => a.role === 'siswa');
-    });
+export default function AdminDashboard({ initialItems = [], initialLoans = [], initialStudents = [] }: AdminDashboardProps) {
+    const items = initialItems;
+    const loans = initialLoans;
+    const students = initialStudents.filter((a: any) => a.role === 'siswa');
     const [activeTab, setActiveTab] = useState<DimensionTab>('all');
     const [isAnimated, setIsAnimated] = useState(false);
 
     useEffect(() => {
-        if (initialItems) setItems(initialItems);
-    }, [initialItems]);
-
-    useEffect(() => {
-        if (initialLoans) setLoans(initialLoans);
-    }, [initialLoans]);
-
-    useEffect(() => {
-        if (initialStudents) setStudents(initialStudents);
-    }, [initialStudents]);
-
-    useEffect(() => {
         const timer = setTimeout(() => setIsAnimated(true), 50);
-
-        const handleItemsChange = () => {
-            if (!initialItems || initialItems.length === 0) {
-                setItems(getStoredItems());
-            }
-        };
-        const handleLoansChange = () => {
-            if (!initialLoans || initialLoans.length === 0) {
-                setLoans(getStoredLoans());
-            }
-        };
-
-        window.addEventListener('inventory_items_changed', handleItemsChange);
-        window.addEventListener('inventory_loans_changed', handleLoansChange);
-
-        return () => {
-            clearTimeout(timer);
-            window.removeEventListener('inventory_items_changed', handleItemsChange);
-            window.removeEventListener('inventory_loans_changed', handleLoansChange);
-        };
-    }, [initialItems, initialLoans]);
+        return () => clearTimeout(timer);
+    }, []);
 
     // Summary calculations
     const totalItems = items.length;

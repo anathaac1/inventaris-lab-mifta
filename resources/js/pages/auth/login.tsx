@@ -4,7 +4,6 @@ import { Eye, EyeOff, MousePointer } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
-import { getStoredAccounts, createSessionToken } from '@/data/auth-store';
 import { toast } from 'sonner';
 
 type Props = {
@@ -35,17 +34,6 @@ export default function Login({ status }: Props) {
         setIsLoading(true);
 
         const cleanUsername = username.trim().toLowerCase();
-        const accounts = getStoredAccounts();
-
-        const matchedAccount = accounts.find(
-            (acc) =>
-                acc.username.toLowerCase() === cleanUsername ||
-                acc.email.toLowerCase() === cleanUsername
-        );
-
-        if (matchedAccount) {
-            createSessionToken(matchedAccount);
-        }
 
         router.post('/login', {
             email: cleanUsername,
@@ -320,11 +308,11 @@ export default function Login({ status }: Props) {
                     <div className="mt-5 text-center px-4">
                         <h2 className="text-white font-extrabold text-base tracking-wide flex items-center justify-center gap-1.5 drop-shadow-md">
                             <span>PinjamYuk!</span>
-                            <span className="text-[10px] font-semibold bg-white/20 text-white px-2 py-0.5 rounded-full backdrop-blur-xs">
+                            {/* <span className="text-[10px] font-semibold bg-white/20 text-white px-2 py-0.5 rounded-full backdrop-blur-xs">
                                 Lab RPL
-                            </span>
+                            </span> */}
                         </h2>
-                        {/* <div className="mt-2.5 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/20 backdrop-blur-md text-white text-[11px] font-medium shadow-xs border border-white/30 animate-bounce">
+                        {/* <div className="mt-2.5 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/20 backdrop-blur-md text-black text-[11px] font-medium shadow-xs border border-white/30 animate-bounce">
                             <MousePointer className="w-3.5 h-3.5" />
                             <span>Arahkan kursor ke tengah untuk masuk</span>
                         </div> */}

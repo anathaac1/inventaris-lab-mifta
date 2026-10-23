@@ -18,8 +18,6 @@ export function DashboardBannerCarousel() {
         {
             number: '01',
             theme: 'light',
-            // badge: 'Gunakan Bijak',
-            // icon: <Sparkles className="w-4 h-4 text-[#0256D0]" />,
             title: (
                 <>
                     Apapun yang dipinjam,
@@ -62,8 +60,6 @@ export function DashboardBannerCarousel() {
         {
             number: '03',
             theme: 'light',
-            // badge: 'Proses Praktis',
-            // icon: <Sparkles className="w-4 h-4 text-[#0256D0]" />,
             title: (
                 <>
                     Proses peminjaman
@@ -164,7 +160,7 @@ export function DashboardBannerCarousel() {
 
     return (
         <div
-            className={`group relative w-full overflow-hidden rounded-2xl sm:rounded-3xl border transition-all duration-500 hover:shadow-md select-none ${
+            className={`group relative w-full overflow-hidden rounded-xl sm:rounded-xl border transition-all duration-500 hover:shadow-md select-none ${
                 isDark
                     ? 'border-slate-800 bg-[#081220] shadow-md shadow-blue-950/20'
                     : 'border-slate-200/90 bg-white shadow-xs'
@@ -287,7 +283,7 @@ export function DashboardBannerCarousel() {
                 type="button"
                 onClick={prevSlide}
                 aria-label="Previous slide"
-                className={`hidden sm:flex absolute left-2 top-1/2 -translate-y-1/2 w-7 h-7 rounded shadow-xs items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-20 cursor-pointer ${
+                className={`hidden sm:flex absolute left-2 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full  shadow-xs items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-20 cursor-pointer ${
                     isDark
                         ? 'bg-slate-900/90 border border-slate-700 text-slate-200 hover:bg-slate-800'
                         : 'bg-white/90 border border-slate-200 text-slate-700 hover:bg-white'

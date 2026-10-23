@@ -8,7 +8,6 @@ import {
     LogOut,
     ChevronDown
 } from 'lucide-react';
-import { getActiveSession, terminateSession, type SessionToken } from '@/data/auth-store';
 import { toast } from 'sonner';
 import { ProfileModal } from '@/pages/siswa/profile/profile-modal';
 
@@ -21,30 +20,11 @@ interface MainLayoutProps {
 export function MainLayout({ children, currentTab = 'home' }: MainLayoutProps) {
     const { auth } = usePage().props as any;
     const currentUser = auth?.user;
-    const [session, setSession] = useState<SessionToken | null>(null);
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [profileModalOpen, setProfileModalOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
     const mobileMenuRef = useRef<HTMLDivElement>(null);
-
-    useEffect(() => {
-        const active = getActiveSession();
-        setSession(active);
-
-        // Check 1-hour expiration every 10 seconds only if no backend auth
-        if (!currentUser) {
-            const interval = setInterval(() => {
-                const current = getActiveSession();
-                if (!current) {
-                    toast.error('Sesi login 1 jam Anda telah berakhir. Silakan masuk kembali.');
-                    router.visit('/login');
-                }
-            }, 10000);
-
-            return () => clearInterval(interval);
-        }
-    }, [currentUser]);
 
     // Close dropdown on outside click or escape
     useEffect(() => {
@@ -73,7 +53,6 @@ export function MainLayout({ children, currentTab = 'home' }: MainLayoutProps) {
     }, []);
 
     const handleLogout = () => {
-        terminateSession();
         router.post('/logout', {}, {
             onFinish: () => {
                 toast.info('Anda telah keluar dari sesi.');
@@ -82,8 +61,8 @@ export function MainLayout({ children, currentTab = 'home' }: MainLayoutProps) {
         });
     };
 
-    const studentName = currentUser?.name || session?.name || 'Ahmad Rizky Pratama';
-    const studentClass = currentUser?.class || session?.class || 'XII RPL A';
+    const studentName = currentUser?.name || 'Ahmad Rizky Pratama';
+    const studentClass = currentUser?.class || 'XII RPL A';
     const studentInitials = studentName
         .split(' ')
         .map((n: string) => n[0])
@@ -207,7 +186,7 @@ export function MainLayout({ children, currentTab = 'home' }: MainLayoutProps) {
             <ProfileModal
                 isOpen={profileModalOpen}
                 onClose={() => setProfileModalOpen(false)}
-                session={session}
+                session={null}
                 user={currentUser}
                 onLogout={handleLogout}
             />

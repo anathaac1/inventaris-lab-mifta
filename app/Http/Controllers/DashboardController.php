@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Alat;
 use App\Models\Peminjaman;
+use Database\Seeders\InventorySeeder;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -21,6 +22,16 @@ class DashboardController extends Controller
         }
 
         try {
+            if (Alat::count() === 0) {
+                (new InventorySeeder())->run();
+            }
+
+            // Bersihkan emoji sparkles jika masih ada di database
+            Alat::where('description', 'like', '%✨%')->get()->each(function ($a) {
+                $a->description = trim(str_replace('✨', '', $a->description));
+                $a->save();
+            });
+
             $items = Alat::where('is_visible_to_students', true)
                 ->latest()
                 ->get();
@@ -37,7 +48,7 @@ class DashboardController extends Controller
             }
 
             $activeLoans = $query->get();
-        } catch (\Throwable) {
+        } catch (\Throwable $e) {
             $items = collect();
             $activeLoans = collect();
         }

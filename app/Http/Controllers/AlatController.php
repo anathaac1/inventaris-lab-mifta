@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Alat;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -12,8 +13,13 @@ class AlatController extends Controller
     /**
      * Display student catalog of items.
      */
-    public function index(Request $request): Response
+    public function index(Request $request): Response|RedirectResponse
     {
+        $user = $request->user();
+        if ($user && ($user->role === 'admin' || str_starts_with($user->email, 'admin') || $user->username === 'admin')) {
+            return redirect('/admin/alat');
+        }
+
         try {
             $query = Alat::where('is_visible_to_students', true);
 

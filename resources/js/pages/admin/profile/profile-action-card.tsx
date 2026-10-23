@@ -1,13 +1,36 @@
-import { Lock, LogOut, ChevronRight } from 'lucide-react';
+import { Lock, LogOut, ChevronRight, Edit3 } from 'lucide-react';
 
 interface ProfileActionCardProps {
+    onOpenEditModal: () => void;
     onOpenPasswordModal: () => void;
     onLogout: () => void;
 }
 
-export function ProfileActionCard({ onOpenPasswordModal, onLogout }: ProfileActionCardProps) {
+export function ProfileActionCard({ onOpenEditModal, onOpenPasswordModal, onLogout }: ProfileActionCardProps) {
     return (
         <div className="bg-white border border-slate-200/90 rounded-xl divide-y divide-slate-100 shadow-2xs overflow-hidden">
+            {/* Edit Profil Admin */}
+            <button
+                type="button"
+                onClick={onOpenEditModal}
+                className="w-full flex items-center justify-between p-3.5 hover:bg-slate-50 transition-colors text-left group cursor-pointer"
+            >
+                <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-blue-50 text-[#0256D0] flex items-center justify-center shrink-0 group-hover:bg-[#0256D0] group-hover:text-white transition-colors">
+                        <Edit3 className="w-4 h-4" />
+                    </div>
+                    <div>
+                        <p className="text-xs font-semibold text-slate-900 group-hover:text-[#0256D0] transition-colors">
+                            Edit Profil Administrator
+                        </p>
+                        <p className="text-[11px] text-slate-500">
+                            Perbarui nama lengkap, jabatan struktural, email, dan nomor kontak
+                        </p>
+                    </div>
+                </div>
+                <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-slate-600" />
+            </button>
+
             {/* Ganti Kata Sandi */}
             <button
                 type="button"

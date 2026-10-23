@@ -1,7 +1,7 @@
 import React from 'react';
-import { KeyRound, Check } from 'lucide-react';
+import { Check } from 'lucide-react';
 import type { UserAccount } from '@/data/auth-store';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 
 interface SiswaResetPasswordModalProps {
@@ -27,24 +27,14 @@ export function SiswaResetPasswordModal({
 }: SiswaResetPasswordModalProps) {
     return (
         <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-            <DialogContent className="max-w-md rounded-md bg-white p-6 border border-slate-300 shadow-xl">
-                <DialogHeader className="border-b border-slate-200 pb-3">
-                    <DialogTitle className="text-base font-bold text-slate-900 flex items-center gap-2">
-                        <div className="w-8 h-8 rounded-md bg-blue-50 text-[#0256D0] flex items-center justify-center border border-blue-200">
-                            <KeyRound className="w-4 h-4 text-[#0256D0]" />
-                        </div>
-                        <span>Berikan Password Baru Siswa</span>
-                    </DialogTitle>
-                    <DialogDescription className="text-xs text-slate-500 mt-1">
-                        Tetapkan password baru jika siswa lupa kata sandi akunnya.
-                    </DialogDescription>
-                </DialogHeader>
+            <DialogContent showCloseButton={false} className="max-w-md rounded-md bg-white p-6 border border-slate-300 shadow-xl">
+                <DialogTitle className="sr-only">Reset Password Pengguna</DialogTitle>
 
                 {student && (
-                    <form onSubmit={onSubmit} className="space-y-4 pt-3">
+                    <form onSubmit={onSubmit} className="space-y-4">
                         {/* Student Target Summary */}
-                        <div className="p-3 rounded-md bg-slate-50 border border-slate-200 text-xs flex items-center gap-3">
-                            <div className="w-9 h-9 rounded-md bg-slate-900 text-white font-bold flex items-center justify-center shrink-0">
+                        <div className="p-3 rounded bg-slate-50 border border-slate-200 text-xs flex items-center gap-3">
+                            <div className="w-9 h-9 rounded bg-slate-900 text-white font-bold flex items-center justify-center shrink-0">
                                 {student.avatar}
                             </div>
                             <div className="min-w-0">
@@ -56,7 +46,7 @@ export function SiswaResetPasswordModal({
                         </div>
 
                         {/* New Password Input */}
-                        <div className="space-y-1.5 border border-slate-200 rounded-md p-3.5 bg-slate-50/50">
+                        <div className="space-y-1.5 border border-slate-200 rounded p-3.5 bg-slate-50/50">
                             <label className="text-xs font-semibold text-slate-700 block">
                                 Password Baru
                             </label>
@@ -67,21 +57,21 @@ export function SiswaResetPasswordModal({
                                 value={newPassword}
                                 onChange={(e) => onNewPasswordChange(e.target.value)}
                                 placeholder="Contoh: rpl2024!"
-                                className="w-full px-3 py-2 rounded-md border border-slate-300 bg-white text-xs text-slate-900 focus:outline-none focus:border-[#0256D0] focus:ring-1 focus:ring-[#0256D0]"
+                                className="w-full px-3 py-2 rounded border border-slate-300 bg-white text-xs text-slate-900 focus:outline-none focus:border-[#0256D0] focus:ring-1 focus:ring-[#0256D0]"
                             />
 
                             {/* Quick Generator Button */}
                             <button
                                 type="button"
                                 onClick={onGenerateRandom}
-                                className="w-full mt-2 py-1.5 px-3 rounded-md bg-blue-50 hover:bg-blue-100 text-[#0256D0] font-semibold text-xs flex items-center justify-center gap-1.5 border border-blue-200 transition-colors cursor-pointer"
+                                className="w-full mt-2 py-1.5 px-3 rounded-lg bg-blue-50 hover:bg-blue-100 text-[#0256D0] font-medium text-xs flex items-center justify-center gap-1.5 border border-blue-200 transition-colors cursor-pointer"
                             >
-                                <span>Generate Password Acak (rpl + angka)</span>
+                                <span>Generate Password Acak</span>
                             </button>
                         </div>
 
                         {/* Actions */}
-                        <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-200">
+                        <div className="flex items-center justify-end gap-2 pt-1">
                             <Button
                                 type="button"
                                 variant="outline"

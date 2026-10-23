@@ -4,7 +4,7 @@ interface ProfileInfoCardProps {
 
 export function ProfileInfoCard({ adminUsername }: ProfileInfoCardProps) {
     return (
-        <div className="bg-white border border-slate-200/90 rounded-xl divide-y divide-slate-100 text-xs shadow-2xs overflow-hidden">
+        <div className="bg-white border border-slate-200/90 rounded divide-y divide-slate-100 text-xs shadow-2xs overflow-hidden">
             <div className="flex justify-between py-3 px-4.5">
                 <span className="text-slate-500">Sekolah</span>
                 <span className="font-semibold text-slate-800">SMKN 1 Kota Bekasi</span>
@@ -25,10 +25,10 @@ export function ProfileInfoCard({ adminUsername }: ProfileInfoCardProps) {
                 <span className="text-slate-500">Username Login</span>
                 <span className="font-bold text-slate-800">{adminUsername}</span>
             </div>
-            <div className="flex justify-between py-3 px-4.5">
+            {/* <div className="flex justify-between py-3 px-4.5">
                 <span className="text-slate-500">Tingkat Hak Akses</span>
                 <span className="font-bold text-[#0256D0]">Super Admin (Penuh)</span>
-            </div>
+            </div> */}
         </div>
     );
 }

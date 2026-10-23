@@ -1,4 +1,4 @@
-import { X, Info, Edit2 } from 'lucide-react';
+import { Info } from 'lucide-react';
 import type { InventoryItem } from '@/data/inventory-data';
 import { ItemIllustration } from '@/components/inventory/item-illustration';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
@@ -13,7 +13,7 @@ interface AlatDetailModalProps {
 export function AlatDetailModal({ item, onClose, onEdit }: AlatDetailModalProps) {
     return (
         <Dialog open={!!item} onOpenChange={(open) => !open && onClose()}>
-            <DialogContent className="max-w-lg p-0 rounded-2xl border border-slate-200 bg-white shadow-xl overflow-hidden">
+            <DialogContent className="max-w-md w-full p-0 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-2xl">
                 {item && (
                     <div>
                         {/* Header Banner */}
@@ -118,18 +118,18 @@ export function AlatDetailModal({ item, onClose, onEdit }: AlatDetailModalProps)
 
                         {/* Footer Actions */}
                         <div className="p-4 bg-slate-50 border-t border-slate-200 flex items-center justify-between">
-                            <Button
+                            {/* <Button
                                 type="button"
                                 variant="outline"
                                 onClick={onClose}
                                 className="h-9 px-4 rounded text-xs font-semibold"
                             >
                                 Tutup
-                            </Button>
+                            </Button> */}
                             <Button
                                 type="button"
                                 onClick={() => onEdit(item)}
-                                className="h-9 px-4 rounded bg-[#0256D0] hover:bg-[#0243a4] text-white text-xs font-semibold flex items-center gap-1.5 shadow-xs cursor-pointer"
+                                className="h-9 px-4 ml-auto rounded bg-[#0256D0] hover:bg-[#0243a4] text-white text-xs font-semibold flex items-center gap-1.5 shadow-xs cursor-pointer"
                             >
                                 {/* <Edit2 className="w-3.5 h-3.5" /> */}
                                 <span>Ubah Data Alat Ini</span>

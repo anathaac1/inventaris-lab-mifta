@@ -22,6 +22,7 @@ export function PeminjamanTabs({
                         : 'border-transparent text-zinc-500 hover:text-zinc-800'
                 }`}
             >
+
                 <span>Aktif</span>
                 <span
                     className={`px-1.5 py-0.5 rounded-full text-[10px] ${

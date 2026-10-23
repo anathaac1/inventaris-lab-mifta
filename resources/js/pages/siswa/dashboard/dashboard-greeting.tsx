@@ -32,7 +32,7 @@ export function DashboardGreeting({
                     </p>
                     <p className="text-[10px] sm:text-xs font-semibold text-slate-700 whitespace-nowrap">
                         {loginDateStr}
-                        <span className="text-slate-400 font-normal mx-0.5 sm:mx-1">•</span>
+                        <span className="text-slate-400 font-normal mx-0.5 sm:mx-1">    </span>
                         {loginTimeStr}
                     </p>
                 </div>

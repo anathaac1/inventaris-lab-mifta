@@ -11,9 +11,19 @@ use Inertia\Response;
 
 class AlatController extends Controller
 {
-    public function index(Request $request): Response
+    public function index(Request $request): Response|RedirectResponse
     {
+        $user = $request->user();
+        if ($user && $user->role !== 'admin' && !str_starts_with($user->email, 'admin') && $user->username !== 'admin') {
+            return redirect('/alat');
+        }
+
         try {
+            Alat::where('description', 'like', '%✨%')->get()->each(function ($a) {
+                $a->description = trim(str_replace('✨', '', $a->description));
+                $a->save();
+            });
+
             $items = Alat::latest()->get();
         } catch (\Throwable) {
             $items = collect();

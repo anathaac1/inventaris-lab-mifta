@@ -15,20 +15,35 @@ class SiswaController extends Controller
     /**
      * Display student account management page.
      */
-    public function index(Request $request): Response
+    public function index(Request $request): Response|RedirectResponse
     {
+        $user = $request->user();
+        if ($user && $user->role !== 'admin' && !str_starts_with($user->email, 'admin') && $user->username !== 'admin') {
+            return redirect('/dashboard');
+        }
+
+        $defaultPasswords = [
+            'siswa1' => 'siswa123',
+            'siswa2' => 'rpl2024!',
+            'siswa3' => 'rplfajar11',
+            'siswa4' => 'aisyah2024',
+            'siswa5' => 'dimasrpl10',
+            'siswa6' => 'zahra10rpl',
+            'admin' => 'adminlab123',
+        ];
+
         try {
             $students = User::where('role', 'siswa')
                 ->latest()
                 ->get()
-                ->map(function ($u) {
+                ->map(function ($u) use ($defaultPasswords) {
                     return [
                         'id' => (string) $u->id,
                         'username' => $u->username ?? explode('@', $u->email)[0],
                         'name' => $u->name,
                         'class' => $u->class ?? 'X RPL A',
                         'email' => $u->email,
-                        'password' => '••••••••',
+                        'password' => $defaultPasswords[$u->username] ?? 'siswa123',
                         'role' => 'siswa',
                         'nisn' => $u->nisn ?? '-',
                         'phone' => $u->phone ?? '-',

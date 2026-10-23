@@ -57,7 +57,7 @@ export function ItemDetailModal({ item, open, isOpen, onClose, onLoanSuccess }: 
                 {!isBorrowing ? (
                     <div className="p-5 space-y-4">
                         {/* Image */}
-                        <div className="rounded-lg bg-zinc-50 p-4 flex flex-col items-center justify-center border border-zinc-100">
+                        <div className="rounded bg-zinc-50 p-4 flex flex-col items-center justify-center border border-zinc-100">
                             <ItemIllustration type={item.iconType} className="w-32 h-24" />
                         </div>
 
@@ -125,7 +125,7 @@ export function ItemDetailModal({ item, open, isOpen, onClose, onLoanSuccess }: 
                                 className="w-full py-4 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs flex items-center justify-center gap-1.5"
                             >
                                 <span>Pinjam Sekarang</span>
-                                <ArrowRight className="w-3.5 h-3.5" />
+                                {/* <ArrowRight className="w-3.5 h-3.5" /> */}
                             </Button>
                         </div>
                     </div>
@@ -143,7 +143,7 @@ export function ItemDetailModal({ item, open, isOpen, onClose, onLoanSuccess }: 
                                 type="text"
                                 readOnly
                                 value={`${item.name} (${item.code})`}
-                                className="w-full px-3 py-2 rounded border border-zinc-200 bg-zinc-50 text-zinc-700 text-xs font-medium"
+                                className="w-full px-3 py-2 rounded border border-zinc-200 bg-zinc-50 text-slate-900 text-xs font-medium"
                             />
                         </div>
 
@@ -155,7 +155,7 @@ export function ItemDetailModal({ item, open, isOpen, onClose, onLoanSuccess }: 
                                     required
                                     value={borrowDate}
                                     onChange={(e) => setBorrowDate(e.target.value)}
-                                    className="w-full px-3 py-2 rounded border border-zinc-200 text-zinc-800 text-xs focus:outline-none focus:border-blue-500"
+                                    className="w-full px-3 py-2 rounded border border-zinc-200 text-slate-900 bg-white placeholder:text-slate-400 text-xs focus:outline-none focus:border-blue-500"
                                 />
                             </div>
                             <div className="space-y-1">
@@ -165,7 +165,7 @@ export function ItemDetailModal({ item, open, isOpen, onClose, onLoanSuccess }: 
                                     required
                                     value={returnEstimate}
                                     onChange={(e) => setReturnEstimate(e.target.value)}
-                                    className="w-full px-3 py-2 rounded border border-zinc-200 text-zinc-800 text-xs focus:outline-none focus:border-blue-500"
+                                    className="w-full px-3 py-2 rounded border border-zinc-200 text-slate-900 bg-white placeholder:text-slate-400 text-xs focus:outline-none focus:border-blue-500"
                                 />
                             </div>
                         </div>
@@ -178,7 +178,7 @@ export function ItemDetailModal({ item, open, isOpen, onClose, onLoanSuccess }: 
                                 value={notes}
                                 onChange={(e) => setNotes(e.target.value)}
                                 placeholder="Contoh: Praktikum Web"
-                                className="w-full px-3 py-2 rounded border border-zinc-200 text-zinc-800 text-xs focus:outline-none focus:border-blue-500"
+                                className="w-full px-3 py-2 rounded border border-zinc-200 text-slate-900 bg-white placeholder:text-slate-400 text-xs focus:outline-none focus:border-blue-500"
                             />
                         </div>
 

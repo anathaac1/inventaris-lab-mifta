@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { UserPlus, Check, Sparkles } from 'lucide-react';
+import { UserPlus, Check } from 'lucide-react';
 import { RPL_CLASSES } from '@/data/auth-store';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -75,19 +75,19 @@ export function SiswaCreateModal({
             <DialogContent className="max-w-xl rounded-md bg-white p-6 border border-slate-300 shadow-xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader className="border-b border-slate-200 pb-3">
                     <DialogTitle className="text-base font-bold text-slate-900 flex items-center gap-2.5">
-                        <div className="w-8 h-8 rounded-md bg-blue-50 text-[#0256D0] flex items-center justify-center border border-blue-200">
+                        {/* <div className="w-8 h-8 rounded-md bg-blue-50 text-[#0256D0] flex items-center justify-center border border-blue-200">
                             <UserPlus className="w-4 h-4 text-[#0256D0]" />
-                        </div>
+                        </div> */}
                         <span>Tambah Akun Pengguna Baru</span>
                     </DialogTitle>
-                    <DialogDescription className="text-xs text-slate-500 mt-1">
+                    {/* <DialogDescription className="text-xs text-slate-500 mt-1">
                         Daftarkan akun siswa atau admin baru untuk akses sistem inventaris lab.
-                    </DialogDescription>
+                    </DialogDescription> */}
                 </DialogHeader>
 
                 <form onSubmit={handleFormSubmit} className="space-y-4 pt-3">
                     {/* Section 1: Peran & Data Utama (Card Kotak) */}
-                    <div className="border border-slate-200 rounded-md p-3.5 bg-slate-50/50 space-y-3.5">
+                    <div className="border border-slate-200 rounded p-3.5 bg-slate-50/50 space-y-3.5">
                         <span className="text-[11px] font-bold text-slate-700 uppercase tracking-wider block">
                             1. Peran & Akses Akun
                         </span>
@@ -191,7 +191,7 @@ export function SiswaCreateModal({
                     </div>
 
                     {/* Section 2: Kontak & Identitas Tambahan (Card Kotak) */}
-                    <div className="border border-slate-200 rounded-md p-3.5 bg-slate-50/50 space-y-3">
+                    <div className="border border-slate-200 rounded p-3.5 bg-slate-50/50 space-y-3">
                         <span className="text-[11px] font-bold text-slate-700 uppercase tracking-wider block">
                             2. Kontak & Identitas
                         </span>
@@ -240,7 +240,7 @@ export function SiswaCreateModal({
                     </div>
 
                     {/* Section 3: Keamanan & Password (Card Kotak) */}
-                    <div className="border border-slate-200 rounded-md p-3.5 bg-slate-50/50 space-y-2.5">
+                    <div className="border border-slate-200 rounded p-3.5 bg-slate-50/50 space-y-2.5">
                         <div className="flex items-center justify-between">
                             <span className="text-[11px] font-bold text-slate-700 uppercase tracking-wider block">
                                 3. Password Akun <span className="text-red-500">*</span>
@@ -250,7 +250,6 @@ export function SiswaCreateModal({
                                 onClick={generateRandomPassword}
                                 className="text-[11px] font-semibold text-[#0256D0] hover:text-blue-700 flex items-center gap-1 cursor-pointer"
                             >
-                                <Sparkles className="w-3 h-3" />
                                 <span>Buat Password Acak</span>
                             </button>
                         </div>
@@ -279,7 +278,7 @@ export function SiswaCreateModal({
                             disabled={isSubmitting || !formData.name || !formData.username || !formData.password}
                             className="h-9 px-4 rounded-md bg-[#0256D0] hover:bg-blue-700 text-white text-xs font-bold shadow-xs cursor-pointer"
                         >
-                            <Check className="w-3.5 h-3.5 mr-1.5" />
+                            {/* <Check className="w-3.5 h-3.5 mr-1.5" /> */}
                             <span>{isSubmitting ? 'Menyimpan...' : 'Simpan User Baru'}</span>
                         </Button>
                     </div>

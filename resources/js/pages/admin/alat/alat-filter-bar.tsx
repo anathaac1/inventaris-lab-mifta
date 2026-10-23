@@ -1,5 +1,5 @@
 import React from 'react';
-import { Plus, X, ChevronDown } from 'lucide-react';
+import { Plus, ChevronDown, X } from 'lucide-react';
 import { CATEGORIES } from '@/data/inventory-data';
 
 export interface AlatFilterValues {
@@ -71,7 +71,7 @@ export function AlatFilterBar({
                     />
                 </div>
 
-                {/* Row 1 - Col 2: Kategori (Select dengan chevron digeser ke kiri dan tombol X di kanan) */}
+                {/* Row 1 - Col 2: Kategori */}
                 <div className="flex items-center gap-3">
                     <label className="w-32 shrink-0 font-medium text-slate-600 text-[11px] sm:text-xs">
                         Kategori
@@ -80,42 +80,32 @@ export function AlatFilterBar({
                         <select
                             value={filters.category}
                             onChange={(e) => handleFieldChange('category', e.target.value)}
-                            className={`w-full h-9 pl-3 pr-14 rounded border border-slate-300 bg-white text-xs appearance-none focus:outline-none focus:border-[#0256D0] focus:ring-1 focus:ring-[#0256D0] cursor-pointer ${
-                                filters.category === 'Semua' ? 'text-transparent' : 'text-slate-900 font-medium'
-                            }`}
+                            className="w-full h-9 pl-3 pr-12 rounded border border-slate-300 bg-white text-xs text-slate-900 font-medium focus:outline-none focus:border-[#0256D0] focus:ring-1 focus:ring-[#0256D0] cursor-pointer"
                         >
-                            <option value="Semua" className="hidden" disabled>Pilih Kategori</option>
+                            <option value="Semua">Semua Kategori</option>
                             {CATEGORIES.filter((cat) => cat !== 'Semua').map((cat) => (
-                                <option key={cat} value={cat} className="text-slate-900 font-normal">
+                                <option key={cat} value={cat}>
                                     {cat}
                                 </option>
                             ))}
                         </select>
-                        {filters.category === 'Semua' && (
-                            <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-xs text-slate-400">
-                                Pilih Kategori
-                            </span>
-                        )}
-                        <div className="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1.5 pointer-events-none">
-                            <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+                        <div className="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1">
                             {filters.category !== 'Semua' && (
                                 <button
                                     type="button"
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        handleFieldChange('category', 'Semua');
-                                    }}
-                                    title="Hapus pilihan kategori"
-                                    className="pointer-events-auto p-1 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full cursor-pointer transition-colors"
+                                    onClick={() => handleFieldChange('category', 'Semua')}
+                                    className="p-0.5 rounded-full hover:bg-slate-200 text-slate-400 hover:text-slate-600 transition-colors cursor-pointer"
+                                    title="Reset Kategori"
                                 >
-                                    <X className="w-3.5 h-3.5" />
+                                    <X className="w-3 h-3" />
                                 </button>
                             )}
+                            <ChevronDown className="w-3.5 h-3.5 text-slate-400 pointer-events-none" />
                         </div>
                     </div>
                 </div>
 
-                {/* Row 1 - Col 3: Ketersediaan Stok (Select) */}
+                {/* Row 1 - Col 3: Ketersediaan Stok */}
                 <div className="flex items-center gap-3">
                     <label className="w-32 shrink-0 font-medium text-slate-600 text-[11px] sm:text-xs">
                         Status Stok
@@ -124,35 +114,25 @@ export function AlatFilterBar({
                         <select
                             value={filters.stockStatus}
                             onChange={(e) => handleFieldChange('stockStatus', e.target.value)}
-                            className={`w-full h-9 pl-3 pr-14 rounded border border-slate-300 bg-white text-xs appearance-none focus:outline-none focus:border-[#0256D0] focus:ring-1 focus:ring-[#0256D0] cursor-pointer ${
-                                filters.stockStatus === 'all' ? 'text-transparent' : 'text-slate-900 font-medium'
-                            }`}
+                            className="w-full h-9 pl-3 pr-12 rounded border border-slate-300 bg-white text-xs text-slate-900 font-medium focus:outline-none focus:border-[#0256D0] focus:ring-1 focus:ring-[#0256D0] cursor-pointer"
                         >
-                            <option value="all" className="hidden" disabled>Pilih Stok</option>
-                            <option value="in_stock" className="text-slate-900 font-normal">Tersedia</option>
-                            <option value="low_stock" className="text-slate-900 font-normal">Stok Menipis</option>
-                            <option value="out_of_stock" className="text-slate-900 font-normal">Habis</option>
+                            <option value="all">Semua Stok</option>
+                            <option value="in_stock">Tersedia</option>
+                            <option value="low_stock">Stok Menipis</option>
+                            <option value="out_of_stock">Habis</option>
                         </select>
-                        {filters.stockStatus === 'all' && (
-                            <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-xs text-slate-400">
-                                Pilih Stok
-                            </span>
-                        )}
-                        <div className="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1.5 pointer-events-none">
-                            <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+                        <div className="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1">
                             {filters.stockStatus !== 'all' && (
                                 <button
                                     type="button"
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        handleFieldChange('stockStatus', 'all');
-                                    }}
-                                    title="Hapus pilihan status stok"
-                                    className="pointer-events-auto p-1 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full cursor-pointer transition-colors"
+                                    onClick={() => handleFieldChange('stockStatus', 'all')}
+                                    className="p-0.5 rounded-full hover:bg-slate-200 text-slate-400 hover:text-slate-600 transition-colors cursor-pointer"
+                                    title="Reset Status Stok"
                                 >
-                                    <X className="w-3.5 h-3.5" />
+                                    <X className="w-3 h-3" />
                                 </button>
                             )}
+                            <ChevronDown className="w-3.5 h-3.5 text-slate-400 pointer-events-none" />
                         </div>
                     </div>
                 </div>
@@ -172,7 +152,7 @@ export function AlatFilterBar({
                     />
                 </div>
 
-                {/* Row 2 - Col 2: Status Visibilitas (Select) */}
+                {/* Row 2 - Col 2: Status Visibilitas */}
                 <div className="flex items-center gap-3">
                     <label className="w-32 shrink-0 font-medium text-slate-600 text-[11px] sm:text-xs">
                         Status Alat
@@ -181,34 +161,24 @@ export function AlatFilterBar({
                         <select
                             value={filters.visibility}
                             onChange={(e) => handleFieldChange('visibility', e.target.value)}
-                            className={`w-full h-9 pl-3 pr-14 rounded border border-slate-300 bg-white text-xs appearance-none focus:outline-none focus:border-[#0256D0] focus:ring-1 focus:ring-[#0256D0] cursor-pointer ${
-                                filters.visibility === 'all' ? 'text-transparent' : 'text-slate-900 font-medium'
-                            }`}
+                            className="w-full h-9 pl-3 pr-12 rounded border border-slate-300 bg-white text-xs text-slate-900 font-medium focus:outline-none focus:border-[#0256D0] focus:ring-1 focus:ring-[#0256D0] cursor-pointer"
                         >
-                            <option value="all" className="hidden" disabled>Pilih Status</option>
-                            <option value="visible" className="text-slate-900 font-normal">Aktif</option>
-                            <option value="hidden" className="text-slate-900 font-normal">Tidak Aktif</option>
+                            <option value="all">Semua Status</option>
+                            <option value="visible">Aktif</option>
+                            <option value="hidden">Tidak Aktif</option>
                         </select>
-                        {filters.visibility === 'all' && (
-                            <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-xs text-slate-400">
-                                Pilih Status
-                            </span>
-                        )}
-                        <div className="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1.5 pointer-events-none">
-                            <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+                        <div className="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1">
                             {filters.visibility !== 'all' && (
                                 <button
                                     type="button"
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        handleFieldChange('visibility', 'all');
-                                    }}
-                                    title="Hapus pilihan status visibilitas"
-                                    className="pointer-events-auto p-1 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full cursor-pointer transition-colors"
+                                    onClick={() => handleFieldChange('visibility', 'all')}
+                                    className="p-0.5 rounded-full hover:bg-slate-200 text-slate-400 hover:text-slate-600 transition-colors cursor-pointer"
+                                    title="Reset Status Alat"
                                 >
-                                    <X className="w-3.5 h-3.5" />
+                                    <X className="w-3 h-3" />
                                 </button>
                             )}
+                            <ChevronDown className="w-3.5 h-3.5 text-slate-400 pointer-events-none" />
                         </div>
                     </div>
                 </div>

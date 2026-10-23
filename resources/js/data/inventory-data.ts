@@ -37,7 +37,7 @@ export const INVENTORY_ITEMS: InventoryItem[] = [
         code: 'EL-001',
         stock: 36,
         total: 40,
-        description: 'Laptop Lenovo ThinkPad dengan spesifikasi Intel Core i5, RAM 8GB, SSD 256GB. Cocok untuk kegiatan praktikum apalagi buat ngoding ✨',
+        description: 'Laptop Lenovo ThinkPad dengan spesifikasi Intel Core i5, RAM 8GB, SSD 256GB. Cocok untuk kegiatan praktikum apalagi buat ngoding.',
         specs: {
             'Tipe': 'Lenovo ThinkPad L14',
             'Processor': 'Intel Core i5-1135G7',
@@ -304,10 +304,10 @@ export const INITIAL_ACTIVE_LOANS: LoanItem[] = [
     },
     {
         id: 'loan-2',
-        itemId: 'mouse',
-        itemName: 'Mouse',
-        code: 'PR-001',
-        category: 'Peripheral',
+        itemId: 'laptop-acer',
+        itemName: 'Laptop Acer',
+        code: 'EL-002',
+        category: 'Laptop',
         borrowDate: '15 Oktober 2026',
         returnEstimate: '18 Oktober 2026',
         status: 'Sedang Dipinjam',
@@ -317,16 +317,55 @@ export const INITIAL_ACTIVE_LOANS: LoanItem[] = [
     },
     {
         id: 'loan-3',
-        itemId: 'laptop-acer',
-        itemName: 'Laptop Acer',
-        code: 'EL-002',
-        category: 'Laptop',
+        itemId: 'mouse',
+        itemName: 'Mouse',
+        code: 'PR-001',
+        category: 'Peripheral',
         borrowDate: '16 Oktober 2026',
         returnEstimate: '19 Oktober 2026',
         status: 'Sedang Dipinjam',
         borrowerName: 'Muhammad Fajar Ramadhan',
         borrowerClass: 'XI RPL A',
         notes: 'Praktikum Basis Data MySQL & Query Lanjut'
+    },
+    {
+        id: 'loan-4',
+        itemId: 'headset',
+        itemName: 'Headset',
+        code: 'PR-003',
+        category: 'Peripheral',
+        borrowDate: '16 Oktober 2026',
+        returnEstimate: '19 Oktober 2026',
+        status: 'Sedang Dipinjam',
+        borrowerName: 'Siti Aisyah Azzahra',
+        borrowerClass: 'XI RPL B',
+        notes: 'Praktikum Multimedia & Video Editing'
+    },
+    {
+        id: 'loan-5',
+        itemId: 'charger-lenovo',
+        itemName: 'Charger Lenovo',
+        code: 'EL-003',
+        category: 'Elektrikal',
+        borrowDate: '17 Oktober 2026',
+        returnEstimate: '20 Oktober 2026',
+        status: 'Sedang Dipinjam',
+        borrowerName: 'Dimas Arya Saputra',
+        borrowerClass: 'X RPL A',
+        notes: 'Praktikum Pemrograman Dasar'
+    },
+    {
+        id: 'loan-6',
+        itemId: 'keyboard-wireless',
+        itemName: 'Keyboard Wireless',
+        code: 'PR-006',
+        category: 'Peripheral',
+        borrowDate: '17 Oktober 2026',
+        returnEstimate: '20 Oktober 2026',
+        status: 'Sedang Dipinjam',
+        borrowerName: 'Zahra Amelia Dewi',
+        borrowerClass: 'X RPL B',
+        notes: 'Praktikum Algoritma Pemrograman'
     }
 ];
 
@@ -414,7 +453,7 @@ export const USER_PROFILE = {
 };
 
 const ITEMS_STORAGE_KEY = 'lab_inventory_items_v1';
-const LOANS_STORAGE_KEY = 'lab_inventory_loans_v3';
+const LOANS_STORAGE_KEY = 'lab_inventory_loans_v4';
 
 export function getStoredItems(): InventoryItem[] {
     if (typeof window === 'undefined') {

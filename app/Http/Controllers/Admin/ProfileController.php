@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -37,6 +38,41 @@ class ProfileController extends Controller
     }
 
     /**
+     * Update administrator profile.
+     */
+    public function update(Request $request): RedirectResponse
+    {
+        $admin = $request->user() ?? User::where('role', 'admin')->first();
+
+        if (!$admin) {
+            return redirect()->back()->with('error', 'Akun administrator tidak ditemukan.');
+        }
+
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'username' => [
+                'required',
+                'string',
+                'max:100',
+                Rule::unique('users', 'username')->ignore($admin->id),
+            ],
+            'email' => [
+                'required',
+                'string',
+                'email',
+                'max:255',
+                Rule::unique('users', 'email')->ignore($admin->id),
+            ],
+            'class' => ['nullable', 'string', 'max:100'],
+            'phone' => ['nullable', 'string', 'max:30'],
+        ]);
+
+        $admin->update($validated);
+
+        return redirect()->back()->with('success', 'Profil administrator berhasil diperbarui!');
+    }
+
+    /**
      * Update administrator password.
      */
     public function updatePassword(Request $request): RedirectResponse
@@ -48,12 +84,22 @@ class ProfileController extends Controller
 
         $admin = $request->user() ?? User::where('role', 'admin')->first();
 
-        if ($admin) {
-            $admin->update([
-                'password' => Hash::make($validated['new_password']),
-            ]);
+        if (!$admin) {
+            return redirect()->back()->with('error', 'Akun administrator tidak ditemukan.');
         }
 
-        return redirect()->back()->with('success', 'Kata sandi administrator berhasil diperbarui.');
+        if (!empty($validated['old_password'])) {
+            if (!Hash::check($validated['old_password'], $admin->password)) {
+                return redirect()->back()->withErrors([
+                    'old_password' => 'Kata sandi saat ini tidak sesuai.',
+                ]);
+            }
+        }
+
+        $admin->update([
+            'password' => Hash::make($validated['new_password']),
+        ]);
+
+        return redirect()->back()->with('success', 'Kata sandi administrator berhasil diperbarui di database!');
     }
 }
